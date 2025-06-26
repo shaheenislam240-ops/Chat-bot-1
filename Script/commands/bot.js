@@ -93,6 +93,26 @@ if ((event.body.toLowerCase() == "bbz")) {
      return api.sendMessage("He is rX ッ❤️ তাকে সবাই আব্দুল্লাহ নামে  চিনে🤙", threadID);
    };
 
+if ((event.body.toLowerCase() == "ki korso") || (event.body.toLowerCase() == "কী করিস")) {
+     return api.sendMessage("her ki r korbo Amr khoj k ney sobai to oder mal tare niye basto", threadID);
+   };
+
+if ((event.body.toLowerCase() == "ami asi to") || (event.body.toLowerCase() == "আমি আছি")) {
+     return api.sendMessage("কত জন আসলো গেলো কই  আর থাকলো", threadID);
+   };
+
+if ((event.body.toLowerCase() == "🙂") || (event.body.toLowerCase() == "🙃")) {
+     return api.sendMessage("কী হইছে জান এমন কেন করো", threadID);
+   };
+
+if ((event.body.toLowerCase() == "emni") || (event.body.toLowerCase() == "kisu na")) {
+     return api.sendMessage("তাহলে এমন করসিস কেন মার দিব 🤓", threadID);
+   };
+
+if ((event.body.toLowerCase() == "💔") || (event.body.toLowerCase() == "🥵")) {
+     return api.sendMessage("কিগো তোমার আবার কী হলো ", threadID);
+   };
+
    if ((event.body.toLowerCase() == "ai") || (event.body.toLowerCase() == "Ai")) {
      return api.sendMessage("If you want to use the AI command, type /ai ", threadID);
    };
@@ -110,14 +130,14 @@ if ((event.body.toLowerCase() == "bbz")) {
      return api.sendMessage("সরি বস মাফ করে দেন আর এমন ভুল হবে না🥺🙏", threadID);
    };
 
-   if ((event.body.toLowerCase() == "@Mahira Arshi") || (event.body.toLowerCase() == "@Nafiya rat")) {
-     return api.sendMessage("খবরদার কেউ এই আইডি মেনশন দিবানা এটা আমার বস আব্দুল্লাহ এর বউ এর আইডি😠🥰⛏️", threadID);
+   if ((event.body.toLowerCase() == "Maria") || (event.body.toLowerCase() == "@mahira arshi")) {
+     return api.sendMessage("উনি আব্দুল্লাহ বস এর বউ লাগেন ওনার সাথে কী দরকার", threadID);
    };
 
-if ((event.body.toLowerCase() == "Maria") || (event.body.toLowerCase() == "nasrin")) {
-     return api.sendMessage("খবরদার কেউ এই নাম দরে ডাক দিবানা এটা আমার বস আব্দুল্লাহ এর বউ এর নাম..!😠🥰⛏️", threadID);
+if ((event.body.toLowerCase() == "maria") || (event.body.toLowerCase() == "Mahira")) {
+     return api.sendMessage("ai j abdullah boss er wife apnare kon sesra daktese ", threadID);
    };
-  
+
   if ((event.body.toLowerCase() == "riya") || (event.body.toLowerCase() == "rumana")) {
      return api.sendMessage("kis mc ka name liya sara mood kharap ho geya", threadID);
    };
