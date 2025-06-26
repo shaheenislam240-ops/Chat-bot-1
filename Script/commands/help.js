@@ -29,24 +29,49 @@ module.exports.run = function ({ api, event, args }) {
 
   const message = `✨ [ Guide For Beginners - Page 1 ] ✨
 
-╭──── [ 𝗜𝗠𝗔𝗚𝗘 𝗚𝗘𝗡𝗘𝗥𝗔𝗧𝗢𝗥 ]
-│ ✧ dalle✧ aimirror✧ dalle3
-│ ✧ emi✧ faceswap✧ flux
-│ ✧ hidream✧ fluxpro✧ genix
-│ ✧ ghibli✧ infinity✧ meta
-│ ✧ midjourney✧ midjourney2✧ monster
-│ ✧ nigi✧ nigiv2✧ pixart
-│ ✧ real✧ xl31
-╰───────────────◊
 ╭──── [ 𝗖𝗛𝗔𝗧 𝗔𝗜 ]
-│ ✧ gpt✧ babyai✧ baby
-│ ✧ bbz✧ bf✧ blackbox
-│ ✧ bot✧ claude✧ claude2
-│ ✧ deepseek✧ gemini✧ gemini2
-│ ✧ gf✧ gf2✧ gpt1
-│ ✧ gpt3✧ gpt4✧ gpt5
-│ ✧ grok✧ llama✧ palm
-│ ✧ pi
+│ ✧ miss you✧bbz✧pik dew
+│ ✧ 😘✧😽✧help
+│ ✧ sim✧simsimi✧ওই কিরে
+│ ✧ oi kire✧...✧bc
+│ ✧ mc✧🫦✧💋
+│ ✧ 👀✧morning✧good morning
+│ ✧ dur bal✧bal✧abdullah
+│ ✧ @rx abdullah✧আব্দুল্লাহ✧owner
+│ ✧ ceo✧tor boss k✧Tor admin
+│ ✧ admin✧boter admin✧ki korso
+│ ✧ কী করিস✧ami asi to✧আমি আছি
+│ ✧ 🙂✧🙃✧emni
+│ ✧ kisu na✧💔✧🥵
+│ ✧ ai✧chup✧stop
+│ ✧ চুপ কর✧chup kor✧আসসালামু আলাইকুম
+│ ✧ assalamualaikum✧assalamu alaikum✧salam
+│ ✧ sala ami tor boss✧sala ami✧cup sala ami tor boss lagi
+│ ✧ madari✧maria✧Maria
+│ ✧ Mahira✧@mahira arshi✧riya
+│ ✧ rumana✧@rx jibon✧jibon
+│ ✧ kiss me✧KISS ME✧tnx
+│ ✧ thank you✧thanks✧ধন্যবাদ
+│ ✧ ....✧...✧😠
+│ ✧ 🤬✧😡✧হুম
+│ ✧ hum✧sorry✧সরি
+│ ✧ name✧tor nam ki✧bot er baccha
+│ ✧ BOT ER BACCHA✧pik de✧ss daw
+│ ✧ ex✧cudi✧tor nanire xudi
+│ ✧ 😅✧😒✧🙄
+│ ✧ amake kew valobashe na✧AMAKE KEW VALOBASHE NA✧aj kew nai bole
+│ ✧ gf✧bf✧😂
+│ ✧ 😁✧😆✧🤣
+│ ✧ 😸✧😹✧🥰
+│ ✧ 😍✧😻✧❤️
+│ ✧ কেমন আছো✧কেমন আছেন✧kmon acho
+│ ✧ how are you✧how are you?✧mon kharap
+│ ✧ tmr ki mon kharap✧i love you✧I love you
+│ ✧ Love you✧ভালোবাসি✧bye
+│ ✧ by✧Bye✧jaiga
+│ ✧ বাই✧pore kotha hbe✧যাই গা
+│ ✧ tumi khaiso✧khaiso✧tumi ki amke valobaso
+│ ✧ tmi ki amake vlo basho✧ami Abdullah✧kire
 ╰───────────────◊
 ╭──── [ UTILITY ]
 │ ✧ accept✧ adc✧ age
@@ -56,13 +81,6 @@ module.exports.run = function ({ api, event, args }) {
 │ ✧ ocr✧ splitimage✧ ss
 │ ✧ translate✧ uid✧ unsend
 │ ✧ uptime✧ weather✧ worldclock
-╰───────────────◊
-╭──── [ GAME ]
-│ ✧ actor✧ coinflip✧ daily
-│ ✧ dhbc✧ freefire✧ fight
-│ ✧ flag✧ guessnumber✧ lastchar
-│ ✧ numbergame✧ pokemon✧ quiz
-│ ✧ slot✧ waifu✧ wordgame
 ╰───────────────◊
 ╭──── [ BOX CHAT ]
 │ ✧ onlyadminbox✧ admin✧ antichangeinfobox
@@ -77,29 +95,7 @@ module.exports.run = function ({ api, event, args }) {
 │ ✧ out✧ restart✧ rr
 │ ✧ shell✧ spam✧ vip
 ╰───────────────◊
-╭──── [ MEME ]
-│ ✧ ads✧ buttslap✧ dcdig
-│ ✧ gname✧ putin✧ wanted2
-╰───────────────◊
-╭──── [ MEDIA ]
-│ ✧ album✧ emojis✧ girl
-│ ✧ github✧ hitler✧ imgur
-│ ✧ manga✧ mobile✧ pinterest
-│ ✧ profile✧ rmbg✧ salami
-│ ✧ sing✧ text2video✧ tts
-│ ✧ upscale✧ video✧ ytb
-│ ✧ ytt
-╰───────────────◊
-╭──── [ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗥 ]
-│ ✧ alldl✧ autodl✧ download
-│ ✧ tiksr✧ tiktokid
-╰───────────────◊
-╭──── [ ANIME ]
-│ ✧ anilist✧ animeinfo✧ aninews
-│ ✧ anivid✧ waifu2
-╰───────────────◊
-
-╭─『 RX  BOT 』
+╭─『 RX  CHAT BOT 』
 ╰‣ Total commands: ${totalCmds}
 ╰‣ Page 1 of 6
 ╰‣ A Personal Facebook Bot
