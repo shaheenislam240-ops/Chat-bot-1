@@ -30,8 +30,8 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
      return api.sendMessage("<আমি তোমাকে রাইতে মিস খাই🥹🤖👅/👅-✘  🎀 🍒:))", threadID);
    };
 
-if ((event.body.toLowerCase() == "bbz")) {
-     return api.sendMessage("হে পাখি, baby বল 😌", threadID);
+if ((event.body.toLowerCase() == "@Sııƞƞeɽ 倫ッ")) {
+     return api.sendMessage("ডাকিস না রাগ করসি  😌", threadID);
    };
 
    if ((event.body.toLowerCase() == "pik dew")) {
@@ -129,11 +129,11 @@ if ((event.body.toLowerCase() == "💔") || (event.body.toLowerCase() == "💔�
      return api.sendMessage("সরি বস মাফ করে দেন আর এমন ভুল হবে না🥺🙏", threadID);
    };
 
-   if ((event.body.toLowerCase() == "Maria") || (event.body.toLowerCase() == "@mahira arshi")) {
+   if ((event.body.toLowerCase() == "nasrin") || (event.body.toLowerCase() == "@mahira arshi")) {
      return api.sendMessage("উনি আব্দুল্লাহ বস এর বউ লাগেন ওনার সাথে কী দরকার", threadID);
    };
 
-if ((event.body.toLowerCase() == "maria") || (event.body.toLowerCase() == "Mahira")) {
+if ((event.body.toLowerCase() == "Maria ❤️") || (event.body.toLowerCase() == "Mahira")) {
      return api.sendMessage("ai j abdullah boss er wife apnare kon sesra daktese ", threadID);
    };
 
