@@ -133,7 +133,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
 };
 
 module.exports.handleReply = async function ({ api, event, handleReply }) {
-try{
+ try {
  if (event.type == "message_reply") {
  const reply = event.body.toLowerCase();
  if (isNaN(reply)) {
@@ -146,40 +146,62 @@ try{
  author: event.senderID,
  lnk: b
  });
- }, event.messageID,
- )}}
-}catch(err){
+ }, event.messageID)
+ }}
+ } catch (err) {
  return api.sendMessage(`Error: ${err.message}`, event.threadID, event.messageID);
-}};
-
- 
-module.exports.handleEvent = async function ({ api, event }) {
-try{
- const body = event.body ? event.body.toLowerCase() : ""
- if(body.startsWith("baby") || body.startsWith("bby") || body.startsWith("/bot")){
- const arr = body.replace(/^\S+\s*/, "")
- if(!arr) {
- await api.sendMessage("hum xan bolo ami asi ", event.threadID, (error, info) => {
- global.client.handleReply.push({
- name: this.config.name,
- type: "reply",
- messageID: info.messageID,
- author: event.senderID
- });
- }, event.messageID,
- )
  }
- const a = (await axios.get(`${await baseApiUrl()}/baby?text=${encodeURIComponent(arr)}&senderID=${event.senderID}&font=1`)).data.reply; 
- await api.sendMessage(a, event.threadID, (error, info) => {
- global.client.handleReply.push({
- name: this.config.name,
- type: "reply",
- messageID: info.messageID,
- author: event.senderID,
- lnk: a
- });
- }, event.messageID,
- )}
-}catch(err){
- return api.sendMessage(`Error: ${err.message}`, event.threadID, event.messageID);
-}};
+};
+
+module.exports.handleEvent = async function ({ api, event }) {
+ try {
+   const body = event.body ? event.body.toLowerCase() : "";
+
+   const triggerWords = [
+     "baby",
+     "bby",
+     "/bot",
+     "bot",
+     "sweetie",
+     "jan",
+     "bbz",
+     "sona",
+     "xan",
+     "maria",
+     "babu",
+     "koliza",
+     "baby koi tumi",
+     "maria koi tumi"
+   ];
+
+   if (triggerWords.some(word => body.includes(word))) {
+     const arr = body.replace(/^\S+\s*/, "");
+
+     if (!arr || arr.trim().length === 0) {
+       return await api.sendMessage("হুম জান, বলো আমি আছি 🥰", event.threadID, (error, info) => {
+         global.client.handleReply.push({
+           name: this.config.name,
+           type: "reply",
+           messageID: info.messageID,
+           author: event.senderID
+         });
+       }, event.messageID);
+     }
+
+     const a = (await axios.get(`${await baseApiUrl()}/baby?text=${encodeURIComponent(arr)}&senderID=${event.senderID}&font=1`)).data.reply;
+
+     return await api.sendMessage(a, event.threadID, (error, info) => {
+       global.client.handleReply.push({
+         name: this.config.name,
+         type: "reply",
+         messageID: info.messageID,
+         author: event.senderID,
+         lnk: a
+       });
+     }, event.messageID);
+   }
+
+ } catch (err) {
+   return api.sendMessage(`❌ Error: ${err.message}`, event.threadID, event.messageID);
+ }
+};
