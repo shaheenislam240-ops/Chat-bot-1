@@ -19,7 +19,7 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
   var name = await Users.getNameUser(event.senderID);
 
    if (event.attachments && event.attachments.length > 0 && event.attachments[0].type === "video") {
-    return api.sendMessage(`${name}, ⚠️ ভিডিও দিলি কেন? খবরদার! এটা যদি আমার বস আব্দুল্লাহ এর বউয়ের ভিডিও হয়, তাহলে তোরে গুঁতা দিমু! 🤨📹😠`, threadID, messageID);
+    return api.sendMessage(`${name}, 😷`, threadID, messageID);
   }
 
 
