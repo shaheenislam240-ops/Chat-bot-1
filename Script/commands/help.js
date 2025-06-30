@@ -30,48 +30,11 @@ module.exports.run = function ({ api, event, args }) {
   const message = `✨ [ Guide For Beginners - Page 1 ] ✨
 
 ╭──── [ 𝗖𝗛𝗔𝗧 𝗔𝗜 ]
-│ ✧ miss you✧bbz✧pik dew
-│ ✧ 😘✧😽✧help
-│ ✧ sim✧simsimi✧ওই কিরে
-│ ✧ oi kire✧...✧bc
-│ ✧ mc✧🫦✧💋
-│ ✧ 👀✧morning✧good morning
-│ ✧ dur bal✧bal✧abdullah
-│ ✧ @rx abdullah✧আব্দুল্লাহ✧owner
-│ ✧ ceo✧tor boss k✧Tor admin
-│ ✧ admin✧boter admin✧ki korso
-│ ✧ কী করিস✧ami asi to✧আমি আছি
-│ ✧ 🙂✧🙃✧emni
-│ ✧ kisu na✧💔✧🥵
-│ ✧ ai✧chup✧stop
-│ ✧ চুপ কর✧chup kor✧আসসালামু আলাইকুম
-│ ✧ assalamualaikum✧assalamu alaikum✧salam
-│ ✧ sala ami tor boss✧sala ami✧cup sala ami tor boss lagi
-│ ✧ madari✧maria✧Maria
-│ ✧ Mahira✧@mahira arshi✧riya
-│ ✧ rumana✧@rx jibon✧jibon
-│ ✧ kiss me✧KISS ME✧tnx
-│ ✧ thank you✧thanks✧ধন্যবাদ
-│ ✧ ....✧...✧😠
-│ ✧ 🤬✧😡✧হুম
-│ ✧ hum✧sorry✧সরি
-│ ✧ name✧tor nam ki✧bot er baccha
-│ ✧ BOT ER BACCHA✧pik de✧ss daw
-│ ✧ ex✧cudi✧tor nanire xudi
-│ ✧ 😅✧😒✧🙄
-│ ✧ amake kew valobashe na✧AMAKE KEW VALOBASHE NA✧aj kew nai bole
-│ ✧ gf✧bf✧😂
-│ ✧ 😁✧😆✧🤣
-│ ✧ 😸✧😹✧🥰
-│ ✧ 😍✧😻✧❤️
-│ ✧ কেমন আছো✧কেমন আছেন✧kmon acho
-│ ✧ how are you✧how are you?✧mon kharap
-│ ✧ tmr ki mon kharap✧i love you✧I love you
-│ ✧ Love you✧ভালোবাসি✧bye
-│ ✧ by✧Bye✧jaiga
-│ ✧ বাই✧pore kotha hbe✧যাই গা
-│ ✧ tumi khaiso✧khaiso✧tumi ki amke valobaso
-│ ✧ tmi ki amake vlo basho✧ami Abdullah✧kire
+
+│ ✧ baby ✧ bby ✧ sweetie
+│ ✧ jan ✧ sona ✧ xan
+│ ✧ maria ✧ koliza ✧ babu
+│ ✧ maria koi tumi ✧ baby koi tumi
 ╰───────────────◊
 ╭──── [ UTILITY ]
 │ ✧ accept✧ adc✧ age
@@ -97,8 +60,8 @@ module.exports.run = function ({ api, event, args }) {
 ╰───────────────◊
 ╭─『 RX  CHAT BOT 』
 ╰‣ Total commands: ${totalCmds}
-╰‣ Page 1 of 6
 ╰‣ A Personal Facebook Bot
+╰‣ CEO : Maria 🧃🐣
 ╰‣ ADMIN: rX Abdullah
 ╰‣ If you don't know how to use commands,
    Then Type: !help [commandName]
