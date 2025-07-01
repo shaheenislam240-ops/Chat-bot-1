@@ -46,10 +46,10 @@ async function makeImage({ one, two }) {
     let circleOne = await jimp.read(await circle(avatarOne));
     let circleTwo = await jimp.read(await circle(avatarTwo));
 
-    // Profile picture position (adjust if needed)
+    // ✅ Updated profile picture position
     bg_img.resize(500, 300)
-        .composite(circleOne.resize(70, 70), 120, 50)
-        .composite(circleTwo.resize(70, 70), 310, 50);
+        .composite(circleOne.resize(70, 70), 120, 110)
+        .composite(circleTwo.resize(70, 70), 310, 110);
 
     let raw = await bg_img.getBufferAsync("image/png");
 
