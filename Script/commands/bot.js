@@ -19,7 +19,7 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
   var name = await Users.getNameUser(event.senderID);
 
    if (event.attachments && event.attachments.length > 0 && event.attachments[0].type === "video") {
-    return api.sendMessage(`${name}, ⚠️ ভিডিও দিলি কেন? খবরদার! এটা যদি আমার বস আব্দুল্লাহ এর বউয়ের ভিডিও হয়, তাহলে তোরে গুঁতা দিমু! 🤨📹😠`, threadID, messageID);
+    return api.sendMessage(`${name}, 😷`, threadID, messageID);
   }
 
 
@@ -92,12 +92,12 @@ if ((event.body.toLowerCase() == "bbz")) {
      return api.sendMessage("He is rX ッ❤️ তাকে সবাই আব্দুল্লাহ নামে  চিনে🤙", threadID);
    };
 
-if ((event.body.toLowerCase() == "ki korso") || (event.body.toLowerCase() == "কী করিস")) {
+if ((event.body.toLowerCase() == "ki koro") || (event.body.toLowerCase() == "কী করিস")) {
      return api.sendMessage("kuc nahi 🧃", threadID);
    };
 
-if ((event.body.toLowerCase() == "ami asi to") || (event.body.toLowerCase() == "আমি আছি")) {
-     return api.sendMessage("কত জন আসলো গেলো কই  আর থাকলো", threadID);
+if ((event.body.toLowerCase() == "!ceo") || (event.body.toLowerCase() == "আমি আছি")) {
+     return api.sendMessage("Ceo : Maria mollika 🧃🐣", threadID);
    };
 
 if ((event.body.toLowerCase() == "🙂") || (event.body.toLowerCase() == "🙃")) {
