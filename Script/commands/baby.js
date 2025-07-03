@@ -7,84 +7,208 @@ const baseApiUrl = async () => {
 
 module.exports.config = {
   name: "baby",
-  version: "1.0.0",
+  version: "6.9.9",
   credits: "Md Abdullah",
-  description: "User wise teachable chat bot",
+  description: "better than all sim simi",
   commandCategory: "chat",
   cooldowns: 0,
   hasPermssion: 0,
   usePrefix: true,
   prefix: true,
-  usages: "[text] OR teach [trigger] - [reply1], [reply2]... OR remove [trigger] OR edit [trigger] - [new reply]"
+  usages: `[anyMessage] OR
+teach [YourMessage] - [Reply1], [Reply2], [Reply3]... OR
+teach [react] [YourMessage] - [react1], [react2], [react3]... OR
+remove [YourMessage] OR
+rm [YourMessage] - [indexNumber] OR
+msg [YourMessage] OR
+list OR
+all OR
+edit [YourMessage] - [NewMessage]`
 };
 
-module.exports.run = async function({ api, event, args }) {
+module.exports.run = async function({ api, event, args, Users }) {
   try {
-    const uid = event.senderID;
-    const link = await baseApiUrl() + "/baby";
+    const link = `${await baseApiUrl()}/baby`;
     const input = args.join(" ").toLowerCase();
+    const uid = event.senderID;
 
-    if (!args[0]) return api.sendMessage("কি বলবে আমাকে?", event.threadID, event.messageID);
-
-    if (args[0] === "teach") {
-      const rest = input.slice(6).trim();
-      const [trigger, replies] = rest.split(" - ");
-      if (!trigger || !replies) return api.sendMessage("Format: teach [trigger] - [reply1], [reply2]...", event.threadID, event.messageID);
-      const res = await axios.get(`${link}?teach=${encodeURIComponent(trigger.trim())}&reply=${encodeURIComponent(replies.trim())}&senderID=${uid}`);
-      return api.sendMessage(`✅ শেখানো শেষ!\nTrigger: "${trigger.trim()}"\nReplies: ${replies.trim()}`, event.threadID, event.messageID);
+    if (!args[0]) {
+      const ran = ["Bolo baby", "hum", "type help baby", "type !baby hi"];
+      const r = ran[Math.floor(Math.random() * ran.length)];
+      return api.sendMessage(r, event.threadID, event.messageID);
     }
 
-    if (args[0] === "remove") {
-      const trigger = input.slice(7).trim();
-      if (!trigger) return api.sendMessage("Remove করার জন্য trigger দিন!", event.threadID, event.messageID);
-      const check = await axios.get(`${link}?check=${encodeURIComponent(trigger)}&senderID=${uid}`);
-      if (!check.data.allowed) return api.sendMessage("❌ এটা আপনি শেখাননি, তাই মুছতে পারবেন না!", event.threadID, event.messageID);
-      const res = await axios.get(`${link}?remove=${encodeURIComponent(trigger)}&senderID=${uid}`);
-      return api.sendMessage(res.data.message, event.threadID, event.messageID);
+    // শুধুমাত্র teach, remove, rm, edit, list, msg কমান্ডে কাজ করবে
+    if (args[0] === 'remove') {
+      const fina = input.replace("remove ", "");
+      const respons = await axios.get(`${link}?remove=${fina}&senderID=${uid}`);
+      return api.sendMessage(respons.data.message, event.threadID, event.messageID);
     }
 
-    if (args[0] === "edit") {
-      const rest = input.slice(5).trim();
-      const [trigger, newReply] = rest.split(" - ");
-      if (!trigger || !newReply) return api.sendMessage("Format: edit [trigger] - [new reply]", event.threadID, event.messageID);
-      const check = await axios.get(`${link}?check=${encodeURIComponent(trigger.trim())}&senderID=${uid}`);
-      if (!check.data.allowed) return api.sendMessage("❌ এটা আপনি শেখাননি, তাই edit করতে পারবেন না!", event.threadID, event.messageID);
-      const res = await axios.get(`${link}?edit=${encodeURIComponent(trigger.trim())}&replace=${encodeURIComponent(newReply.trim())}`);
-      return api.sendMessage(`🛠️ Edit complete: ${res.data.message}`, event.threadID, event.messageID);
+    if (args[0] === 'rm' && input.includes('-')) {
+      const [fi, f] = input.replace("rm ", "").split(' - ');
+      const respons = await axios.get(`${link}?remove=${fi}&index=${f}`);
+      return api.sendMessage(respons.data.message, event.threadID, event.messageID);
     }
 
-    const res = await axios.get(`${link}?text=${encodeURIComponent(input)}&senderID=${uid}`);
-    const reply = res.data.reply || "আমি এটা শিখিনি";
+    if (args[0] === 'list') {
+      if (args[1] === 'all') {
+        const res = await axios.get(`${link}?list=all`);
+        const data = res.data.teacher.teacherList;
+        const teachers = await Promise.all(data.map(async (item) => {
+          const number = Object.keys(item)[0];
+          const value = item[number];
+          const name = await Users.getName(number) || "unknown";
+          return { name, value };
+        }));
+        teachers.sort((a, b) => b.value - a.value);
+        const output = teachers.map((teacher, index) => `${index + 1}/ ${teacher.name}: ${teacher.value}`).join('\n');
+        return api.sendMessage(`Total Teach = ${res.data.length}\n\n👑 | List of Teachers of baby\n${output}`, event.threadID, event.messageID);
+      } else {
+        const respo = await axios.get(`${link}?list=all`);
+        return api.sendMessage(`Total Teach = ${respo.data.length}`, event.threadID, event.messageID);
+      }
+    }
 
-    return api.sendMessage(reply, event.threadID, (error, info) => {
+    if (args[0] === 'msg' || args[0] === 'message') {
+      const fuk = input.replace("msg ", "");
+      const respo = await axios.get(`${link}?list=${fuk}`);
+      return api.sendMessage(`Message ${fuk} = ${respo.data.data}`, event.threadID, event.messageID);
+    }
+
+    if (args[0] === 'edit') {
+      const command = input.split(' - ')[1];
+      if (!command || command.length < 2) {
+        return api.sendMessage('❌ | Invalid format! Use edit [YourMessage] - [NewReply]', event.threadID, event.messageID);
+      }
+      const res = await axios.get(`${link}?edit=${args[1]}&replace=${command}`);
+      return api.sendMessage(`changed ${res.data.message}`, event.threadID, event.messageID);
+    }
+
+    if (args[0] === 'teach' && args[1] !== 'amar' && args[1] !== 'react') {
+      const [comd, command] = input.split(' - ');
+      const final = comd.replace("teach ", "");
+      if (!command || command.length < 2) {
+        return api.sendMessage('❌ | Invalid format! Use [YourMessage] - [Reply1], [Reply2], [Reply3]...', event.threadID, event.messageID);
+      }
+      const re = await axios.get(`${link}?teach=${final}&reply=${command}&senderID=${uid}`);
+      const name = await Users.getName(re.data.teacher) || "";
+      return api.sendMessage(`✅ Replies added ${re.data.message}\nTeacher: ${name || "unknown"}\nTeachs: ${re.data.teachs}`, event.threadID, event.messageID);
+    }
+
+    if (args[0] === 'teach' && args[1] === 'amar') {
+      const [comd, command] = input.split(' - ');
+      const final = comd.replace("teach ", "");
+      if (!command || command.length < 2) {
+        return api.sendMessage('❌ | Invalid format! Use [YourMessage] - [Reply1], [Reply2], [Reply3]...', event.threadID, event.messageID);
+      }
+      const re = await axios.get(`${link}?teach=${final}&senderID=${uid}&reply=${command}&key=intro`);
+      return api.sendMessage(`✅ Replies added ${re.data.message}`, event.threadID, event.messageID);
+    }
+
+    if (args[0] === 'teach' && args[1] === 'react') {
+      const [comd, command] = input.split(' - ');
+      const final = comd.replace("teach react ", "");
+      if (!command || command.length < 2) {
+        return api.sendMessage('❌ | Invalid format! Use [teach] [YourMessage] - [Reply1], [Reply2], [Reply3]... OR [teach] [react] [YourMessage] - [react1], [react2], [react3]...', event.threadID, event.messageID);
+      }
+      const re = await axios.get(`${link}?teach=${final}&react=${command}`);
+      return api.sendMessage(`✅ Replies added ${re.data.message}`, event.threadID, event.messageID);
+    }
+
+    if (['amar name ki', 'amr nam ki', 'amar nam ki', 'amr name ki'].some(phrase => input.includes(phrase))) {
+      const response = await axios.get(`${link}?text=amar name ki&senderID=${uid}&key=intro`);
+      return api.sendMessage(response.data.reply, event.threadID, event.messageID);
+    }
+
+    // সাধারণ মেসেজগুলো এখানে হ্যান্ডেল হবে
+    const a = (await axios.get(`${link}?text=${input}&senderID=${uid}&font=1`)).data.reply;
+    return api.sendMessage(a, event.threadID, (error, info) => {
       global.client.handleReply.push({
         name: this.config.name,
         type: "reply",
         messageID: info.messageID,
         author: event.senderID,
+        lnk: a,
+        apiUrl: link
       });
     }, event.messageID);
 
-  } catch (err) {
-    return api.sendMessage(`❌ Error: ${err.message}`, event.threadID, event.messageID);
+  } catch (e) {
+    console.error('Error in command execution:', e);
+    return api.sendMessage(`Error: ${e.message}`, event.threadID, event.messageID);
   }
 };
 
 module.exports.handleReply = async function({ api, event }) {
   try {
     if (event.type !== "message_reply") return;
-    const replyText = event.body.toLowerCase();
-    const link = await baseApiUrl() + "/baby";
-    const res = await axios.get(`${link}?text=${encodeURIComponent(replyText)}&senderID=${event.senderID}`);
-    const reply = res.data.reply || "আমি এটা শিখিনি";
-    return api.sendMessage(reply, event.threadID, (error, info) => {
-      global.client.handleReply.push({
-        name: this.config.name,
-        type: "reply",
-        messageID: info.messageID,
-        author: event.senderID,
-      });
-    }, event.messageID);
+    const reply = event.body.toLowerCase();
+    if (isNaN(reply)) {
+      const b = (await axios.get(`${await baseApiUrl()}/baby?text=${encodeURIComponent(reply)}&senderID=${event.senderID}&font=1`)).data.reply;
+      await api.sendMessage(b, event.threadID, (error, info) => {
+        global.client.handleReply.push({
+          name: this.config.name,
+          type: "reply",
+          messageID: info.messageID,
+          author: event.senderID,
+          lnk: b
+        });
+      }, event.messageID);
+    }
+  } catch (err) {
+    return api.sendMessage(`Error: ${err.message}`, event.threadID, event.messageID);
+  }
+};
+
+module.exports.handleEvent = async function({ api, event }) {
+  try {
+    const body = event.body ? event.body.toLowerCase() : "";
+
+    const triggerWords = [
+      "baby",
+      "bby",
+      "/bot",
+      "bot",
+      "sweetie",
+      "jan",
+      "bbz",
+      "sona",
+      "xan",
+      "maria",
+      "babu",
+      "koliza",
+      "baby koi tumi",
+      "maria koi tumi"
+    ];
+
+    if (triggerWords.some(word => body.includes(word))) {
+      const arr = body.replace(/^\S+\s*/, "");
+
+      if (!arr || arr.trim().length === 0) {
+        return await api.sendMessage("হুম জান, বলো আমি আছি 🥰", event.threadID, (error, info) => {
+          global.client.handleReply.push({
+            name: this.config.name,
+            type: "reply",
+            messageID: info.messageID,
+            author: event.senderID
+          });
+        }, event.messageID);
+      }
+
+      const a = (await axios.get(`${await baseApiUrl()}/baby?text=${encodeURIComponent(arr)}&senderID=${event.senderID}&font=1`)).data.reply;
+
+      return await api.sendMessage(a, event.threadID, (error, info) => {
+        global.client.handleReply.push({
+          name: this.config.name,
+          type: "reply",
+          messageID: info.messageID,
+          author: event.senderID,
+          lnk: a
+        });
+      }, event.messageID);
+    }
+
   } catch (err) {
     return api.sendMessage(`❌ Error: ${err.message}`, event.threadID, event.messageID);
   }
