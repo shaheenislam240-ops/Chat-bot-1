@@ -169,7 +169,7 @@ module.exports.handleEvent = async function({ api, event }) {
       "baby",
       "bby",
       "/bot",
-      "bot",
+      "rx",
       "sweetie",
       "jan",
       "bbz",
