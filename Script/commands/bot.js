@@ -30,12 +30,12 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
      return api.sendMessage("<আমি তোমাকে রাইতে মিস খাই🥹🤖👅/👅-✘  🎀 🍒:))", threadID);
    };
 
-if ((event.body.toLowerCase() == "bbz")) {
-     return api.sendMessage("হে পাখি, baby বল 😌", threadID);
+if ((event.body.toLowerCase() == "tomar malik k")) {
+     return api.sendMessage("rx m.me/rxabdullah007", threadID);
    };
 
    if ((event.body.toLowerCase() == "pik dew")) {
-     return api.sendMessage("শরম নাই তোর? আমার কাছে পিক চাইছিস 😑 আমি তোর শালী লাগি নাকি?", threadID);
+     return api.sendMessage("শরম নাই তোর? গ্রুপ এ  পিক চাইছিস 😑", threadID);
    };
 
     if ((event.body.toLowerCase() == "😘") || (event.body.toLowerCase() == "😽")) {
@@ -145,7 +145,7 @@ if ((event.body.toLowerCase() == "মারিয়া") || (event.body.toLower
      return api.sendMessage("🥰-জীবন-🌺 আমার বস আব্দুল্লাহ'র বন্ধু লাগে লুচ্ছি বেডি'রা দূরে থাক😠🥰⛏️", threadID);
    };
 
-   if ((event.body.toLowerCase() == "KISS ME") || (event.body.toLowerCase() == "kiss me")) {
+   if ((event.body.toLowerCase() == "কিস দে") || (event.body.toLowerCase() == "kiss me")) {
      return api.sendMessage("️ তুমি পঁচা তোমাকে কিস দিবো না 🤭", threadID);
    };
 
@@ -154,14 +154,14 @@ if ((event.body.toLowerCase() == "মারিয়া") || (event.body.toLower
    };
 
    if ((event.body.toLowerCase() == "....") || (event.body.toLowerCase() == "...") || (event.body.toLowerCase() == "😠") || (event.body.toLowerCase() == "🤬") || (event.body.toLowerCase() == "😡")) {
-     return api.sendMessage("️রাগ করে না সোনা পাখি এতো রাগ শরীরের জন্য ভালো না🥰", threadID);
+     return api.sendMessage("️🙂", threadID);
    };
 
    if ((event.body.toLowerCase() == "হুম") || (event.body.toLowerCase() == "Hum")) {
      return api.sendMessage("️হুম  ⛏️😷", threadID);
    };
 
-if ((event.body.toLowerCase() == "arshi") || (event.body.toLowerCase() == "Arshir ammu")) {
+if ((event.body.toLowerCase() == "arshi") || (event.body.toLowerCase() == "arshir ammu")) {
      return api.sendMessage("️আর্শির আম্মু কই আপনে আপনারে ডাকে", threadID);
    };
 
@@ -185,12 +185,12 @@ if ((event.body.toLowerCase() == "arshi") || (event.body.toLowerCase() == "Arshi
      return api.sendMessage("️এত চোদা চুদি করস কেনো দেখা যাবে বাসর-রাতে-তুই-কতো পারিস..!🥱🌝🌚⛏️🌶️ ", threadID);
    };
 
-   if ((event.body.toLowerCase() == "😅") || (event.body.toLowerCase() == "...")) {
+   if ((event.body.toLowerCase() == "😭") || (event.body.toLowerCase() == "...")) {
      return api.sendMessage("️কি গো কলিজা তোমার কি মন খারাপ🥺", threadID);
    };
   
    if ((event.body.toLowerCase() == "😒") || (event.body.toLowerCase() == "🙄")) {
-     return api.sendMessage("️ এইদিকে ওইদিকে কি দেখো জানু আমি তোমার সামনে দেখো😘", threadID);
+     return api.sendMessage("️🙄", threadID);
    };
 
    if ((event.body.toLowerCase() == "AMAKE KEW VALOBASHE NA") || (event.body.toLowerCase() == "amake kew valobashe na") || (event.body.toLowerCase() == "Aj kew nai bole")) {
@@ -233,7 +233,7 @@ if ((event.body.toLowerCase() == "arshi") || (event.body.toLowerCase() == "Arshi
      return api.sendMessage("হুম ঝাং আমি তোমাকে রাইতে ভলোপাসি <🥵", threadID);
    };
 
-   if ((event.body.toLowerCase() == "ami Abdullah") || (event.body.toLowerCase() == "kire")) {
+   if ((event.body.toLowerCase() == "ami abdullah") || (event.body.toLowerCase() == "kire")) {
      return api.sendMessage("হ্যা বস কেমন আছেন..?☺️", threadID);
    };
   mess = "{name}"
