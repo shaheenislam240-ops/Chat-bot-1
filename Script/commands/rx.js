@@ -1,38 +1,24 @@
-const fs = require("fs-extra");
-const axios = require("axios");
-
 module.exports.config = {
   name: "rx",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Send random Islamic video",
+  description: "Send random rX video",
   commandCategory: "video",
   usages: "",
-  cooldowns: 2,
-  dependencies: {
-    "fs-extra": "",
-    "axios": ""
-  }
+  cooldowns: 3,
+  usePrefix: true
 };
 
-module.exports.run = async function ({ api, event }) {
-  const videoLinks = [
-    "https://i.imgur.com/8kzBGia.mp4",
-    "https://i.imgur.com/Y6WJ9vF.mp4"
+module.exports.run = async ({ api, event }) => {
+  const videos = [
+    "https://files.catbox.moe/2alll5.mov"
   ];
 
-  const filePath = __dirname + "/cache/1.mp4";
-  const randomLink = videoLinks[Math.floor(Math.random() * videoLinks.length)];
+  const randomVideo = videos[Math.floor(Math.random() * videos.length)];
 
-  const message = `🎬 Video from rX`;
-
-  axios.get(randomLink, { responseType: "stream" }).then(response => {
-    response.data.pipe(fs.createWriteStream(filePath)).on("close", () => {
-      api.sendMessage({
-        body: message,
-        attachment: fs.createReadStream(filePath)
-      }, event.threadID, () => fs.unlinkSync(filePath));
-    });
-  });
+  return api.sendMessage({
+    body: "🎬 Video from rX",
+    attachment: await global.utils.getStreamFromURL(randomVideo)
+  }, event.threadID, event.messageID);
 };
