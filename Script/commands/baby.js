@@ -38,7 +38,6 @@ module.exports.run = async function({ api, event, args, Users }) {
       return api.sendMessage(r, event.threadID, event.messageID);
     }
 
-    // শুধুমাত্র teach, remove, rm, edit, list, msg কমান্ডে কাজ করবে
     if (args[0] === 'remove') {
       const fina = input.replace("remove ", "");
       const respons = await axios.get(`${link}?remove=${fina}&senderID=${uid}`);
@@ -58,7 +57,8 @@ module.exports.run = async function({ api, event, args, Users }) {
         const teachers = await Promise.all(data.map(async (item) => {
           const number = Object.keys(item)[0];
           const value = item[number];
-          const name = await Users.getName(number) || "unknown";
+          const userData = await Users.getData(number);
+          const name = userData?.name || "unknown";
           return { name, value };
         }));
         teachers.sort((a, b) => b.value - a.value);
@@ -92,8 +92,9 @@ module.exports.run = async function({ api, event, args, Users }) {
         return api.sendMessage('❌ | Invalid format! Use [YourMessage] - [Reply1], [Reply2], [Reply3]...', event.threadID, event.messageID);
       }
       const re = await axios.get(`${link}?teach=${final}&reply=${command}&senderID=${uid}`);
-      const name = await Users.getName(re.data.teacher) || "";
-      return api.sendMessage(`✅ Replies added ${re.data.message}\nTeacher: ${name || "unknown"}\nTeachs: ${re.data.teachs}`, event.threadID, event.messageID);
+      const userData = await Users.getData(re.data.teacher);
+      const name = userData?.name || "unknown";
+      return api.sendMessage(`✅ Replies added ${re.data.message}\nTeacher: ${name}\nTeachs: ${re.data.teachs}`, event.threadID, event.messageID);
     }
 
     if (args[0] === 'teach' && args[1] === 'amar') {
@@ -110,7 +111,7 @@ module.exports.run = async function({ api, event, args, Users }) {
       const [comd, command] = input.split(' - ');
       const final = comd.replace("teach react ", "");
       if (!command || command.length < 2) {
-        return api.sendMessage('❌ | Invalid format! Use [teach] [YourMessage] - [Reply1], [Reply2], [Reply3]... OR [teach] [react] [YourMessage] - [react1], [react2], [react3]...', event.threadID, event.messageID);
+        return api.sendMessage('❌ | Invalid format! Use [teach] [YourMessage] - [Reply1], [Reply2], [Reply3]...', event.threadID, event.messageID);
       }
       const re = await axios.get(`${link}?teach=${final}&react=${command}`);
       return api.sendMessage(`✅ Replies added ${re.data.message}`, event.threadID, event.messageID);
@@ -121,7 +122,6 @@ module.exports.run = async function({ api, event, args, Users }) {
       return api.sendMessage(response.data.reply, event.threadID, event.messageID);
     }
 
-    // সাধারণ মেসেজগুলো এখানে হ্যান্ডেল হবে
     const a = (await axios.get(`${link}?text=${input}&senderID=${uid}&font=1`)).data.reply;
     return api.sendMessage(a, event.threadID, (error, info) => {
       global.client.handleReply.push({
@@ -186,7 +186,8 @@ module.exports.handleEvent = async function({ api, event }) {
       const arr = body.replace(/^\S+\s*/, "");
 
       if (!arr || arr.trim().length === 0) {
-        return await api.sendMessage("হুম জান, বলো আমি আছি 🥰", event.threadID, (error, info) => {
+        const message = "হুম জান, বলো আমি আছি 🥰\nতোমার কথায় মনটা ভালো হয়ে গেলো 💖";
+        return await api.sendMessage(message, event.threadID, (error, info) => {
           global.client.handleReply.push({
             name: this.config.name,
             type: "reply",
