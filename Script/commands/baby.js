@@ -186,8 +186,15 @@ module.exports.handleEvent = async function({ api, event }) {
       const arr = body.replace(/^\S+\s*/, "");
 
       if (!arr || arr.trim().length === 0) {
-        const message = "হুম জান, বলো আমি আছি 🥰\nতোমার কথায় মনটা ভালো হয়ে গেলো 💖";
-        return await api.sendMessage(message, event.threadID, (error, info) => {
+        const replies = [
+          "হুম জান, বলো আমি আছি 🥰",
+          "বলো না জান, তোমার কথা শোনার জন্যই তো বসে আছি 🩷",
+          "জানু তুমি ডাক দিলে মনটা ভালো হয়ে গেলো 😻",
+          "আছি তো জান, বলো কি করবো তোমার জন্য 💖"
+        ];
+        const pick = replies[Math.floor(Math.random() * replies.length)];
+
+        return await api.sendMessage(pick, event.threadID, (error, info) => {
           global.client.handleReply.push({
             name: this.config.name,
             type: "reply",
