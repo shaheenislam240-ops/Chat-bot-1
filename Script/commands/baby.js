@@ -168,7 +168,7 @@ module.exports.handleEvent = async function({ api, event }) {
     const triggerWords = [
       "baby",
       "bby",
-      "/bot",
+      "hippi",
       "rx",
       "sweetie",
       "jan",
@@ -187,10 +187,10 @@ module.exports.handleEvent = async function({ api, event }) {
 
       if (!arr || arr.trim().length === 0) {
         const replies = [
-          "হুম জান, বলো আমি আছি 🥰",
-          "বলো না জান, তোমার কথা শোনার জন্যই তো বসে আছি 🩷",
-          "জানু তুমি ডাক দিলে মনটা ভালো হয়ে গেলো 😻",
-          "আছি তো জান, বলো কি করবো তোমার জন্য 💖"
+          "ki hoise ato daka daki koris kn",
+          "daksos kn ato ",
+          "heaa bol bbz",
+          "Ki baby 😘"
         ];
         const pick = replies[Math.floor(Math.random() * replies.length)];
 
