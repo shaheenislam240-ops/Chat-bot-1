@@ -1,5 +1,5 @@
 const axios = require("axios");
-const simsim = "https://rx-api-simisimi.vercel.app";";
+const simsim = "https://rx-api-simisimi.vercel.app";
 
 module.exports.config = {
  name: "baby",
