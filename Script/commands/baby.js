@@ -48,7 +48,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
  const res = await axios.get(`${simsim}/list`);
  if (res.data.code === 200) {
  return api.sendMessage(
- `🤖 Total Questions Learned: ${res.data.totalQuestions}\n💬 Total Replies Stored: ${res.data.totalReplies}\n📚 Developer: ${res.data.author}`,
+ `🤖 Total Questions Learned: ${res.data.totalQuestions}\n💬 Total Replies Stored: ${res.data.totalReplies}\n📚 Developer: rX Abdullah`,
  event.threadID,
  event.messageID
  );
