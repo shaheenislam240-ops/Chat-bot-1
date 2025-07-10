@@ -17,7 +17,7 @@
     "PASSWORD": "",
     "OTPKEY": "",
     "BOTNAME": "rX Chat Bot",
-    "PREFIX": "x",
+    "PREFIX": "/",
     "ADMINBOT": [
         "100068565380737",
         "100095313077616",
