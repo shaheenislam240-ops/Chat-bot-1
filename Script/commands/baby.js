@@ -6,7 +6,7 @@ module.exports.config = {
   version: "1.0.2",
   hasPermssion: 0,
   credits: "ULLASH",
-  description: "Cute AI Baby Chatbot | Talk, Teach & Chat with Emotion ☢️",
+  description: "Cute AI Baby Chatbot",
   commandCategory: "simsim",
   usages: "[message/query]",
   cooldowns: 0,
@@ -118,5 +118,64 @@ module.exports.handleReply = async function ({ api, event, Users, handleReply })
   } catch (err) {
     console.error(err);
     return api.sendMessage(`❌ | Error in handleReply: ${err.message}`, event.threadID, event.messageID);
+  }
+};
+
+module.exports.handleEvent = async function ({ api, event, Users }) {
+  try {
+    const raw = event.body ? event.body.toLowerCase().trim() : "";
+    if (!raw) return;
+    const senderName = await Users.getNameUser(event.senderID);
+
+    if (
+      raw === "baby" || raw === "bot" || raw === "bby" ||
+      raw === "jan" || raw === "bbz" || raw === "maria" || raw === "বট" || raw === "hippi"
+    ) {
+      const greetings = [
+        "হুম জান, বলো আমি আছি 🥰",
+        "জান বলো কী হয়েছে? 💞",
+        "বলো না জানু, কানে কানে বলো 🥺",
+        "তুমি ডাকলেই আমি চলে আসি 🌸",
+        "এত আদর করো কেনো তুমি? 🙈",
+        "জান, ভালোবাসি তোমায় 😘"
+      ];
+      const randomReply = greetings[Math.floor(Math.random() * greetings.length)];
+      return api.sendMessage(randomReply, event.threadID, (err, info) => {
+        if (!err) {
+          global.client.handleReply.push({
+            name: module.exports.config.name,
+            messageID: info.messageID,
+            author: event.senderID,
+            type: "simsimi"
+          });
+        }
+      });
+    }
+
+    if (
+      raw.startsWith("baby ") || raw.startsWith("bot ") || raw.startsWith("bby ") ||
+      raw.startsWith("jan ") || raw.startsWith("xan ") ||
+      raw.startsWith("জান ") || raw.startsWith("বট ") || raw.startsWith("বেবি ")
+    ) {
+      const query = raw.replace(/^baby\s+|^bot\s+|^bby\s+|^jan\s+|^xan\s+|^জান\s+|^বট\s+|^বেবি\s+/i, "").trim();
+      if (!query) return;
+
+      const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
+      const reply = Array.isArray(res.data.response) ? res.data.response[0] : res.data.response;
+
+      return api.sendMessage(reply, event.threadID, (err, info) => {
+        if (!err) {
+          global.client.handleReply.push({
+            name: module.exports.config.name,
+            messageID: info.messageID,
+            author: event.senderID,
+            type: "simsimi"
+          });
+        }
+      }, event.messageID);
+    }
+  } catch (err) {
+    console.error(err);
+    return api.sendMessage(`❌ | Error in handleEvent: ${err.message}`, event.threadID, event.messageID);
   }
 };
