@@ -136,8 +136,8 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
         "জান বলো কী হয়েছে? 💞",
         "বলো না জানু, কানে কানে বলো 🥺",
         "তুমি ডাকলেই আমি চলে আসি 🌸",
-        "এত আদর করো কেনো তুমি? 🙈",
-        "জান, ভালোবাসি তোমায় 😘"
+        "kire ato dakis kn? 🙈",
+        "dakis na portesi😘"
       ];
       const randomReply = greetings[Math.floor(Math.random() * greetings.length)];
       return api.sendMessage(randomReply, event.threadID, (err, info) => {
