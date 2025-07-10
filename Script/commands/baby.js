@@ -132,12 +132,12 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
       raw === "jan" || raw === "bbz" || raw === "maria" || raw === "বট" || raw === "hippi"
     ) {
       const greetings = [
-        "hm jan bolo ami asi🥰",
-        "khaite bossi bby 💞",
-        "jibon er vabi abdullah er bou 🥺",
-        "ki bby",
-        "kire ato dakis kn? 🙈",
-        "dakis na portesi 😐"
+        "হুম জান, বলো আমি আছি 🥰",
+        "জান বলো কী হয়েছে? 💞",
+        "বলো না জানু, কানে কানে বলো 🥺",
+        "তুমি ডাকলেই আমি চলে আসি 🌸",
+        "ডাকিস না পড়তে বসসি 🙈",
+        "কী বেবি 😘"
       ];
       const randomReply = greetings[Math.floor(Math.random() * greetings.length)];
       return api.sendMessage(randomReply, event.threadID, (err, info) => {
