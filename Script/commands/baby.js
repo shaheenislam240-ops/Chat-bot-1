@@ -117,12 +117,13 @@ module.exports.handleReply = async function ({ api, event, Users, handleReply })
 };
 
 module.exports.handleEvent = async function ({ api, event, Users }) {
-  const text = event.body?.toLowerCase().trim();
-  if (!text) return;
+  if (!event.body) return;
+  const text = event.body.toLowerCase().trim();
   const senderName = await Users.getNameUser(event.senderID);
 
   const triggers = ["baby", "bot", "jan", "bbz", "maria", "hippi"];
-  if (triggers.includes(text)) {
+
+  if (triggers.some(t => text.startsWith(t))) {
     const replies = [
       "Yes baby, I'm here 🥰",
       "Tell me 💞",
@@ -143,7 +144,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     });
   }
 
-  const matchPrefix = /^(baby|bot|jan|bbz|maria|hippi)\s+/i;
+  const matchPrefix = /^(baby|bot|jan|bbz|maria|hippi)[\s\W_]+/i;
   if (matchPrefix.test(text)) {
     const query = text.replace(matchPrefix, "").trim();
     if (!query) return;
