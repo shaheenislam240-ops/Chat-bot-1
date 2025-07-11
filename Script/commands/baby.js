@@ -3,14 +3,14 @@ const simsim = "https://rx-simisimi-api.onrender.com";
 
 module.exports.config = {
   name: "baby",
-  version: "1.0.2",
+  version: "1.0.4",
   hasPermission: 0,
   credits: "rX",
-  description: "Teachable Baby AI",
-  commandCategory: "simsimi",
-  usages: "[message | teach | list | edit | remove]",
+  description: "Teachable Baby AI with multi-reply & msg count feature",
+  commandCategory: "simsim",
+  usages: "[message | teach | list | edit | remove | msg]",
   cooldowns: 0,
-  prefix: false
+  prefix: false,
 };
 
 module.exports.run = async function ({ api, event, args, Users }) {
@@ -23,56 +23,63 @@ module.exports.run = async function ({ api, event, args, Users }) {
   }
 
   if (args[0] === "teach") {
-    const parts = query.replace("teach ", "").split(" - ");
+    const parts = query.replace("teach ", "").split(" - ").map(s => s.trim()).filter(Boolean);
     if (parts.length < 2)
-      return api.sendMessage("❌ | Use: teach [Question] - [Reply]", event.threadID, event.messageID);
-    const [ask, ans] = parts;
-    const res = await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}`);
-    return api.sendMessage(`✅ ${res.data.message}`, event.threadID, event.messageID);
-  }
+      return api.sendMessage("❌ | Use: teach [Trigger] - [Reply1] - [Reply2] - ...", event.threadID, event.messageID);
+    const trigger = parts[0];
+    const replies = parts.slice(1);
 
-  if (args[0] === "edit") {
-    const parts = query.replace("edit ", "").split(" - ");
-    if (parts.length < 3)
-      return api.sendMessage("❌ | Use: edit [Question] - [OldReply] - [NewReply]", event.threadID, event.messageID);
-    const [ask, oldReply, newReply] = parts;
-    const res = await axios.get(`${simsim}/edit?ask=${encodeURIComponent(ask)}&old=${encodeURIComponent(oldReply)}&new=${encodeURIComponent(newReply)}`);
-    return api.sendMessage(res.data.message, event.threadID, event.messageID);
-  }
-
-  if (["remove", "rm"].includes(args[0])) {
-    const parts = query.replace(/^(remove|rm)\s*/, "").split(" - ");
-    if (parts.length < 2)
-      return api.sendMessage("❌ | Use: remove [Question] - [Reply]", event.threadID, event.messageID);
-    const [ask, ans] = parts;
-    const res = await axios.get(`${simsim}/delete?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}`);
-    return api.sendMessage(res.data.message, event.threadID, event.messageID);
-  }
-
-  if (args[0] === "list") {
-    const trigger = args.slice(1).join(" ").trim();
-    if (!trigger) {
-      return api.sendMessage("📌 ট্রিগার দিন!\nউদাহরণ: !baby list jan", event.threadID, event.messageID);
+    try {
+      const res = await axios.get(`${simsim}/teach?ask=${encodeURIComponent(trigger)}&ans=${encodeURIComponent(replies.join(" - "))}`);
+      return api.sendMessage(`✅ ${res.data.message}`, event.threadID, event.messageID);
+    } catch {
+      return api.sendMessage("❌ Teach করতে সমস্যা হচ্ছে!", event.threadID, event.messageID);
     }
+  }
+
+  if (args[0] === "msg") {
+    const trigger = args.slice(1).join(" ").trim();
+    if (!trigger) return api.sendMessage("❌ ট্রিগার দিন, যেমন: !baby msg jan", event.threadID, event.messageID);
 
     try {
       const res = await axios.get(`${simsim}/simsimi-list?ask=${encodeURIComponent(trigger)}`);
-      const data = res.data;
-
-      if (data.message?.includes("No replies")) {
-        return api.sendMessage(`❌ "${trigger}" এর কোনো রিপ্লাই খুঁজে পাইনি`, event.threadID, event.messageID);
+      if (res.data.message?.includes("No replies")) {
+        return api.sendMessage(`❌ "${trigger}" এর কোনো রিপ্লাই পাওয়া যায়নি।`, event.threadID, event.messageID);
       }
-
-      const replies = data.replies.map((r, i) => `${i + 1}. ${r}`).join("\n");
-      const fancyTrigger = trigger.toUpperCase();
-
-      return api.sendMessage(
-        `📌 𝗧𝗿𝗶𝗴𝗴𝗲𝗿: ${fancyTrigger}\n📋 𝗧𝗼𝘁𝗮𝗹: ${data.total}\n━━━━━━━━━━━━━━\n${replies}`,
-        event.threadID,
-        event.messageID
-      );
+      const total = res.data.total || 0;
+      return api.sendMessage(`📌 "${trigger}" এ মোট ${total} টি রিপ্লাই সিখানো আছে।`, event.threadID, event.messageID);
     } catch {
-      return api.sendMessage("❌ লিস্ট আনতে সমস্যা হচ্ছে!", event.threadID, event.messageID);
+      return api.sendMessage("❌ রিপ্লাই লিস্ট আনতে সমস্যা হচ্ছে!", event.threadID, event.messageID);
+    }
+  }
+
+  if (args[0] === "list") {
+    return api.sendMessage("❌ এখনই এই কমান্ডটি সমর্থিত নয়, কিন্তু !baby msg [trigger] দিয়ে রিপ্লাই সংখ্যা দেখানো যায়।", event.threadID, event.messageID);
+  }
+
+  if (args[0] === "edit") {
+    const parts = query.replace("edit ", "").split(" - ").map(s => s.trim()).filter(Boolean);
+    if (parts.length < 3)
+      return api.sendMessage("❌ | Use: edit [Trigger] - [OldReply] - [NewReply]", event.threadID, event.messageID);
+    const [trigger, oldReply, newReply] = parts;
+    try {
+      const res = await axios.get(`${simsim}/edit?ask=${encodeURIComponent(trigger)}&old=${encodeURIComponent(oldReply)}&new=${encodeURIComponent(newReply)}`);
+      return api.sendMessage(res.data.message, event.threadID, event.messageID);
+    } catch {
+      return api.sendMessage("❌ Edit করতে সমস্যা হচ্ছে!", event.threadID, event.messageID);
+    }
+  }
+
+  if (["remove", "rm"].includes(args[0])) {
+    const parts = query.replace(/^(remove|rm)\s*/, "").split(" - ").map(s => s.trim()).filter(Boolean);
+    if (parts.length < 2)
+      return api.sendMessage("❌ | Use: remove [Trigger] - [Reply]", event.threadID, event.messageID);
+    const [trigger, ans] = parts;
+    try {
+      const res = await axios.get(`${simsim}/delete?ask=${encodeURIComponent(trigger)}&ans=${encodeURIComponent(ans)}`);
+      return api.sendMessage(res.data.message, event.threadID, event.messageID);
+    } catch {
+      return api.sendMessage("❌ Delete করতে সমস্যা হচ্ছে!", event.threadID, event.messageID);
     }
   }
 
@@ -91,7 +98,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
   const callWords = ["baby", "jan", "maria", "bbz", "bot", "বট", "বেবি"];
   if (callWords.includes(text)) {
-    const replies = [
+    const defaultReplies = [
       "হুম জান, বলো আমি আছি 🥰",
       "জান বলো কী হয়েছে? 💞",
       "বলো না জানু, কানে কানে বলো 🥺",
@@ -99,7 +106,19 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
       "ডাকিস না পড়তে বসসি 🙈",
       "কী বেবি 😘"
     ];
-    const res = replies[Math.floor(Math.random() * replies.length)];
-    return api.sendMessage(res, event.threadID, event.messageID);
+
+    if (event.messageReply) {
+      const senderName = await Users.getNameUser(event.senderID);
+      try {
+        const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
+        const reply = Array.isArray(res.data.response) ? res.data.response[0] : res.data.response;
+        return api.sendMessage(reply, event.threadID, event.messageID);
+      } catch {
+        return api.sendMessage("❌ সমস্যা হচ্ছে, পরে আবার চেষ্টা করুন।", event.threadID, event.messageID);
+      }
+    } else {
+      const res = defaultReplies[Math.floor(Math.random() * defaultReplies.length)];
+      return api.sendMessage(res, event.threadID, event.messageID);
+    }
   }
 };
