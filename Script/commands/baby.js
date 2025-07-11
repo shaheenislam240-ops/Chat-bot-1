@@ -3,10 +3,10 @@ const simsim = "https://rx-simisimi-api.onrender.com";
 
 module.exports.config = {
   name: "baby",
-  version: "1.0.4",
+  version: "1.0.6",
   hasPermission: 0,
-  credits: "rX",
-  description: "Teachable Baby AI with multi-reply & msg count feature",
+  credits: "rX Abdullah",
+  description: "Teachable Baby AI with teach, list, edit, remove & msg features",
   commandCategory: "simsim",
   usages: "[message | teach | list | edit | remove | msg]",
   cooldowns: 0,
@@ -39,7 +39,23 @@ module.exports.run = async function ({ api, event, args, Users }) {
 
   if (args[0] === "msg") {
     const trigger = args.slice(1).join(" ").trim();
-    if (!trigger) return api.sendMessage("❌ ট্রিগার দিন, যেমন: !baby msg jan", event.threadID, event.messageID);
+
+    if (!trigger) {
+      try {
+        const res = await axios.get(`${simsim}/list`);
+        if (res.data.code === 200) {
+          return api.sendMessage(
+            `🤖 Total Questions Learned: ${res.data.totalQuestions}\n💬 Total Replies Stored: ${res.data.totalReplies}\n📚 Developer: rX Abdullah`,
+            event.threadID,
+            event.messageID
+          );
+        } else {
+          return api.sendMessage(`❌ Error: ${res.data.message || "Failed to fetch list"}`, event.threadID, event.messageID);
+        }
+      } catch {
+        return api.sendMessage("❌ Error fetching data, try again later.", event.threadID, event.messageID);
+      }
+    }
 
     try {
       const res = await axios.get(`${simsim}/simsimi-list?ask=${encodeURIComponent(trigger)}`);
@@ -54,7 +70,20 @@ module.exports.run = async function ({ api, event, args, Users }) {
   }
 
   if (args[0] === "list") {
-    return api.sendMessage("❌ এখনই এই কমান্ডটি সমর্থিত নয়, কিন্তু !baby msg [trigger] দিয়ে রিপ্লাই সংখ্যা দেখানো যায়।", event.threadID, event.messageID);
+    try {
+      const res = await axios.get(`${simsim}/list`);
+      if (res.data.code === 200) {
+        return api.sendMessage(
+          `🤖 Total Questions Learned: ${res.data.totalQuestions}\n💬 Total Replies Stored: ${res.data.totalReplies}\n📚 Developer: rX Abdullah`,
+          event.threadID,
+          event.messageID
+        );
+      } else {
+        return api.sendMessage(`❌ Error: ${res.data.message || "Failed to fetch list"}`, event.threadID, event.messageID);
+      }
+    } catch {
+      return api.sendMessage("❌ Error fetching data, try again later.", event.threadID, event.messageID);
+    }
   }
 
   if (args[0] === "edit") {
