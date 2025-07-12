@@ -121,7 +121,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
   if (!text) return;
   const senderName = await Users.getNameUser(event.senderID);
 
-  const triggers = ["baby", "bot", "jan", "bbz", "maria", "hippi"];
+  const triggers = ["baby", "bby", "jan", "bbz", "maria", "hippi"];
   if (triggers.includes(text)) {
     const replies = [
       "Yes baby, I'm here 🥰",
