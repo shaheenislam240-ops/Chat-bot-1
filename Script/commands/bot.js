@@ -1,49 +1,62 @@
 const axios = require("axios");
-const simsim = "https://rx-simisimi-api.onrender.com";
+const simapi = "https://rx-simisimi-api.onrender.com/api?text=";
 
 module.exports.config = {
-  name: "bot",
-  version: "1.0.0",
+  name: "Obot",
+  version: "1.0.1",
   hasPermssion: 0,
-  credits: "Modified by ChatGPT",
-  description: "Mention + API based reply system",
-  commandCategory: "chat",
-  usages: "[text]",
-  cooldowns: 0,
-  prefix: false
+  credits: "OpenAI | Custom for Abdullah",
+  description: "",
+  commandCategory: "noprefix",
+  usages: "",
+  cooldowns: 2
 };
 
-const triggerWords = ["sona", "abdullah"];
-const fixedReplies = [
-  "Bolo re baba 😒",
-  "Ki hoise bolo 🫣",
-  "Ai ami ekdom ready 🫶",
-  "Maira dibo ekta 😑",
-  "Haa bolchi toh 😌"
-];
+const replyMap = {
+  sona: [
+    "তুমি জান আমার সব ❤️", "কি হয়েছে বলো 😚", "এত আদর করো কেন 🥹", "ভালোবাসি জান 🫶"
+  ],
+  abdullah: [
+    "বস আব্দুল্লাহ অনেক হ্যান্ডসাম 😎\nতাঁর মতো ছেলে আর নাই 😌\nতুমি ওনার ফ্যান না?",
+    "জানু আব্দুল্লাহ আমার সব 🥵\nওর জন্য পাগল আমি 🥰\nওকে ডেকো না বেশি 😤",
+    "আব্দুল্লাহ মানেই ভালোবাসা 🫠\nউনি আসলেই লিজেন্ড 😈\nতাকে ভুলে যেও না"
+  ],
+  baby: [
+    "আমি বেবি, cute type 😽\nতুমি কেমন আছো? 😊\nডিস্টার্ব দিও না 😾",
+    "Baby is busy right now 😤\nতুমি পরে এসো 🙄\nআসলে ভালোবাসা দিবো 😚",
+    "Baby বললেই আমি melt 😳\nতুমি বলো, কি চাও 🫣\nতুমি কি আমার crush?"
+  ]
+};
 
-module.exports.run = async ({ api, event }) => {
-  const { threadID, messageID, body, senderID, messageReply } = event;
+module.exports.handleEvent = async function ({ api, event, Users }) {
+  const { body, senderID, threadID, messageID, messageReply } = event;
+  if (!body) return;
+  const name = await Users.getNameUser(senderID);
+  const lower = body.toLowerCase();
 
   if (messageReply && messageReply.senderID == api.getCurrentUserID()) {
     try {
-      const res = await axios.get(`${simsim}/ask?text=${encodeURIComponent(body)}&lc=bn`);
-      const reply = res.data.answer || "😶";
-      return api.sendMessage(reply, threadID, messageID);
-    } catch (e) {
-      return api.sendMessage("😓 Sorry, API error hoyeche.", threadID, messageID);
+      const query = encodeURIComponent(body);
+      const res = await axios.get(`${simapi}${query}`);
+      const reply = res.data.message;
+      if (reply) return api.sendMessage(reply, threadID, messageID);
+    } catch {
+      return api.sendMessage("😿 Bot uttor dite parlo na!", threadID, messageID);
     }
+    return;
   }
 
-  if (body && triggerWords.some(word => body.toLowerCase().includes(word))) {
-    const name = (await api.getUserInfo(senderID))[senderID].name;
-    const randomReply = fixedReplies[Math.floor(Math.random() * fixedReplies.length)];
-    return api.sendMessage({
-      body: `@${name} ${randomReply}`,
-      mentions: [{
-        tag: `@${name}`,
-        id: senderID
-      }]
-    }, threadID, messageID);
+  for (const key of Object.keys(replyMap)) {
+    if (lower === key) {
+      const list = replyMap[key];
+      const randomReply = list[Math.floor(Math.random() * list.length)];
+      const msg = {
+        body: `@${name} ${randomReply}`,
+        mentions: [{ tag: `@${name}`, id: senderID }]
+      };
+      return api.sendMessage(msg, threadID, messageID);
+    }
   }
 };
+
+module.exports.run = function () {};
