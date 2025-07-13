@@ -1,5 +1,7 @@
 const axios = require("axios");
+const fs = require("fs");
 const simsim = "https://rx-simisimi-api.onrender.com";
+const customTriggers = JSON.parse(fs.readFileSync(__dirname + "/../../customTriggers.json", "utf-8"));
 
 module.exports.config = {
   name: "baby",
@@ -17,6 +19,14 @@ module.exports.run = async function ({ api, event, args, Users }) {
   const uid = event.senderID;
   const senderName = await Users.getNameUser(uid);
   const query = args.join(" ").toLowerCase();
+
+  // ✅ Mention if input matches customTriggers
+  if (customTriggers[query]) {
+    return api.sendMessage({
+      body: `@${senderName} ${customTriggers[query]}`,
+      mentions: [{ tag: `@${senderName}`, id: uid }]
+    }, event.threadID, event.messageID);
+  }
 
   try {
     if (args[0] === "list") {
