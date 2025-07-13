@@ -3,58 +3,44 @@ const simsim = "https://rx-simisimi-api.onrender.com";
 
 module.exports.config = {
   name: "baby",
-  version: "1.0.6",
+  version: "1.0.7",
   hasPermssion: 0,
   credits: "rX + Modified by Abdullah",
-  description: "AI Chatbot with Teach & List support + sona/maria",
+  description: "AI chatbot with custom trigger (sona)",
   commandCategory: "chat",
   usages: "[query]",
   cooldowns: 0,
   prefix: false
 };
 
-const triggerReplies = {
-  sona: [
-    "কি রে সোনা, মন খারাপ নাকি? 😘",
-    "সোনা বললি আর না শুনি পারি? বলো 🥺",
-    "এই যে সোনা, কি করছো তুমি? 💖",
-    "হুমম বলো সোনা 🌸",
-    "তোমার ডাকেই মনটা ভরে যায় সোনা 💕"
-  ],
-  maria: [
-    "কি রে মারিয়া, আবার কি চাই তোর? 😏",
-    "মারিয়া বললেই তো আমি চলে আসি 😎",
-    "মারিয়া ডাক দিছে, মানে কিছুর দরকার 🤖",
-    "মারিয়া 🧁 আবারো কি সমস্যা?",
-    "হ্যাঁ মারিয়া, বলো কি হয়েছে 🥰"
-  ]
-};
+const sonaReplies = [
+  "কি রে সোনা, মন খারাপ নাকি? 😘",
+  "সোনা বললি আর না শুনি পারি? বলো 🥺",
+  "এই যে সোনা, কি করছো তুমি? 💖",
+  "হুমম বলো সোনা 🌸",
+  "তোমার ডাকেই মনটা ভরে যায় সোনা 💕"
+];
 
-let lastTriggerMessages = {}; // threadID: { type, messageID }
+let lastSonaMessageID = {};
 
 module.exports.run = async function ({ api, event, args, Users }) {
   const uid = event.senderID;
   const senderName = await Users.getNameUser(uid);
   const query = args.join(" ").toLowerCase();
 
-  if (query === "sona" || query === "maria") {
-    const replies = triggerReplies[query];
-    const reply = replies[Math.floor(Math.random() * replies.length)];
-
-    return api.sendMessage({
-      body: `@${senderName} ${reply}`,
-      mentions: [{ tag: `@${senderName}`, id: uid }]
-    }, event.threadID, (err, info) => {
-      if (!err) {
-        lastTriggerMessages[event.threadID] = {
-          type: query,
-          messageID: info.messageID
-        };
-      }
-    }, event.messageID);
-  }
-
   try {
+    if (query === "sona") {
+      const reply = sonaReplies[Math.floor(Math.random() * sonaReplies.length)];
+      return api.sendMessage({
+        body: `@${senderName} ${reply}`,
+        mentions: [{ tag: `@${senderName}`, id: uid }]
+      }, event.threadID, (err, info) => {
+        if (!err) {
+          lastSonaMessageID[event.threadID] = info.messageID;
+        }
+      }, event.messageID);
+    }
+
     if (args[0] === "list") {
       const res = await axios.get(`${simsim}/list`);
       return api.sendMessage(
@@ -72,8 +58,11 @@ module.exports.run = async function ({ api, event, args, Users }) {
         return api.sendMessage("❌ No replies found.", event.threadID, event.messageID);
       }
       const formatted = res.data.replies.map((rep, i) => `${i + 1}. ${rep}`).join("\n");
-      const msg = `📌 𝗧𝗿𝗶𝗴𝗴𝗲𝗿: ${trigger.toUpperCase()}\n📋 𝗧𝗼𝘁𝗮𝗹: ${res.data.total}\n━━━━━━━━━━━━━━\n${formatted}`;
-      return api.sendMessage(msg, event.threadID, event.messageID);
+      return api.sendMessage(
+        `📌 𝗧𝗿𝗶𝗴𝗴𝗲𝗿: ${trigger.toUpperCase()}\n📋 𝗧𝗼𝘁𝗮𝗹: ${res.data.total}\n━━━━━━━━━━━━━━\n${formatted}`,
+        event.threadID,
+        event.messageID
+      );
     }
 
     if (args[0] === "teach") {
@@ -102,8 +91,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
 
     if (!query) {
       const texts = ["Hey baby 💖", "Yes, I'm here 😘"];
-      const reply = texts[Math.floor(Math.random() * texts.length)];
-      return api.sendMessage(reply, event.threadID);
+      return api.sendMessage(texts[Math.floor(Math.random() * texts.length)], event.threadID);
     }
 
     const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
@@ -118,23 +106,29 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
   if (!text) return;
   const senderName = await Users.getNameUser(event.senderID);
 
-  if (text === "sona" || text === "maria") {
-    const replies = triggerReplies[text];
-    const reply = replies[Math.floor(Math.random() * replies.length)];
+  if (text === "sona") {
+    const reply = sonaReplies[Math.floor(Math.random() * sonaReplies.length)];
     return api.sendMessage({
       body: `@${senderName} ${reply}`,
       mentions: [{ tag: `@${senderName}`, id: event.senderID }]
     }, event.threadID, (err, info) => {
       if (!err) {
-        lastTriggerMessages[event.threadID] = {
-          type: text,
-          messageID: info.messageID
-        };
+        lastSonaMessageID[event.threadID] = info.messageID;
       }
     }, event.messageID);
   }
 
-  const triggers = ["baby", "bby", "jan", "bbz", "hippi"];
+  const isReplyToSona = event.messageReply && event.messageReply.messageID === lastSonaMessageID[event.threadID];
+  if (isReplyToSona) {
+    try {
+      const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
+      return api.sendMessage(res.data.response, event.threadID, event.messageID);
+    } catch (e) {
+      return api.sendMessage(`❌ Error: ${e.message}`, event.threadID, event.messageID);
+    }
+  }
+
+  const triggers = ["baby", "bby", "jan", "bbz", "maria", "hippi"];
   if (triggers.includes(text)) {
     const replies = [
       "Yes baby, I'm here 🥰",
@@ -143,25 +137,13 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
       "You called? 🌸",
       "What happened? 😘"
     ];
-    const reply = replies[Math.floor(Math.random() * replies.length)];
-    return api.sendMessage(reply, event.threadID);
+    return api.sendMessage(replies[Math.floor(Math.random() * replies.length)], event.threadID);
   }
 
   const matchPrefix = /^(baby|bot|jan|bbz|maria|hippi)\s+/i;
   if (matchPrefix.test(text)) {
     const query = text.replace(matchPrefix, "").trim();
-    if (!query) return;
     const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
     return api.sendMessage(res.data.response, event.threadID, event.messageID);
-  }
-
-  const lastMsg = lastTriggerMessages[event.threadID];
-  if (lastMsg && event.messageReply?.messageID === lastMsg.messageID) {
-    try {
-      const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
-      return api.sendMessage(res.data.response, event.threadID, event.messageID);
-    } catch (e) {
-      return api.sendMessage(`❌ Error: ${e.message}`, event.threadID, event.messageID);
-    }
   }
 };
