@@ -1,11 +1,13 @@
 const axios = require("axios");
 const simsim = "https://rx-simisimi-api.onrender.com";
 
+let lastSonaMsgId = null;
+
 module.exports.config = {
   name: "baby",
   version: "1.0.5",
   hasPermssion: 0,
-  credits: "rX",
+  credits: "rX + Modified by ChatGPT",
   description: "AI Chatbot with Teach & List support",
   commandCategory: "chat",
   usages: "[query]",
@@ -120,6 +122,32 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
   const text = event.body?.toLowerCase().trim();
   if (!text) return;
   const senderName = await Users.getNameUser(event.senderID);
+
+  if (text.includes("sona")) {
+    const sonaReplies = [
+      "ki bolish sona? 💛",
+      "hmm bolo sona 😚",
+      "ki chao bolo sona 🥰",
+      "sonar dorkar chilo? 😌",
+      "onek din por dakli sona 💕",
+      "bujhlam na, abar bol sona? 😶",
+      "tomar jonno ami ready sona 😇"
+    ];
+    const random = sonaReplies[Math.floor(Math.random() * sonaReplies.length)];
+    const mention = { tag: senderName, id: event.senderID };
+    return api.sendMessage({ body: random, mentions: [mention] }, event.threadID, (err, info) => {
+      if (!err) lastSonaMsgId = info.messageID;
+    });
+  }
+
+  if (event.messageReply && event.messageReply.messageID === lastSonaMsgId) {
+    try {
+      const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
+      return api.sendMessage(res.data.response, event.threadID, event.messageID);
+    } catch (e) {
+      return api.sendMessage(`❌ Error: ${e.message}`, event.threadID, event.messageID);
+    }
+  }
 
   const triggers = ["baby", "bby", "jan", "bbz", "maria", "hippi"];
   if (triggers.includes(text)) {
