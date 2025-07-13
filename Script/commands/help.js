@@ -31,10 +31,10 @@ module.exports.run = function ({ api, event, args }) {
 
 ╭──── [ 𝗖𝗛𝗔𝗧 𝗔𝗜 ]
 
-│ ✧ baby ✧ bby ✧ sweetie
-│ ✧ jan ✧ sona ✧ xan
-│ ✧ maria ✧ koliza ✧ babu
-│ ✧ maria koi tumi ✧ baby koi tumi
+│ ✧ baby ✧ bby ✧ 
+│ ✧ jan ✧ 
+│ ✧ maria ✧ hippi ✧ 
+│ ✧ maria rani ✧ bbz
 ╰───────────────◊
 ╭──── [ UTILITY ]
 │ ✧ accept✧ adc✧ age
