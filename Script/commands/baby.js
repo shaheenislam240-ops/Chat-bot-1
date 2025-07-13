@@ -133,9 +133,14 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
       "bujhlam na, abar bol sona? 😶",
       "tomar jonno ami ready sona 😇"
     ];
-    const random = sonaReplies[Math.floor(Math.random() * sonaReplies.length)];
-    const mention = { tag: senderName, id: event.senderID };
-    return api.sendMessage({ body: random, mentions: [mention] }, event.threadID, (err, info) => {
+    const replyText = sonaReplies[Math.floor(Math.random() * sonaReplies.length)];
+    return api.sendMessage({
+      body: `@${senderName} ${replyText}`,
+      mentions: [{
+        tag: `@${senderName}`,
+        id: event.senderID
+      }]
+    }, event.threadID, (err, info) => {
       if (!err) lastSonaMsgId = info.messageID;
     });
   }
