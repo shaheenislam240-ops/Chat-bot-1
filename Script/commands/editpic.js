@@ -1,5 +1,5 @@
 const axios = require("axios");
-const deepaiKey = "e3dd9b23-d765-40d1-af5f-d1981929198d";
+const deepaiKey = "13ca915b-7504-48bf-8765-086fc5907998";
 
 module.exports.config = {
   name: "refine",
