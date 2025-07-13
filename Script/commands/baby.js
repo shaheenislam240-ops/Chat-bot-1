@@ -13,20 +13,32 @@ module.exports.config = {
   prefix: false
 };
 
-const sonaTriggerMessage = "কি রে সোনা, মন খারাপ নাকি? 😘";
-let sonaLastMessageID = null;
-
 module.exports.run = async function ({ api, event, args, Users }) {
   const uid = event.senderID;
   const senderName = await Users.getNameUser(uid);
   const query = args.join(" ").toLowerCase();
 
   if (query === "sona") {
+    const sonaReplies = [
+      "কি রে সোনা, মন খারাপ নাকি? 😘",
+      "সোনা বললি আর না শুনি পারি? বলো 🥺",
+      "এই যে সোনা, কি করছো তুমি? 💖",
+      "হুমম বলো সোনা 🌸",
+      "তোমার ডাকেই মনটা ভরে যায় সোনা 💕"
+    ];
+    const reply = sonaReplies[Math.floor(Math.random() * sonaReplies.length)];
     return api.sendMessage({
-      body: `@${senderName} ${sonaTriggerMessage}`,
+      body: `@${senderName} ${reply}`,
       mentions: [{ tag: `@${senderName}`, id: uid }]
     }, event.threadID, (err, info) => {
-      if (!err) sonaLastMessageID = info.messageID;
+      if (!err) {
+        global.client.handleReply.push({
+          name: module.exports.config.name,
+          messageID: info.messageID,
+          author: uid,
+          type: "sona"
+        });
+      }
     }, event.messageID);
   }
 
@@ -88,7 +100,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
         global.client.handleReply.push({
           name: module.exports.config.name,
           messageID: info.messageID,
-          author: event.senderID,
+          author: uid,
           type: "simsimi"
         });
       }
@@ -98,13 +110,30 @@ module.exports.run = async function ({ api, event, args, Users }) {
   }
 };
 
-module.exports.handleReply = async function ({ api, event, Users }) {
+module.exports.handleReply = async function ({ api, event, Users, handleReply }) {
   const senderName = await Users.getNameUser(event.senderID);
   const text = event.body?.toLowerCase();
   if (!text) return;
 
-  // ✅ If replying to the last 'sona' message
-  if (event.messageReply && event.messageReply.messageID === sonaLastMessageID) {
+  if (handleReply.type === "sona") {
+    try {
+      const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
+      return api.sendMessage(res.data.response, event.threadID, (err, info) => {
+        if (!err) {
+          global.client.handleReply.push({
+            name: module.exports.config.name,
+            messageID: info.messageID,
+            author: event.senderID,
+            type: "sona"
+          });
+        }
+      }, event.messageID);
+    } catch (e) {
+      return api.sendMessage(`❌ Error: ${e.message}`, event.threadID, event.messageID);
+    }
+  }
+
+  if (handleReply.type === "simsimi") {
     try {
       const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
       return api.sendMessage(res.data.response, event.threadID, (err, info) => {
@@ -128,13 +157,27 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
   if (!text) return;
   const senderName = await Users.getNameUser(event.senderID);
 
-  // ✅ Only if exactly "sona"
   if (text === "sona") {
+    const sonaReplies = [
+      "কি রে সোনা, মন খারাপ নাকি? 😘",
+      "সোনা বললি আর না শুনি পারি? বলো 🥺",
+      "এই যে সোনা, কি করছো তুমি? 💖",
+      "হুমম বলো সোনা 🌸",
+      "তোমার ডাকেই মনটা ভরে যায় সোনা 💕"
+    ];
+    const reply = sonaReplies[Math.floor(Math.random() * sonaReplies.length)];
     return api.sendMessage({
-      body: `@${senderName} ${sonaTriggerMessage}`,
+      body: `@${senderName} ${reply}`,
       mentions: [{ tag: `@${senderName}`, id: event.senderID }]
     }, event.threadID, (err, info) => {
-      if (!err) sonaLastMessageID = info.messageID;
+      if (!err) {
+        global.client.handleReply.push({
+          name: module.exports.config.name,
+          messageID: info.messageID,
+          author: event.senderID,
+          type: "sona"
+        });
+      }
     }, event.messageID);
   }
 
