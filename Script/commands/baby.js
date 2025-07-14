@@ -4,7 +4,6 @@ require("dotenv").config();
 const API_BASE = "https://rx-api-m2ko.onrender.com";
 
 const emojis = ['🥰','😊','😽','😍','😘','💖','💙','💜','🌟','✨'];
-
 const fixedTriggers = ['sona', 'abdullah', 'baby', 'maria', 'bbz', 'bby'];
 
 const removeEmojis = text => text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD800-\uDFFF]|[\uFE00-\uFE0F]|[\u200D])/g, '').trim();
@@ -24,7 +23,7 @@ module.exports = {
     version: "1.0.12",
     hasPermssion: 0,
     credits: "rX",
-    description: "API based baby bot without mention, all teach/edit/delete/list via API",
+    description: "Baby bot using API (no mention, clean reply)",
   },
 
   onStart: async function({ message, api }) {
@@ -40,12 +39,10 @@ module.exports = {
     if (fixedTriggers.includes(contentRaw)) {
       const data = await apiCall("", { text: contentRaw });
       let reply = data?.response || "Sorry, kichu bujhte pari nai.";
-
       const countEmoji = Math.floor(Math.random() * 2);
       for (let i = 0; i < countEmoji; i++) {
         reply += " " + emojis[Math.floor(Math.random() * emojis.length)];
       }
-
       return api.sendMessage(reply, message.threadID, message.messageID);
     }
 
@@ -101,7 +98,6 @@ module.exports = {
     if (lower === "!baby list") {
       const data = await apiCall("list", {});
       if (!data) return api.sendMessage("❌ Failed to fetch list", threadID);
-
       const msg = `📋 Total Triggers: ${data.totalQuestions || 0}\n📌 Total Replies: ${data.totalReplies || 0}`;
       return api.sendMessage(msg, threadID);
     }
