@@ -79,7 +79,10 @@ module.exports.run = async function ({ api, event, args, Users }) {
     }
 
     const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
-    return api.sendMessage(res.data.response, event.threadID, (err, info) => {
+    let reply = res.data.response;
+    reply = reply.replace(/@mention/gi, `@${senderName}`);
+
+    return api.sendMessage(reply, event.threadID, (err, info) => {
       if (!err) {
         global.client.handleReply.push({
           name: module.exports.config.name,
@@ -101,7 +104,9 @@ module.exports.handleReply = async function ({ api, event, Users, handleReply })
 
   try {
     const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
-    return api.sendMessage(res.data.response, event.threadID, (err, info) => {
+    let reply = res.data.response;
+    reply = reply.replace(/@mention/gi, `@${senderName}`);
+    return api.sendMessage(reply, event.threadID, (err, info) => {
       if (!err) {
         global.client.handleReply.push({
           name: module.exports.config.name,
@@ -148,7 +153,10 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     const query = text.replace(matchPrefix, "").trim();
     if (!query) return;
     const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
-    return api.sendMessage(res.data.response, event.threadID, (err, info) => {
+    let reply = res.data.response;
+    reply = reply.replace(/@mention/gi, `@${senderName}`);
+
+    return api.sendMessage(reply, event.threadID, (err, info) => {
       if (!err) {
         global.client.handleReply.push({
           name: module.exports.config.name,
