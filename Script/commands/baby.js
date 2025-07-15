@@ -1,105 +1,193 @@
 const axios = require("axios");
-require("dotenv").config();
+const simsim = "https://rx-simisimi-api.onrender.com";
 
-const API_BASE = "https://rx-api-m2ko.onrender.com";
+module.exports.config = {
+  name: "baby",
+  version: "1.0.5",
+  hasPermssion: 0,
+  credits: "rX",
+  description: "AI Chatbot with Teach & List support",
+  commandCategory: "chat",
+  usages: "[query]",
+  cooldowns: 0,
+  prefix: false
+};
 
-const emojis = ['🥰','😊','😽','😍','😘','💖','💙','💜','🌟','✨'];
-const fixedTriggers = ['sona', 'abdullah', 'baby', 'maria', 'bbz', 'bby'];
+module.exports.run = async function ({ api, event, args, Users }) {
+  const uid = event.senderID;
+  const senderName = await Users.getNameUser(uid);
+  const query = args.join(" ").toLowerCase();
 
-const removeEmojis = text => text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD800-\uDFFF]|[\uFE00-\uFE0F]|[\u200D])/g, '').trim();
-
-async function apiCall(endpoint, params) {
   try {
-    const res = await axios.get(`${API_BASE}/${endpoint}`, { params });
-    return res.data;
-  } catch {
-    return null;
-  }
-}
-
-module.exports = {
-  config: {
-    name: "baby",
-    version: "1.0.12",
-    hasPermssion: 0,
-    credits: "rX",
-    description: "Baby bot using API (no mention, clean reply)",
-  },
-
-  onStart: async function({ message, api }) {
-    const contentRaw = (message.body || "").toLowerCase().trim();
-    if (!contentRaw) return;
-
-    if (message.messageReply && message.messageReply.senderID === api.getCurrentUserID()) {
-      const data = await apiCall("", { text: contentRaw });
-      const reply = data?.response || "Sorry, kichu bujhte pari nai.";
-      return api.sendMessage(reply, message.threadID, message.messageID);
-    }
-
-    if (fixedTriggers.includes(contentRaw)) {
-      const data = await apiCall("", { text: contentRaw });
-      let reply = data?.response || "Sorry, kichu bujhte pari nai.";
-      const countEmoji = Math.floor(Math.random() * 2);
-      for (let i = 0; i < countEmoji; i++) {
-        reply += " " + emojis[Math.floor(Math.random() * emojis.length)];
+    if (args[0] === "autoteach") {
+      const mode = args[1];
+      if (!["on", "off"].includes(mode)) {
+        return api.sendMessage("✅ Use: baby autoteach on/off", event.threadID, event.messageID);
       }
-      return api.sendMessage(reply, message.threadID, message.messageID);
+      const status = mode === "on";
+      await axios.post(`${simsim}/setting`, { autoTeach: status });
+      return api.sendMessage(`✅ Auto teach is now ${status ? "ON 🟢" : "OFF 🔴"}`, event.threadID, event.messageID);
     }
 
-    const data = await apiCall("", { text: contentRaw });
-    const reply = data?.response || "Sorry, kichu bujhte pari nai.";
-    return api.sendMessage(reply, message.threadID, message.messageID);
-  },
-
-  onCall: async function({ event, api }) {
-    const { body, threadID } = event;
-    if (!body) return;
-
-    const lower = body.toLowerCase();
-
-    if (lower.startsWith("!baby teach ")) {
-      const cmd = body.slice(12).trim();
-      const sepIndex = cmd.indexOf(" - ");
-      if (sepIndex === -1) return api.sendMessage("❌ Format: !baby teach trigger - reply1 - reply2 ...", threadID);
-
-      const trigger = cmd.slice(0, sepIndex).toLowerCase().trim();
-      const repliesRaw = cmd.slice(sepIndex + 3).split("-").map(r => r.trim()).filter(Boolean);
-      if (!trigger || repliesRaw.length === 0) return api.sendMessage("❌ Trigger and replies required", threadID);
-
-      const data = await apiCall("teach", { ask: trigger, ans: repliesRaw.join(" - "), senderName: event.senderName });
-      return api.sendMessage(data?.message || "❌ Teach failed", threadID);
+    if (args[0] === "list") {
+      const res = await axios.get(`${simsim}/list`);
+      return api.sendMessage(
+        `🤖 Total Questions Learned: ${res.data.totalQuestions}\n💬 Total Replies Stored: ${res.data.totalReplies}\n📚 Developer: rX Abdullah`,
+        event.threadID,
+        event.messageID
+      );
     }
 
-    if (lower.startsWith("!baby edit ")) {
-      const cmd = body.slice(10).trim();
-      const parts = cmd.split(" - ");
-      if (parts.length !== 3) return api.sendMessage("❌ Format: !baby edit trigger - old reply - new reply", threadID);
+    if (args[0] === "msg") {
+      const trigger = query.replace("msg ", "").trim();
+      if (!trigger) return api.sendMessage("❌ | Use: !baby msg [trigger]", event.threadID, event.messageID);
 
-      const [trigger, oldReply, newReply] = parts.map(p => p.trim());
-      if (!trigger || !oldReply || !newReply) return api.sendMessage("❌ All fields required", threadID);
+      const res = await axios.get(`${simsim}/simsimi-list?ask=${encodeURIComponent(trigger)}`);
+      if (!res.data.replies || res.data.replies.length === 0) {
+        return api.sendMessage("❌ No replies found.", event.threadID, event.messageID);
+      }
 
-      const data = await apiCall("edit", { ask: trigger.toLowerCase(), old: oldReply, new: newReply });
-      return api.sendMessage(data?.message || "❌ Edit failed", threadID);
+      const formatted = res.data.replies.map((rep, i) => `${i + 1}. ${rep}`).join("\n");
+      const msg = `📌 𝗧𝗿𝗶𝗴𝗴𝗲𝗿: ${trigger.toUpperCase()}\n📋 𝗧𝗼𝘁𝗮𝗹: ${res.data.total}\n━━━━━━━━━━━━━━\n${formatted}`;
+      return api.sendMessage(msg, event.threadID, event.messageID);
     }
 
-    if (lower.startsWith("!baby delete ")) {
-      const cmd = body.slice(12).trim();
-      const sepIndex = cmd.indexOf(" - ");
-      if (sepIndex === -1) return api.sendMessage("❌ Format: !baby delete trigger - reply", threadID);
+    if (args[0] === "teach") {
+      const parts = query.replace("teach ", "").split(" - ");
+      if (parts.length < 2)
+        return api.sendMessage("❌ | Use: teach [Question] - [Reply]", event.threadID, event.messageID);
 
-      const trigger = cmd.slice(0, sepIndex).toLowerCase().trim();
-      const replyToDelete = cmd.slice(sepIndex + 3).trim();
-      if (!trigger || !replyToDelete) return api.sendMessage("❌ Trigger and reply required", threadID);
-
-      const data = await apiCall("delete", { ask: trigger, ans: replyToDelete });
-      return api.sendMessage(data?.message || "❌ Delete failed", threadID);
+      const [ask, ans] = parts;
+      const res = await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}&senderID=${uid}&senderName=${encodeURIComponent(senderName)}`);
+      return api.sendMessage(`✅ ${res.data.message}`, event.threadID, event.messageID);
     }
 
-    if (lower === "!baby list") {
-      const data = await apiCall("list", {});
-      if (!data) return api.sendMessage("❌ Failed to fetch list", threadID);
-      const msg = `📋 Total Triggers: ${data.totalQuestions || 0}\n📌 Total Replies: ${data.totalReplies || 0}`;
-      return api.sendMessage(msg, threadID);
+    if (args[0] === "edit") {
+      const parts = query.replace("edit ", "").split(" - ");
+      if (parts.length < 3)
+        return api.sendMessage("❌ | Use: edit [Question] - [OldReply] - [NewReply]", event.threadID, event.messageID);
+
+      const [ask, oldR, newR] = parts;
+      const res = await axios.get(`${simsim}/edit?ask=${encodeURIComponent(ask)}&old=${encodeURIComponent(oldR)}&new=${encodeURIComponent(newR)}`);
+      return api.sendMessage(res.data.message, event.threadID, event.messageID);
+    }
+
+    if (["remove", "rm"].includes(args[0])) {
+      const parts = query.replace(/^(remove|rm)\s*/, "").split(" - ");
+      if (parts.length < 2)
+        return api.sendMessage("❌ | Use: remove [Question] - [Reply]", event.threadID, event.messageID);
+
+      const [ask, ans] = parts;
+      const res = await axios.get(`${simsim}/delete?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}`);
+      return api.sendMessage(res.data.message, event.threadID, event.messageID);
+    }
+
+    if (!query) {
+      const texts = ["Hey baby 💖", "Yes, I'm here 😘"];
+      const reply = texts[Math.floor(Math.random() * texts.length)];
+      return api.sendMessage(reply, event.threadID);
+    }
+
+    const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
+    return api.sendMessage(res.data.response, event.threadID, (err, info) => {
+      if (!err) {
+        global.client.handleReply.push({
+          name: module.exports.config.name,
+          messageID: info.messageID,
+          author: event.senderID,
+          type: "simsimi"
+        });
+      }
+    }, event.messageID);
+  } catch (e) {
+    return api.sendMessage(`❌ Error: ${e.message}`, event.threadID, event.messageID);
+  }
+};
+
+module.exports.handleReply = async function ({ api, event, Users }) {
+  const senderName = await Users.getNameUser(event.senderID);
+  const text = event.body?.toLowerCase();
+  if (!text) return;
+
+  try {
+    const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
+    return api.sendMessage(res.data.response, event.threadID, (err, info) => {
+      if (!err) {
+        global.client.handleReply.push({
+          name: module.exports.config.name,
+          messageID: info.messageID,
+          author: event.senderID,
+          type: "simsimi"
+        });
+      }
+    }, event.messageID);
+  } catch (e) {
+    return api.sendMessage(`❌ Error: ${e.message}`, event.threadID, event.messageID);
+  }
+};
+
+module.exports.handleEvent = async function ({ api, event, Users }) {
+  const text = event.body?.toLowerCase().trim();
+  if (!text) return;
+
+  const senderName = await Users.getNameUser(event.senderID);
+
+  const triggers = ["baby", "bby", "jan", "bbz", "maria", "hippi"];
+  if (triggers.includes(text)) {
+    const replies = [
+      "Yes baby, I'm here 🥰",
+      "Tell me 💞",
+      "Say it 🥺",
+      "You called? 🌸",
+      "What happened? 😘"
+    ];
+    const reply = replies[Math.floor(Math.random() * replies.length)];
+    return api.sendMessage(reply, event.threadID, (err, info) => {
+      if (!err) {
+        global.client.handleReply.push({
+          name: module.exports.config.name,
+          messageID: info.messageID,
+          author: event.senderID,
+          type: "simsimi"
+        });
+      }
+    });
+  }
+
+  const matchPrefix = /^(baby|bot|jan|bbz|maria|hippi)\s+/i;
+  if (matchPrefix.test(text)) {
+    const query = text.replace(matchPrefix, "").trim();
+    if (!query) return;
+
+    try {
+      const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
+      return api.sendMessage(res.data.response, event.threadID, (err, info) => {
+        if (!err) {
+          global.client.handleReply.push({
+            name: module.exports.config.name,
+            messageID: info.messageID,
+            author: event.senderID,
+            type: "simsimi"
+          });
+        }
+      }, event.messageID);
+    } catch (e) {
+      return api.sendMessage(`❌ Error: ${e.message}`, event.threadID, event.messageID);
+    }
+  }
+
+  if (event.type === "message_reply") {
+    try {
+      const setting = await axios.get(`${simsim}/setting`);
+      if (!setting.data.autoTeach) return;
+
+      const ask = event.messageReply.body?.toLowerCase().trim();
+      const ans = event.body?.toLowerCase().trim();
+      if (!ask || !ans || ask === ans) return;
+
+      await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}&senderName=${encodeURIComponent(senderName)}`);
+    } catch (e) {
+      console.log("Auto teach error:", e.message);
     }
   }
 };
