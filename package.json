@@ -1,14 +1,14 @@
 {
   "name": "RX CHAT BOT",
   "version": "10.1.1",
-  "description": "chat bot ownar rx abdullah",
+  "description": "made by 𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_☢️",
   "main": "Cyber.js",
   "engines": {
       "node": "20.x",
       "npm": "10.0.0"
   },
   "scripts": {
-      "start": "node Abdullah.js",
+      "start": "node Rxabdullah.js",
       "login": "node login",
       "test": "node --trace-warnings --use_strict --async-stack-traces mirai"
   },
