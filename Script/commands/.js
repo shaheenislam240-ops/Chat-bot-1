@@ -28,7 +28,7 @@ module.exports.handleEvent = async ({ api, event, Threads }) => {
  const body = content.toLowerCase();
  if (body.startsWith("🥺")) {
  const rahad = [
- "╭•┄┅════❁🌺❁════┅┄•╮\n \n আমি বোঝাবো কেমন করে -!!🥺\n\n╰•┄┅════❁🌺❁════┅┄•╯",
+ "╭•┄┅════❁🌺❁════┅┄•╮\n\nআমি কেমন করে বোঝাবো-!!🥺\n\n╰•┄┅════❁🌺❁════┅┄•╯",
  "╭•┄┅════❁🌺❁════┅┄•╮\n\nআমি ওরে কতটা ভালোবাসি-!!🥺\n\n╰•┄┅════❁🌺❁════┅┄•╯"
 
  ];
