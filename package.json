@@ -14,25 +14,25 @@
   },
   "repository": {
       "type": "git",
-      "url": "https://github.com/cyber-ullash/CYBER-BOT-COMMUNITY.git"
+      "url": "https://github.com/rxmaria761/rX-Chat-bot.git"
   },
   "keywords": [
       "bot",
       "facebook",
-      "ullashproject",
+      "rxproject",
       "messenger",
       "javasvript",
-      "ullash",
-      "cyberullash",
-      "cyberRajib ",
-      "islamick chat bot"
+      "abdullah",
+      "abdullahs",
+      "rxmaria",
+      "rx chat bot"
   ],
-  "author": "Ullash ッ",
+  "author": "rX Abdullah",
   "license": "GPL-3.0",
   "bugs": {
-      "url": "https://github.com/cyber-ullash/CYBER-BOT-COMMUNITY/issues"
+      "url": "https://github.com/rxmaria761/rX-Chat-bot/issues"
   },
-  "homepage": "https://github.com/cyber-ullash/CYBER-BOT-COMMUNITY/issues",
+  "homepage": "https://github.com/rxmaria761/rX-Chat-bot/issues",
   "dependencies": {
       "@distube/ytdl-core": "^4.13.2",
       "@miraipr0ject/assets": "^1.0.9",
