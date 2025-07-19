@@ -1,44 +1,84 @@
+const axios = require("axios");
+const fs = require("fs-extra");
+const path = require("path");
+const Canvas = require("canvas");
+
 module.exports.config = {
-    name: "joinNoti",
-    eventType: ["log:subscribe"],
-    version: "1.0.3",
-    credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️",
-    description: "Send custom welcome message when a user joins",
-    dependencies: {}
+  name: "joinNoti",
+  eventType: ["log:subscribe"],
+  version: "100.0.0",
+  credits: "RX Abdullah",
+  description: "Auto welcome image with styled message",
+  dependencies: {
+    "axios": "",
+    "canvas": "",
+    "fs-extra": ""
+  }
 };
 
 module.exports.run = async function({ api, event }) {
-    const { threadID } = event;
+  const { threadID } = event;
+  const addedUsers = event.logMessageData.addedParticipants;
+  if (addedUsers.some(user => user.userFbId === api.getCurrentUserID())) return;
 
-    // If bot is added to the group
-    if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-        return api.sendMessage(`✨ 𝐓𝐡𝐚𝐧𝐤𝐬 𝐟𝐨𝐫 𝐚𝐝𝐝𝐢𝐧𝐠 𝐦𝐞! 𝐓𝐲𝐩𝐞 !help 𝐭𝐨 𝐬𝐞𝐞 𝐦𝐲 𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬. 💖`, threadID);
+  const threadInfo = await api.getThreadInfo(threadID);
+  const groupName = threadInfo.threadName || "this group";
+  const memberCount = threadInfo.participantIDs.length;
+
+  for (const user of addedUsers) {
+    const userID = user.userFbId;
+    const userName = user.fullName;
+    const imgPath = path.join(__dirname, "cache", `${userID}_welcome.png`);
+    const bgURL = "https://i.postimg.cc/QtnYCz75/IMG-6833.jpg";
+    const avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512`;
+
+    try {
+      const [bgBuffer, avatarBuffer] = await Promise.all([
+        axios.get(bgURL, { responseType: "arraybuffer" }),
+        axios.get(avatarURL, { responseType: "arraybuffer" })
+      ]);
+
+      const bgImg = await Canvas.loadImage(bgBuffer.data);
+      const avatarImg = await Canvas.loadImage(avatarBuffer.data);
+      const canvas = Canvas.createCanvas(720, 400);
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+      const avatarX = 270;
+      const avatarY = 70;
+      const avatarSize = 180;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(avatarX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(avatarImg, avatarX, avatarY, avatarSize, avatarSize);
+      ctx.restore();
+
+      ctx.font = "bold 32px Arial";
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.fillText(`Welcome ${userName}`, 360, 300);
+
+      ctx.font = "24px Arial";
+      ctx.fillText(`Group: ${groupName}`, 360, 340);
+      ctx.fillText(`Member No: ${memberCount}`, 360, 375);
+
+      const buffer = canvas.toBuffer("image/png");
+      fs.ensureDirSync(path.join(__dirname, "cache"));
+      fs.writeFileSync(imgPath, buffer);
+
+      const mention = [{ tag: userName, id: userID }];
+      const message = {
+        body: `@${userName} welcome to ${groupName} 🎉\nType !help for all commands ⚙️\n𝗬𝗼𝘂 𝗮𝗿𝗲 𝘁𝗵𝗲 ${memberCount}𝘁𝗵 𝗺𝗲𝗺𝗯𝗲𝗿 𝗼𝗳 𝘁𝗵𝗶𝘀 𝗴𝗿𝗼𝘂𝗽 💙`,
+        mentions: mention,
+        attachment: fs.createReadStream(imgPath)
+      };
+
+      api.sendMessage(message, threadID, () => fs.unlinkSync(imgPath));
+    } catch (err) {
+      console.log(err);
     }
-
-    const threadInfo = await api.getThreadInfo(threadID);
-    const threadName = threadInfo.threadName || "this group";
-
-    const addedById = event.author;
-    const addedByName = await api.getUserInfo(addedById).then(info => info[addedById].name);
-
-    const addedNames = event.logMessageData.addedParticipants.map(user => user.fullName);
-    const addedTags = addedNames.join(', ');
-    const totalMembers = threadInfo.participantIDs.length;
-
-    const customMessage = 
-`╭━━━⊱🌺 𝗪𝗘𝗟𝗖𝗢𝗠𝗘 🌺⊰━━━╮
-
-✨ 𝓐𝓼𝓼𝓪𝓵𝓪𝓶𝓾 𝓐𝓵𝓪𝓲𝓴𝓾𝓶, 『 ${addedTags} 』❤️  
-🎉 𝓨𝓸𝓾 𝓱𝓪𝓿𝓮 𝓳𝓸𝓲𝓷𝓮𝓭 𝓽𝓱𝓮 𝓯𝓪𝓶𝓲𝓵𝔂 — 𝓦𝓮𝓵𝓬𝓸𝓶𝓮 𝓽𝓸 『 ${threadName} 』🎊
-
-👑 𝓨𝓸𝓾 𝓪𝓻𝓮 𝓷𝓸𝔀 𝓽𝓱𝓮 ${totalMembers}𝓽𝓱 𝓶𝓮𝓶𝓫𝓮𝓻 𝓸𝓯 𝓸𝓾𝓻 𝓯𝓪𝓶! 💞
-🙋‍♂️ 𝓐𝓭𝓭𝓮𝓭 𝓑𝔂: ${addedByName}
-
-📜 𝓟𝓵𝓮𝓪𝓼𝓮 𝓻𝓮𝓪𝓭 𝓽𝓱𝓮 𝓻𝓾𝓵𝓮𝓼 𝓪𝓷𝓭 𝓼𝓽𝓪𝔂 𝓻𝓮𝓼𝓹𝓮𝓬𝓽𝓯𝓾𝓵 🌟  
-🛠️ 𝓣𝔂𝓹𝓮 !help 𝓽𝓸 𝓼𝓮𝓮 𝓬𝓸𝓶𝓶𝓪𝓷𝓭𝓼 💬  
-💻 𝓑𝓸𝓽 𝓒𝓻𝓮𝓪𝓽𝓸𝓻: 𝓻𝓧 🔥
-
-╰━━━━━━⊱💖⊰━━━━━━╯`;
-
-    return api.sendMessage(customMessage, threadID);
+  }
 };
