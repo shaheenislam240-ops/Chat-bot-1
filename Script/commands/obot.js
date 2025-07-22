@@ -32,7 +32,7 @@ module.exports.handleEvent = async function({ api, event, Users }) {
 
   const message =
 `╭──────•◈•──────╮
-   𝗛𝗘𝗬 𝗫𝗔𝗡 𝗜'𝗠 MARIA 𝗕𝗔𝗕𝗬✨   
+   Hᴇʏ Xᴀɴ I’ᴍ Mᴀʀɪᴀ Bᴀʙʏ✨   
 
  ❄Dᴇᴀʀ, ${name}
  💌 ${randReply}
