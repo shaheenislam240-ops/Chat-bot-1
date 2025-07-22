@@ -135,11 +135,11 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
   const triggers = ["baby", "bby", "jan", "bbz", "maria", "hippi"];
   if (triggers.includes(text)) {
     const replies = [
-      "Yes baby, I'm here 🥰",
-      "Tell me 💞",
-      "Say it 🥺",
+      "𝘼𝙨𝙨𝙖𝙡𝙖𝙢𝙪𝙖𝙡𝙖𝙞𝙠𝙪𝙢♥",
+      "muri kha 🤌🫥",
+      "bolo bby 🥹",
       "You called? 🌸",
-      "What happened? 😘"
+      "আমাকে ডাকলে ,আমি কিন্তু 𝐊𝐢𝐬𝐬 করে দিব 😘"
     ];
     const reply = replies[Math.floor(Math.random() * replies.length)];
     return api.sendMessage(reply, event.threadID, (err, info) => {
