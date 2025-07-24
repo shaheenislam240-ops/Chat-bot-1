@@ -132,7 +132,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
   const senderName = await Users.getNameUser(event.senderID);
 
-  const triggers = ["baby", "bby", "rx", "bbz", "maria", "hippi"];
+  const triggers = ["baby", "bby", "xan", "bbz", "maria", "hippi"];
   if (triggers.includes(text)) {
     const replies = [
       "𝘼𝙨𝙨𝙖𝙡𝙖𝙢𝙪𝙖𝙡𝙖𝙞𝙠𝙪𝙢♥",
@@ -176,7 +176,6 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     }
   }
 
-  // ✅ Updated auto-teach with senderID so !baby remove works
   if (event.type === "message_reply") {
     try {
       const setting = await axios.get(`${simsim}/setting`);
@@ -186,11 +185,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
       const ans = event.body?.toLowerCase().trim();
       if (!ask || !ans || ask === ans) return;
 
-      await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}&senderID=${event.senderID}&senderName=${encodeURIComponent(senderName)}`);
-
-      // Optional: delete the auto-taught message after reply (uncomment below to enable)
-      // await api.unsendMessage(event.messageID);
-
+      await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}&senderName=${encodeURIComponent(senderName)}`);
     } catch (e) {
       console.log("Auto teach error:", e.message);
     }
