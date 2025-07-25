@@ -1,7 +1,7 @@
 module.exports.config = {
  name: "supportgc",
  version: "1.1",
- credits: "—͟͟͞͞𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+ credits: "rX",
  cooldowns: 5,
  hasPermission: 0,
  description: "Join the official support group chat",
@@ -12,7 +12,7 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, event }) {
  const userId = event.senderID;
- const supportGroupThreadId = "6601227983317461";// Replace with the actual thread ID of the support group, if available.
+ const supportGroupThreadId = "9743462909093513";// Replace with the actual thread ID of the support group, if available.
 
  try {
  const threadInfo = await api.getThreadInfo(supportGroupThreadId);
