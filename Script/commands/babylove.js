@@ -4,7 +4,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "babylove",
-  version: "1.0.0",
+  version: "1.0.2",
   hasPermssion: 0,
   credits: "RX Abdullah",
   description: "Multi auto voice response on trigger",
@@ -14,21 +14,31 @@ module.exports.config = {
   prefix: false
 };
 
-// 🔥 Trigger-based setup
 const triggers = [
   {
-    keywords: ["ghumabo baby"],
+    keywords: ["ghumabo"],
     audioUrl: "https://files.catbox.moe/us0nva.mp3",
     reply: "😴 Okaay baby, sweet dreams 🌙",
     fileName: "ghumabo.mp3"
   },
   {
-    keywords: ["bhalobashi baby"],
+    keywords: ["ringtone"],
     audioUrl: "https://files.catbox.moe/ga798u.mp3",
-    reply: "💖 Aami o bhalobashi tomake baby!",
+    reply: "💖ay lo. Baby!",
     fileName: "bhalobashi.mp3"
+  },
+  {
+    keywords: ["ekta gan bolo"],
+    audioUrl: "https://files.catbox.moe/rhuifn.mp3",
+    reply: "🎶 Suno baby, ei gan ta tomar jonno 💖",
+    fileName: "gan.mp3"
+  },
+  {
+    keywords: ["baby explain me"],
+    audioUrl: "https://files.catbox.moe/ijgma4.mp3",
+    reply: "📝 go away!",
+    fileName: "explain.mp3"
   }
-  // ➕ Add more trigger objects here if needed
 ];
 
 module.exports.handleEvent = async function({ api, event }) {
@@ -49,7 +59,7 @@ module.exports.handleEvent = async function({ api, event }) {
       } catch (e) {
         console.log(`❌ Failed to send audio for "${trigger.keywords[0]}":`, e.message);
       }
-      break; // Stop after first match
+      break;
     }
   }
 };
