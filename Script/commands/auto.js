@@ -1,91 +1,93 @@
-module.exports = {
-  config: {
-    name: "autodl",
-    version: "1.2.0",
-    hasPermssion: 0,
-    credits: "Maria x rX",
-    description: "Auto video downloader from TikTok (No-Watermark), YouTube, Instagram, Twitter, Facebook",
-    commandCategory: "media",
-    usages: "",
-    cooldowns: 5,
+const axios = require("axios");
+const fs = require("fs-extra");
+const tinyurl = require("tinyurl");
+
+const baseApiUrl = async () => {
+  const base = await axios.get(
+    "https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json"
+  );
+  return base.data.api;
+};
+
+module.exports.config = {
+  name: "autodl",
+  version: "1.0.0",
+  hasPermssion: 0,
+  credits: "Modified by Maria | Base by Dipto",
+  description: "Auto downloader for multiple platforms",
+  commandCategory: "media",
+  usages: "Send a video/photo link (Tiktok, YouTube, FB, Insta etc.)",
+  cooldowns: 2,
+  dependencies: {
+    axios: "",
+    "fs-extra": "",
+    tinyurl: "",
   },
+};
 
-  run: async () => {},
+module.exports.handleEvent = async function ({ api, event }) {
+  const content = event.body ? event.body.trim() : "";
+  if (!content.startsWith("https://")) return;
 
-  handleEvent: async function ({ api, event }) {
-    const axios = require("axios");
-    const fs = require("fs-extra");
-    const content = event.body?.trim();
-    const messageID = event.messageID;
-    const threadID = event.threadID;
+  try {
+    // Platforms supported
+    const platforms = [
+      "vt.tiktok.com",
+      "vm.tiktok.com",
+      "www.facebook.com",
+      "fb.watch",
+      "instagram.com",
+      "pin.it",
+      "youtube.com",
+      "youtu.be",
+      "i.imgur.com"
+    ];
 
-    if (!content || !content.startsWith("https://")) return;
+    const isSupported = platforms.some(p => content.includes(p));
+    if (!isSupported) return;
 
-    let videoURL = "", title = "", platform = "", path = __dirname + "/cache/autodl.mp4";
-
-    try {
-      // TikTok (No Watermark)
-      if (content.includes("tiktok.com")) {
-        platform = "TikTok";
-        api.setMessageReaction("🎵", messageID, () => {}, true);
-        const res = await axios.get(`https://api.akuari.my.id/downloader/tiktok?link=${encodeURIComponent(content)}`);
-        videoURL = res.data?.result?.video;
-        title = res.data?.result?.title || "TikTok Video";
-      }
-
-      // YouTube
-      else if (content.includes("youtube.com") || content.includes("youtu.be")) {
-        platform = "YouTube";
-        api.setMessageReaction("🎬", messageID, () => {}, true);
-        const res = await axios.get(`https://api.akuari.my.id/downloader/youtube?link=${encodeURIComponent(content)}`);
-        videoURL = res.data?.mp4?.url || res.data?.url;
-        title = res.data?.title || "YouTube Video";
-      }
-
-      // Instagram
-      else if (content.includes("instagram.com")) {
-        platform = "Instagram";
-        api.setMessageReaction("📸", messageID, () => {}, true);
-        const res = await axios.get(`https://api.akuari.my.id/downloader/igdl2?link=${encodeURIComponent(content)}`);
-        videoURL = res.data?.url?.[0];
-        title = "Instagram Video";
-      }
-
-      // Twitter/X
-      else if (content.includes("twitter.com") || content.includes("x.com")) {
-        platform = "Twitter";
-        api.setMessageReaction("🐦", messageID, () => {}, true);
-        const res = await axios.get(`https://api.akuari.my.id/downloader/twitter?link=${encodeURIComponent(content)}`);
-        videoURL = res.data?.url;
-        title = res.data?.title || "Twitter Video";
-      }
-
-      // Facebook
-      else if (content.includes("facebook.com") || content.includes("fb.watch")) {
-        platform = "Facebook";
-        api.setMessageReaction("📘", messageID, () => {}, true);
-        const res = await axios.get(`https://api.akuari.my.id/downloader/fb?link=${encodeURIComponent(content)}`);
-        videoURL = res.data?.url?.[0];
-        title = "Facebook Video";
-      }
-
-      if (!videoURL) {
-        return api.sendMessage("❌ Unable to download video. Please check the link.", threadID, messageID);
-      }
-
-      const videoBuffer = (await axios.get(videoURL, { responseType: "arraybuffer" })).data;
-      fs.writeFileSync(path, Buffer.from(videoBuffer, "utf-8"));
-
-      const caption = `🎞️ ${title}\n\nrX Auto Download 🐣 [${platform}]`;
-
+    // Special case for Imgur
+    if (content.startsWith("https://i.imgur.com")) {
+      const ext = content.substring(content.lastIndexOf("."));
+      const imgData = await axios.get(content, { responseType: "arraybuffer" });
+      const imgPath = `${__dirname}/cache/img${ext}`;
+      fs.writeFileSync(imgPath, Buffer.from(imgData.data, "binary"));
       return api.sendMessage({
-        body: caption,
-        attachment: fs.createReadStream(path)
-      }, threadID, () => fs.unlinkSync(path), messageID);
-
-    } catch (err) {
-      console.error("❌ Error downloading video:", err.message || err);
-      return api.sendMessage("🚫 Something went wrong while downloading the video.", threadID, messageID);
+        body: `🖼️ Image downloaded\nrX Auto Download 🐣`,
+        attachment: fs.createReadStream(imgPath),
+      }, event.threadID, () => fs.unlinkSync(imgPath), event.messageID);
     }
+
+    // Normal downloader
+    api.setMessageReaction("⏬", event.messageID, () => {}, true);
+
+    const apiUrl = await baseApiUrl();
+    const res = await axios.get(`${apiUrl}/alldl?url=${encodeURIComponent(content)}`);
+    const data = res.data;
+
+    if (!data.result) {
+      return api.sendMessage(`❌ Failed to fetch video.`, event.threadID, event.messageID);
+    }
+
+    const shortUrl = await tinyurl.shorten(data.result);
+    const fileExt = data.result.includes(".jpg") ? ".jpg" :
+                    data.result.includes(".png") ? ".png" :
+                    data.result.includes(".jpeg") ? ".jpeg" : ".mp4";
+
+    const filePath = `${__dirname}/cache/video${fileExt}`;
+    const fileData = (await axios.get(data.result, { responseType: "arraybuffer" })).data;
+    fs.writeFileSync(filePath, Buffer.from(fileData, "utf-8"));
+
+    const title = data.title || "Downloaded Video";
+
+    api.sendMessage({
+      body: `🎬 ${title}\n\nrX Auto Download 🐣\n✅ 🔗 ${shortUrl}`,
+      attachment: fs.createReadStream(filePath),
+    }, event.threadID, () => fs.unlinkSync(filePath), event.messageID);
+
+  } catch (e) {
+    api.sendMessage(`⚠️ Error: ${e.message}`, event.threadID, event.messageID);
   }
 };
+
+module.exports.run = () => {};
