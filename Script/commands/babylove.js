@@ -14,8 +14,6 @@ module.exports.config = {
   prefix: false
 };
 
-const songProgress = {};
-
 const triggers = [
   {
     keywords: ["ghumabo"],
@@ -34,6 +32,12 @@ const triggers = [
     audioUrl: "https://files.catbox.moe/ijgma4.mp3",
     reply: "📝 go away!",
     fileName: "explain.mp3"
+  },
+  {
+    keywords: ["👀", "🙄"],
+    audioUrl: "https://files.catbox.moe/vgzkeu.mp3",
+    reply: "ki dekhis? 🙄",
+    fileName: "dekhdkhi.mp3"
   }
 ];
 
