@@ -4,17 +4,16 @@ const path = require("path");
 
 module.exports.config = {
   name: "babyimg",
-  version: "1.0.0",
+  version: "1.0.1",
   hasPermssion: 0,
   credits: "RX Abdullah",
-  description: "Send image on trigger word",
+  description: "Send image as reply to trigger word",
   commandCategory: "auto",
   usages: "",
   cooldowns: 0,
   prefix: false
 };
 
-// List of keyword triggers with image link + reply
 const imageTriggers = [
   {
     keywords: ["khabo", "khuda lagse"],
@@ -25,10 +24,9 @@ const imageTriggers = [
   {
     keywords: ["holpagol", "sex"],
     imageUrl: "https://i.postimg.cc/Vs26JVMf/e052f3e1f21ab2d1c07312c720eda6ae.jpg",
-    reply: "🌙boka**nki 😴",
-    fileName: "goodnight.jpg"
+    reply: "🌙 boka nki 😴",
+    fileName: "gumkorefela.jpg"
   }
-  // Add more triggers here
 ];
 
 module.exports.handleEvent = async function({ api, event }) {
@@ -45,7 +43,7 @@ module.exports.handleEvent = async function({ api, event }) {
         api.sendMessage({
           body: trigger.reply,
           attachment: fs.createReadStream(filePath)
-        }, event.threadID, () => fs.unlinkSync(filePath));
+        }, event.threadID, () => fs.unlinkSync(filePath), event.messageID); // ✅ reply to user
       } catch (err) {
         console.log(`❌ Failed to send image for ${trigger.keywords[0]}:`, err.message);
       }
