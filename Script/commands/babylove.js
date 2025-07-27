@@ -4,9 +4,9 @@ const path = require("path");
 
 module.exports.config = {
   name: "babylove",
-  version: "1.0.6",
+  version: "1.0.7",
   hasPermssion: 0,
-  credits: "RX Abdullah",
+  credits: "RX Abdullah + Modified by ChatGPT",
   description: "Multi auto voice response on trigger",
   commandCategory: "auto",
   usages: "",
@@ -49,6 +49,8 @@ const deepSongs = [
   { url: "https://files.catbox.moe/ag634t.mp3", title: "💥 Created by maria" }
 ];
 
+const songProgress = {};
+
 module.exports.handleEvent = async function({ api, event }) {
   const msg = event.body?.toLowerCase();
   if (!msg) return;
@@ -56,23 +58,18 @@ module.exports.handleEvent = async function({ api, event }) {
   const threadID = event.threadID;
   const messageID = event.messageID;
 
+  // Handle "next" replies
   if (event.type === "message_reply" && ["next", "arekta"].includes(msg.trim())) {
     const repliedMsgID = event.messageReply?.messageID;
     const progress = songProgress[threadID];
-    if (!progress) return;
-    if (progress.msgID !== repliedMsgID) return;
+    if (!progress || progress.msgID !== repliedMsgID) return;
 
-    const nextIndex = progress.index + 1;
-    if (nextIndex >= deepSongs.length) {
-      api.sendMessage("😅 Shesh! Aar gaan nai.", threadID);
-      delete songProgress[threadID];
-      return;
-    }
-
+    const nextIndex = (progress.index + 1) % deepSongs.length;
     await sendSong(api, threadID, nextIndex, messageID);
     return;
   }
 
+  // Handle voice triggers
   for (const trigger of triggers) {
     if (trigger.keywords.some(k => msg.includes(k))) {
       const filePath = path.join(__dirname, trigger.fileName);
@@ -82,7 +79,7 @@ module.exports.handleEvent = async function({ api, event }) {
         api.sendMessage({
           body: trigger.reply,
           attachment: fs.createReadStream(filePath)
-        }, threadID, () => fs.unlinkSync(filePath));
+        }, threadID, () => fs.unlinkSync(filePath), messageID);
       } catch (e) {
         console.log(`❌ Failed to send audio for "${trigger.keywords[0]}":`, e.message);
       }
@@ -90,8 +87,10 @@ module.exports.handleEvent = async function({ api, event }) {
     }
   }
 
+  // Handle song trigger
   if (msg.includes("ekta gan bolo")) {
-    await sendSong(api, threadID, 0, messageID);
+    const randomIndex = Math.floor(Math.random() * deepSongs.length);
+    await sendSong(api, threadID, randomIndex, messageID);
     return;
   }
 };
@@ -113,7 +112,7 @@ async function sendSong(api, threadID, index, replyToID) {
       if (!err) {
         songProgress[threadID] = { index, msgID: info.messageID };
       }
-    });
+    }, replyToID);
   } catch (e) {
     console.log("❌ Error sending song:", e.message);
   }
