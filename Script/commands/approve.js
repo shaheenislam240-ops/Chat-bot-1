@@ -9,8 +9,8 @@ module.exports.config = {
 };
 
 
-const dataPath = __dirname + "/Priyanshu/approvedThreads.json";
-const dataPending = __dirname + "/Priyanshu/pendingdThreads.json";
+const dataPath = __dirname + "/rx/approvedThreads.json";
+const dataPending = __dirname + "/rx/pendingdThreads.json";
 const fs = require("fs");
 
 module.exports.onLoad = () => {
