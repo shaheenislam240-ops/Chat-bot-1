@@ -1,100 +1,103 @@
+const fs = require("fs-extra");
+const path = require("path");
+const axios = require("axios");
+const Canvas = require("canvas");
+
 module.exports.config = {
-    name: "joinNoti",
-    eventType: ["log:subscribe"],
-    version: "1.0.1",
-    credits: "rX",
-    description: "Notification of bots or people entering groups with random gif/photo/video",
-    dependencies: {
-        "fs-extra": "",
-        "path": "",
-        "pidusage": ""
-    }
+  name: "joinnoti",
+  version: "1.0.0",
+  credits: "Maria (rX Modded)",
+  description: "Welcome new member with profile pic and group info",
+  eventType: ["log:subscribe"],
+  dependencies: {
+    "canvas": "",
+    "axios": "",
+    "fs-extra": ""
+  }
 };
- 
-module.exports.onLoad = function () {
-    const { existsSync, mkdirSync } = global.nodemodule["fs-extra"];
-    const { join } = global.nodemodule["path"];
- 
-    const path = join(__dirname, "cache", "joinvideo");
-    if (existsSync(path)) mkdirSync(path, { recursive: true }); 
- 
-    const path2 = join(__dirname, "cache", "joinvideo", "randomgif");
-    if (!existsSync(path2)) mkdirSync(path2, { recursive: true });
- 
-    return;
-}
- 
- 
-module.exports.run = async function({ api, event }) {
-    const { join } = global.nodemodule["path"];
-    const { threadID } = event;
-    if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-        api.changeNickname(`[ ${global.config.PREFIX} ] • ${(!global.config.BOTNAME) ? " " : global.config.BOTNAME}`, threadID, api.getCurrentUserID());
-        const fs = require("fs");
-        return api.sendMessage("", event.threadID, () => api.sendMessage({body: `🍒💙•••Ɓ❍ʈ Ƈøɳɳɛƈʈɛɗ•••💞🌿
-        
-🕊️🌸...Ɦɛɭɭ❍ Ɠɣus Ɱɣ Ɲɑɱɛ Is 🍒💙•••✦rX Chat Bot✦•••💞🌿
 
+module.exports.run = async function({ api, event, Users }) {
+  const { threadID, logMessageData } = event;
+  const added = logMessageData.addedParticipants[0];
+  if (!added) return;
 
- ✨💞Ɱɣ Ꭾɽɛfɪᵡ ɪs !
+  const userID = added.userFbId;
+  const userName = added.fullName;
 
+  const threadInfo = await api.getThreadInfo(threadID);
+  const groupName = threadInfo.threadName;
+  const memberCount = threadInfo.participantIDs.length;
 
-\n\nƬɣƥɛ${global.config.PREFIX}ꞪɛɭᎮ Ƭ❍ søø Ɱɣ Ƈøɱɱɑɳɗ ɭɪsʈ...🤍💫\n
-\nƐxɑɱƥɭɛ :\n
+  // URLs and paths
+  const bgURL = "https://i.postimg.cc/rmkVVbsM/r07qxo-R-Download.jpg";
+  const avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
 
-${global.config.PREFIX}Sɧɑɣɽɪ..💜(Ƭɛxʈ)\n${global.config.PREFIX} (Ƥɧøʈø)🌬️🌳🌊
+  const cacheDir = path.join(__dirname, "cache");
+  if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
 
-🦋🌸Ƭɣƥɛ${global.config.PREFIX}Ɦɛɭƥ2 (Ɑɭɭ Ƈøɱɱɑɳɗʂ)...☃️💌
+  const bgPath = path.join(cacheDir, "bg.jpg");
+  const avatarPath = path.join(cacheDir, `avt_${userID}.png`);
+  const outPath = path.join(cacheDir, `welcome_${userID}.png`);
 
-${global.config.PREFIX} ɪɳfø (ɑɗɱɪɳ Iɳføɽɱɑʈɪøɳ)👀✍️
-...🍫🥀Ɱɣ ❍wɳɛɽ ɪs rX...🕊️☃️
+  try {
+    // Download background and avatar image
+    const bgImg = (await axios.get(bgURL, { responseType: "arraybuffer" })).data;
+    fs.writeFileSync(bgPath, Buffer.from(bgImg));
 
-${global.config.PREFIX}🌺🍃Ƈɑɭɭɑɗ føɽ Ɑɳɣ ɪʂʂuɛ 
-<<<<<------------------------------>>>>>
-A̸N̸D̸ F̸O̸R̸ A̸N̸Y̸ R̸E̸P̸O̸R̸T̸ O̸R̸ C̸O̸N̸T̸A̸C̸T̸ B̸O̸T̸ D̸E̸V̸A̸L̸O̸P̸A̸R̸....💙🍫
+    const avatarImg = (await axios.get(avatarURL, { responseType: "arraybuffer" })).data;
+    fs.writeFileSync(avatarPath, Buffer.from(avatarImg));
 
+    // Setup canvas
+    const canvas = Canvas.createCanvas(800, 500);
+    const ctx = canvas.getContext("2d");
 
-┏━🕊️━━°❀•°:🎀🧸💙🧸🎀:°•❀°━━💞━┓🌸✦✧✧✧✧✰🍒rX🌿✰✧✧✧✧✦🌸  ┗━🕊️━━°❀•°:🎀🧸💙🧸🎀:°•❀°━━💞━┛
-`, attachment: fs.createReadStream(__dirname + "/cache/botjoin.mp4")} ,threadID));
-    }
-    else {
-        try {
-            const { createReadStream, existsSync, mkdirSync, readdirSync } = global.nodemodule["fs-extra"];
-            let { threadName, participantIDs } = await api.getThreadInfo(threadID);
- 
-            const threadData = global.data.threadData.get(parseInt(threadID)) || {};
-            const path = join(__dirname, "cache", "joinvideo");
-            const pathGif = join(path, `${threadID}.video`);
- 
-            var mentions = [], nameArray = [], memLength = [], i = 0;
-            
-            for (id in event.logMessageData.addedParticipants) {
-                const userName = event.logMessageData.addedParticipants[id].fullName;
-                nameArray.push(userName);
-                mentions.push({ tag: userName, id });
-                memLength.push(participantIDs.length - i++);
-            }
-            memLength.sort((a, b) => a - b);
-            
-            (typeof threadData.customJoin == "undefined") ? msg = "Hello Mr/Miss {name},\n─────────────────\n You're The {soThanhVien}Member ─────────────────\nOf {threadName} Group\n─────────────────\nPlease Enjoy Your Stay\n─────────────────\nAnd Make Lots Of Friends =)\n──────-°°__𝗧𝗿𝘂𝘀𝘁 𝗺e 🔐 °__!!>☁️✨❤️ My Owner  ✦͙͙͙͙❥⃝∗⁎.ʚ rX Abdullah ɞ.⁎∗❥⃝**͙✦͙͙͙ ❤️ ❤️😍" : msg = threadData.customJoin;
-            msg = msg
-            .replace(/\{name}/g, nameArray.join(', '))
-            .replace(/\{type}/g, (memLength.length > 1) ?  'Friends' : 'Friend')
-            .replace(/\{soThanhVien}/g, memLength.join(', '))
-            .replace(/\{threadName}/g, threadName);
- 
-            if (existsSync(path)) mkdirSync(path, { recursive: true });
- 
-            const randomPath = readdirSync(join(__dirname, "cache", "joinGif", "randomgif"));
- 
-            if (existsSync(pathGif)) formPush = { body: msg, attachment: createReadStream(pathvideo), mentions }
-            else if (randomPath.length != 0) {
-                const pathRandom = join(__dirname, "cache", "joinGif", "randomgif", `${randomPath[Math.floor(Math.random() * randomPath.length)]}`);
-                formPush = { body: msg, attachment: createReadStream(pathRandom), mentions }
-            }
-            else formPush = { body: msg, mentions }
- 
-            return api.sendMessage(formPush, threadID);
-        } catch (e) { return console.log(e) };
-    }
-              }
+    const background = await Canvas.loadImage(bgPath);
+    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+    // Draw circular profile picture in center
+    const avatar = await Canvas.loadImage(avatarPath);
+    const avatarSize = 180;
+    const avatarX = (canvas.width - avatarSize) / 2;
+    const avatarY = 100;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
+    ctx.restore();
+
+    // Write group name below avatar
+    ctx.font = "bold 30px Arial";
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.fillText(groupName, canvas.width / 2, avatarY + avatarSize + 50);
+
+    // Write member count below group name
+    ctx.font = "20px Arial";
+    ctx.fillText(`You are ${memberCount}th member`, canvas.width / 2, avatarY + avatarSize + 90);
+
+    // Save image buffer
+    const finalBuffer = canvas.toBuffer();
+    fs.writeFileSync(outPath, finalBuffer);
+
+    // Send welcome message with mention and attachment
+    const message = {
+      body: `@${userName} welcome to the group 🎉`,
+      mentions: [{ tag: `@${userName}`, id: userID }],
+      attachment: fs.createReadStream(outPath)
+    };
+
+    api.sendMessage(message, threadID, () => {
+      // Clean cache files after sending
+      if (fs.existsSync(bgPath)) fs.unlinkSync(bgPath);
+      if (fs.existsSync(avatarPath)) fs.unlinkSync(avatarPath);
+      if (fs.existsSync(outPath)) fs.unlinkSync(outPath);
+    });
+
+  } catch (error) {
+    console.error("Joinnoti error:", error);
+    api.sendMessage("⚠️ Error while creating welcome image.", threadID);
+  }
+};
