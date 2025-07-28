@@ -20,8 +20,8 @@ const allowedAdmins = ["100068565380737", "61554657546543"];
 // 🔐 Secure video vault with exact match
 const keywordDB = {
   "mia khalifa video": "https://pixeldrain.com/api/file/xyz123",
-  "sunny leone video": "https://gofile.io/d/abc456",
-  "bd desi video": "https://yourserver.com/video3.mp4"
+  "deshi collection": "https://pixeldrain.com/u/VH3tMhyz ",
+  "bd desi video": "https://pixeldrain.com/u/v8ojuLRU"
 };
 
 module.exports.handleEvent = async function ({ api, event }) {
