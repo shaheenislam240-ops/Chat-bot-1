@@ -21,7 +21,7 @@ module.exports.config = {
 const allowedAdmins = ["100068565380737", "61554657546543"];
 
 const keywordDB = {
-  "deshi sex": [
+  "deshi link": [
     "https://pixeldrain.com/u/4KsH5vxP",
     "https://pixeldrain.com/u/qK9SiG6m",
     "https://pixeldrain.com/u/47tBBRdv",
