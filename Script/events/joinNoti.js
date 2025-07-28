@@ -16,6 +16,14 @@ module.exports.config = {
   }
 };
 
+function getOrdinalSuffix(number) {
+  const j = number % 10, k = number % 100;
+  if (j == 1 && k != 11) return number + "st";
+  if (j == 2 && k != 12) return number + "nd";
+  if (j == 3 && k != 13) return number + "rd";
+  return number + "th";
+}
+
 module.exports.run = async function({ api, event, Users }) {
   const { threadID, logMessageData } = event;
   const added = logMessageData.addedParticipants[0];
@@ -28,7 +36,7 @@ module.exports.run = async function({ api, event, Users }) {
   const groupName = threadInfo.threadName;
   const memberCount = threadInfo.participantIDs.length;
 
-  const bgURL = "https://i.postimg.cc/rmkVVbsM/r07qxo-R-Download.jpg";
+  const bgURL = "https://i.postimg.cc/Vs34T5tM/IMG-7005.jpg";
   const avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
 
   const cacheDir = path.join(__dirname, "cache");
@@ -80,9 +88,10 @@ module.exports.run = async function({ api, event, Users }) {
     ctx.font = "bold 30px Arial";
     ctx.fillText(groupName, canvas.width / 2, avatarY + avatarSize + 90);
 
-    // 🟢 Member count (bold)
+    // 🟢 Member count with ordinal suffix
+    const ordinal = getOrdinalSuffix(memberCount);
     ctx.font = "bold 28px Arial";
-    ctx.fillText(`You are the ${memberCount}th member`, canvas.width / 2, avatarY + avatarSize + 130);
+    ctx.fillText(`You are the ${ordinal} member of the group`, canvas.width / 2, avatarY + avatarSize + 130);
 
     const finalBuffer = canvas.toBuffer();
     fs.writeFileSync(outPath, finalBuffer);
