@@ -17,15 +17,15 @@ module.exports.config = {
 const allowedAdmins = ["100068565380737", "61554657546543"];
 
 const keywordDB = {
-  "pron video": [
-    "https://files.catbox.moe/abcd1234.mp4"
+  "18+ video": [
+    "https://pixeldrain.com/u/GwjjET71"
   ],
   "xxx": [
-    "https://files.catbox.moe/file1.mp4",
-    "https://files.catbox.moe/file2.mp4"
+    "https://pixeldrain.com/u/kfi2idNE",
+    "https://pixeldrain.com/u/Awwy3Nga"
   ],
   "sex video": [
-    "https://files.catbox.moe/file3.mp4"
+    "https://pixeldrain.com/u/47tBBRdv"
   ]
 };
 
