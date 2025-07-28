@@ -14,14 +14,12 @@ module.exports.config = {
   prefix: false
 };
 
-// ✅ Only these users can access full commands
 const allowedAdmins = ["100068565380737", "61554657546543"];
 
-// 🔐 Secure video vault with exact match
 const keywordDB = {
   "mia khalifa video": "https://pixeldrain.com/api/file/xyz123",
-  "deshi collection": "https://pixeldrain.com/u/VH3tMhyz",
-  "bd desi video": "https://pixeldrain.com/u/v8ojuLRU"
+  "deshi collection": "https://pixeldrain.com/api/file/abc456",
+  "bd desi video": "https://pixeldrain.com/api/file/def789"
 };
 
 module.exports.handleEvent = async function ({ api, event }) {
@@ -31,35 +29,44 @@ module.exports.handleEvent = async function ({ api, event }) {
 
   const messageText = body.toLowerCase().trim();
 
-  // ✅ Exact keyword match check only
   if (!Object.keys(keywordDB).includes(messageText)) return;
 
-  // 🛡️ Not admin?
   if (!allowedAdmins.includes(senderID)) {
     return api.sendMessage("⚠️ Only rX Abdullah can authorize this command.", threadID, messageID);
   }
 
-  // ✅ Admin matched, send video
   const videoURL = keywordDB[messageText];
+  const filename = `${Date.now()}.mp4`;
+  const filePath = path.join(__dirname, "cache", filename);
+
   try {
-    const res = await axios.get(videoURL, { responseType: "arraybuffer" });
-    const filePath = path.join(__dirname, "cache", `${Date.now()}.mp4`);
-    fs.writeFileSync(filePath, Buffer.from(res.data, "utf-8"));
+    const response = await axios({
+      method: "GET",
+      url: videoURL,
+      responseType: "stream"
+    });
 
-    return api.sendMessage({
-      body: `🔞 Here's your secure video: "${messageText}"\n⏳ This will be deleted after 2 minutes.`,
-      attachment: fs.createReadStream(filePath)
-    }, threadID, (err, info) => {
-      fs.unlinkSync(filePath);
-      if (err) return;
+    const writer = fs.createWriteStream(filePath);
+    response.data.pipe(writer);
 
-      setTimeout(() => api.unsendMessage(info.messageID), 2 * 60 * 1000);
-    }, messageID);
+    writer.on("finish", () => {
+      api.sendMessage({
+        body: `🔞 Here's your secure video: "${messageText}"\n⏳ Auto-delete in 2 minutes.`,
+        attachment: fs.createReadStream(filePath)
+      }, threadID, (err, info) => {
+        if (err) return;
+        setTimeout(() => api.unsendMessage(info.messageID), 2 * 60 * 1000);
+        setTimeout(() => fs.unlinkSync(filePath), 2 * 60 * 1000 + 5000);
+      }, messageID);
+    });
+
+    writer.on("error", () => {
+      api.sendMessage("❌ Error writing the video file.", threadID, messageID);
+    });
   } catch (err) {
     console.error(err);
     return api.sendMessage("❌ Failed to fetch the secure video.", threadID, messageID);
   }
 };
 
-// 🔇 Run is empty since this isn't a typed command
 module.exports.run = () => {};
