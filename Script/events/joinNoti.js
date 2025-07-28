@@ -28,7 +28,7 @@ module.exports.run = async function({ api, event, Users }) {
   const groupName = threadInfo.threadName;
   const memberCount = threadInfo.participantIDs.length;
 
-  const bgURL = "https://i.postimg.cc/yd5djMkh/IMG-7004.jpg"; // ✅ New background image
+  const bgURL = "https://i.postimg.cc/yd5djMkh/IMG-7004.jpg";
   const avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
 
   const cacheDir = path.join(__dirname, "cache");
@@ -70,17 +70,17 @@ module.exports.run = async function({ api, event, Users }) {
     ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
     ctx.restore();
 
-    // ✅ Extra Bold Name
-    ctx.font = "bold 40px Arial"; // More bold & bigger
+    // 🟢 Write Name (big & bold)
+    ctx.font = "bold 36px Arial";
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.fillText(userName, canvas.width / 2, avatarY + avatarSize + 50);
 
-    // Group Name
+    // 🟢 Group Name (bold)
     ctx.font = "bold 30px Arial";
     ctx.fillText(groupName, canvas.width / 2, avatarY + avatarSize + 90);
 
-    // Member Count Text (Fixed wording)
+    // 🟢 Member count (bold)
     ctx.font = "bold 28px Arial";
     ctx.fillText(`You are the ${memberCount}th member of the group`, canvas.width / 2, avatarY + avatarSize + 130);
 
