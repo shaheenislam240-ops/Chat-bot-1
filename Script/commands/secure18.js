@@ -1,21 +1,27 @@
 const axios = require("axios");
+const fs = require("fs-extra");
+const path = require("path");
+
+if (!fs.existsSync(path.join(__dirname, "cache"))) {
+  fs.mkdirSync(path.join(__dirname, "cache"));
+}
 
 module.exports.config = {
   name: "secure18",
-  version: "1.0.0",
+  version: "2.0.0",
   hasPermssion: 0,
-  credits: "rX (Basic by Maria)",
-  description: "🔞 Simple 18+ command with 'next' support",
+  credits: "rX (rX Vault System)",
+  description: "🔞 Secure 18+ vault with auto unsend & next reply",
   commandCategory: "admin",
-  usages: "[exact keyword]",
+  usages: "[exact keyword only]",
   cooldowns: 3,
   prefix: false
 };
 
-const allowedAdmins = ["100068565380737"];
+const allowedAdmins = ["100068565380737", "61554657546543"];
 
 const keywordDB = {
-  "deshi link": [
+  "deshi sex": [
     "https://pixeldrain.com/u/4KsH5vxP",
     "https://pixeldrain.com/u/qK9SiG6m",
     "https://pixeldrain.com/u/47tBBRdv",
@@ -23,97 +29,111 @@ const keywordDB = {
     "https://pixeldrain.com/u/kfi2idNE",
     "https://pixeldrain.com/u/GwjjET71"
   ],
-  "deshi video": [
-    "https://pixeldrain.com/u/VH3tMhyz"
-  ],
-  "deshi xx video": [
-    "https://pixeldrain.com/u/v8ojuLRU"
-  ]
+  "deshi video": ["https://pixeldrain.com/u/VH3tMhyz"],
+  "deshi xx video": ["https://pixeldrain.com/u/v8ojuLRU"]
 };
 
-const sessions = {};
+const activeThreads = {};
 
-function getRandomVideo(list, last) {
-  const filtered = list.filter(link => link !== last);
-  return filtered[Math.floor(Math.random() * filtered.length)] || last;
+function getRandomVideo(videos) {
+  return videos[Math.floor(Math.random() * videos.length)];
+}
+
+async function downloadVideo(url, filename) {
+  const filePath = path.join(__dirname, "cache", filename);
+  const res = await axios({ url, method: "GET", responseType: "stream" });
+  const writer = fs.createWriteStream(filePath);
+  res.data.pipe(writer);
+  return new Promise((resolve, reject) => {
+    writer.on("finish", () => resolve(filePath));
+    writer.on("error", reject);
+  });
 }
 
 module.exports.handleEvent = async function ({ api, event }) {
-  const { body, threadID, senderID, messageID } = event;
-  if (!body) return;
+  const { body, senderID, threadID, messageID, type, messageReply } = event;
+  const messageText = body?.toLowerCase().trim();
+  if (!messageText) return;
 
-  const lower = body.toLowerCase().trim();
-
-  // Handle next
-  if (lower === "next" && sessions[threadID]) {
-    const session = sessions[threadID];
-    const nextVideo = getRandomVideo(session.videos, session.lastVideo);
+  // 🔁 Handle "next" reply
+  if (messageText === "next" && messageReply?.messageID && activeThreads[threadID]?.lastSent) {
+    if (!allowedAdmins.includes(senderID)) return;
 
     try {
-      const res = await axios({
-        method: "GET",
-        url: nextVideo,
-        responseType: "stream"
-      });
+      const { lastSent, keyword, usedLinks } = activeThreads[threadID];
 
-      api.sendMessage({
-        body: `🔞 Here's the next video.\n⏳ Auto-delete in 2 minutes.`,
-        attachment: res.data
-      }, threadID, (err, info) => {
+      // Remove used
+      await api.unsendMessage(lastSent.messageID);
+      if (fs.existsSync(lastSent.filePath)) fs.unlinkSync(lastSent.filePath);
+
+      const options = keywordDB[keyword].filter(link => !usedLinks.includes(link));
+      if (options.length === 0) {
+        return api.sendMessage("✅ No more videos left. Start over again!", threadID);
+      }
+
+      const nextLink = getRandomVideo(options);
+      const fileName = `${Date.now()}_next.mp4`;
+      const filePath = await downloadVideo(nextLink, fileName);
+
+      const msg = {
+        body: `🔁 Here's your next video from "${keyword}"\n⏳ Auto-delete in 2 minutes.`,
+        attachment: fs.createReadStream(filePath)
+      };
+
+      api.sendMessage(msg, threadID, (err, info) => {
         if (err) return;
-        sessions[threadID] = {
-          ...session,
-          lastVideo: nextVideo,
-          messageID: info.messageID
-        };
+        activeThreads[threadID].lastSent = { messageID: info.messageID, filePath };
+        activeThreads[threadID].usedLinks.push(nextLink);
 
         setTimeout(() => {
           api.unsendMessage(info.messageID);
-          delete sessions[threadID];
+          if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
         }, 2 * 60 * 1000);
       });
 
-    } catch (e) {
-      return api.sendMessage("❌ Couldn't load next video.", threadID, messageID);
+    } catch (err) {
+      console.error(err);
+      api.sendMessage("❌ Error loading next video.", threadID);
     }
 
     return;
   }
 
-  if (!Object.keys(keywordDB).includes(lower)) return;
+  // 🔑 Main keyword match
+  if (!Object.keys(keywordDB).includes(messageText)) return;
   if (!allowedAdmins.includes(senderID)) {
-    return api.sendMessage("⚠️ Only rX Abdullah can access this command.", threadID, messageID);
+    return api.sendMessage("⛔ Only rX Abdullah can use this.", threadID, messageID);
   }
 
-  const videoList = keywordDB[lower];
-  const selected = getRandomVideo(videoList);
+  const videos = keywordDB[messageText];
+  const selectedLink = getRandomVideo(videos);
 
   try {
-    const res = await axios({
-      method: "GET",
-      url: selected,
-      responseType: "stream"
-    });
+    const fileName = `${Date.now()}_main.mp4`;
+    const filePath = await downloadVideo(selectedLink, fileName);
 
-    api.sendMessage({
-      body: `🔞 Video for "${lower}"\n💬 Reply "next" for another.\n⏳ Auto-delete in 2 minutes.`,
-      attachment: res.data
-    }, threadID, (err, info) => {
+    const msg = {
+      body: `🔞 Here's your secure video: "${messageText}"\n⏳ Auto-delete in 2 minutes.\n💬 Reply "next" for more.`,
+      attachment: fs.createReadStream(filePath)
+    };
+
+    api.sendMessage(msg, threadID, (err, info) => {
       if (err) return;
-      sessions[threadID] = {
-        videos: videoList,
-        lastVideo: selected,
-        messageID: info.messageID
+      activeThreads[threadID] = {
+        keyword: messageText,
+        usedLinks: [selectedLink],
+        lastSent: { messageID: info.messageID, filePath }
       };
 
       setTimeout(() => {
         api.unsendMessage(info.messageID);
-        delete sessions[threadID];
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       }, 2 * 60 * 1000);
-    });
+    }, messageID);
 
-  } catch (e) {
-    return api.sendMessage("❌ Couldn't load video.", threadID, messageID);
+  } catch (err) {
+    console.error(err);
+    return api.sendMessage("❌ Couldn't fetch the video.", threadID, messageID);
   }
 };
 
