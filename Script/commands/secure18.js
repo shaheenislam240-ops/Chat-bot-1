@@ -20,7 +20,7 @@ const allowedAdmins = ["100068565380737", "61554657546543"];
 // 🔐 Secure video vault with exact match
 const keywordDB = {
   "mia khalifa video": "https://pixeldrain.com/api/file/xyz123",
-  "deshi collection": "https://pixeldrain.com/u/VH3tMhyz ",
+  "deshi collection": "https://pixeldrain.com/u/VH3tMhyz",
   "bd desi video": "https://pixeldrain.com/u/v8ojuLRU"
 };
 
