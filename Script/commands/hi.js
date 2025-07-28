@@ -2,7 +2,7 @@ module.exports.config = {
   name: "hi",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+  credits: "rX",
   description: "hi sticker",
   commandCategory: "QTV BOX",
   usages: "[text]",
@@ -46,7 +46,7 @@ module.exports.handleEvent = async ({ event, api, Users }) => {
     ];
     let sticker = data[Math.floor(Math.random() * data.length)];
     let moment = require("moment-timezone");
-    let hours = moment.tz('Asia/Manila').format('HHmm');
+    let hours = moment.tz('Asia/Dhaka').format('HHmm');
     let session = (
     hours > 0001 && hours <= 400 ? "bright morning" : 
     hours > 401 && hours <= 700 ? "morning" :
