@@ -2,10 +2,10 @@ module.exports.config = {
     name: "cmd",
     version: "1.0.0",
     hasPermssion: 2,
-    credits: "MAHBUB SHAON",
+    credits: "Modified by rX Abdullah",
     description: "Manage/Control all bot modules",
     commandCategory: "System",
-    usages: "[load/unload/loadAll/unloadAll/info] [name module]",
+    usages: "[load/unload/loadAll/unloadAll/info/count] [module name]",
     cooldowns: 2,
     dependencies: {
         "fs-extra": "",
@@ -37,10 +37,8 @@ const loadCommand = function ({ moduleList, threadID, messageID, api }) {
                 throw new Error("[CMD] - Module is not properly formatted!");
 
             global.client.eventRegistered = global.client.eventRegistered.filter(info => info != command.config.name);
-
             global.client.commands.set(command.config.name, command);
             logger.loader("Loaded command " + command.config.name + "!");
-
         } catch (error) {
             errorList.push("- " + nameModule + " reason: " + error);
         }
@@ -85,13 +83,13 @@ module.exports.run = function ({ event, args, api }) {
         return;
     }
 
-    if (event.senderID != "100000478146113") {
+    // ✅ শুধুমাত্র rX Abdullah চালাতে পারবে
+    if (event.senderID != "100068565380737") {
         return api.sendMessage("[CMD] » You are not authorized to use this command!", event.threadID, event.messageID);
     }
 
     const { readdirSync } = global.nodemodule["fs-extra"];
     const { threadID, messageID } = event;
-
     var moduleList = args.slice(1);
 
     switch (args[0]) {
@@ -119,11 +117,8 @@ module.exports.run = function ({ event, args, api }) {
         }
         case "info": {
             const command = global.client.commands.get(moduleList.join("") || "");
-
             if (!command) return api.sendMessage("[CMD] » The specified module does not exist!", threadID, messageID);
-
             const { name, version, hasPermssion, credits, cooldowns, dependencies } = command.config;
-
             return api.sendMessage(
                 `====== ${name.toUpperCase()} ======\n` +
                 `- Created by: ${credits}\n` +
