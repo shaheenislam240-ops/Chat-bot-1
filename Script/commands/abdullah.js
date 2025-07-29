@@ -4,10 +4,10 @@ const path = require("path");
 
 module.exports.config = {
   name: "abdullah",
-  version: "1.0.0",
+  version: "1.0.2",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Sends stylish message + Imgur video when 'abdullah' is mentioned",
+  description: "Send stylish message + Imgur video if someone says 'abdullah'",
   commandCategory: "media",
   usages: "noprefix",
   cooldowns: 3
@@ -18,7 +18,7 @@ module.exports.handleEvent = async function ({ api, event }) {
   if (!message || !message.includes("abdullah")) return;
 
   const videoUrl = "https://i.imgur.com/8tJ70qr.mp4";
-  const videoPath = path.join(__dirname, "cache", "abdullah_video.mp4");
+  const filePath = path.join(__dirname, "cache", "abdullah.mp4");
 
   const styledText = `★彡🌙⛧∘₊˚⋆ 𝑨𝑩𝑫𝑼𝑳𝑳𝑨𝐇 𝑴𝑶𝑫𝑬 ∘₊˚⋆⛧🌙彡★
 
@@ -34,28 +34,35 @@ module.exports.handleEvent = async function ({ api, event }) {
     const response = await axios({
       method: "GET",
       url: videoUrl,
-      responseType: "stream"
+      responseType: "stream",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+        "Referer": "https://imgur.com/"
+      }
     });
 
-    const writer = fs.createWriteStream(videoPath);
+    const writer = fs.createWriteStream(filePath);
     response.data.pipe(writer);
 
     writer.on("finish", () => {
       api.sendMessage({
         body: styledText,
-        attachment: fs.createReadStream(videoPath)
-      }, event.threadID, () => fs.unlinkSync(videoPath), event.messageID);
+        attachment: fs.createReadStream(filePath)
+      }, event.threadID, () => {
+        fs.unlinkSync(filePath); // auto delete
+      }, event.messageID);
     });
 
     writer.on("error", (err) => {
-      console.error("Write error:", err);
-      api.sendMessage("❌ Video save error.", event.threadID);
+      console.error("Save error:", err);
+      api.sendMessage("❌ Video save failed.", event.threadID);
     });
 
   } catch (err) {
     console.error("Download error:", err.message);
-    api.sendMessage("❌ Could not download video.", event.threadID);
+    api.sendMessage("❌ Could not download the video.", event.threadID);
   }
 };
 
-module.exports.run = async function () {};
+module.exports.run = async () => {};
