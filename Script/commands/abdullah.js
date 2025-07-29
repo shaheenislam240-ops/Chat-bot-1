@@ -1,9 +1,8 @@
-const axios = require("axios");
 const fs = require("fs");
 const request = require("request");
 const path = require("path");
 
-const link = [
+const videoLinks = [
   "https://i.imgur.com/8tJ70qr.mp4"
 ];
 
@@ -11,39 +10,36 @@ module.exports.config = {
   name: "abdullah",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "rX",
-  description: "auto reply to salam",
+  credits: "rX Abdullah",
+  description: "Auto reply to 'abdullah' with video",
   commandCategory: "noprefix",
   usages: "abdullah",
   cooldowns: 5,
   dependencies: {
     "request": "",
-    "fs-extra": "",
-    "axios": ""
+    "fs-extra": ""
   }
 };
 
-module.exports.handleEvent = async ({ api, event }) => {
-  const content = event.body || '';
-  const body = content.toLowerCase().trim();
+module.exports.handleEvent = async function ({ api, event }) {
+  const message = event.body?.toLowerCase().trim();
+  if (!message || !message.includes("abdullah")) return;
 
-  if (!body.includes("abdullah")) return;
+  const msg = 
+    "╭─────────────⭑─────────────╮\n" +
+    "   𝙎𝙝𝙚 𝙞𝙨 𝙧𝙭 ✨\n" +
+    "   𝙏𝙖𝙠𝙚 𝙨𝙤𝙗𝙖𝙞 𝘼𝙗𝙙𝙪𝙡𝙡𝙖𝙝 𝙣𝙖𝙢𝙚 𝙖 𝙘𝙝𝙞𝙣𝙚 😎\n" +
+    "╰─────────────⭑─────────────╯";
 
-  const messages = [
-    "╭•┄┅════❁🌺❁════┅┄•╮\n\n🎀 𝙎𝙝𝙚 𝙞𝙨 𝙧𝙓\n\n╰•┄┅════❁🌺❁════┅┄•╯",
-    "╭•┄┅════❁🌺❁════┅┄•╮\n\n𝙏𝙖𝙠𝙚 𝙨𝙤𝙗𝙖𝙞 𝘼𝙗𝙙𝙪𝙡𝙡𝙖𝙝 𝙣𝙖𝙢𝙚 𝙖 𝙘𝙝𝙞𝙣𝙚\n\n╰•┄┅════❁🌺❁════┅┄•╯"
-  ];
-  const messageText = messages[Math.floor(Math.random() * messages.length)];
-  const videoUrl = link[Math.floor(Math.random() * link.length)];
+  const videoUrl = videoLinks[Math.floor(Math.random() * videoLinks.length)];
+  const filePath = path.join(__dirname, "cache", `${event.senderID}_abdullah.mp4`);
 
-  const filePath = path.join(__dirname, "/cache", `${event.senderID}_abdullah.mp4`);
   const file = fs.createWriteStream(filePath);
-
   request(videoUrl)
     .pipe(file)
     .on("finish", () => {
       api.sendMessage({
-        body: messageText,
+        body: msg,
         attachment: fs.createReadStream(filePath)
       }, event.threadID, () => {
         fs.unlinkSync(filePath);
@@ -54,12 +50,6 @@ module.exports.handleEvent = async ({ api, event }) => {
     });
 };
 
-module.exports.run = async ({ api, event, Threads, getText }) => {
-  const { threadID, messageID } = event;
-  let data = (await Threads.getData(threadID)).data;
-  if (typeof data["abdullah"] === "undefined" || data["abdullah"]) data["abdullah"] = false;
-  else data["abdullah"] = true;
-  await Threads.setData(threadID, { data });
-  global.data.threadData.set(threadID, data);
-  api.sendMessage(`${(data["abdullah"]) ? getText("off") : getText("on")} ${getText("successText")}`, threadID, messageID);
+module.exports.run = async function () {
+  // Nothing here, because this module uses noprefix trigger
 };
