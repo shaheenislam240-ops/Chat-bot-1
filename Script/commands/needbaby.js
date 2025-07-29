@@ -32,7 +32,7 @@ module.exports.config = {
  description: "সিঙ্গেলদের শেষ ভরসার ফাইল",
  usePrefix: false,
  commandCategory: "fun",
- usages: "/need baby",
+ usages: "need baby",
  cooldowns: 20,
 };
 
