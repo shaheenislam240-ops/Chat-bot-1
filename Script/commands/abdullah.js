@@ -1,26 +1,23 @@
-const axios = require("axios");
 const fs = require("fs");
-const path = require("path");
+const axios = require("axios");
 
 module.exports.config = {
   name: "abdullah",
-  version: "1.0.2",
+  version: "1.0.0",
   hasPermssion: 0,
-  credits: "rX Abdullah",
-  description: "Send stylish message + Imgur video if someone says 'abdullah'",
-  commandCategory: "media",
-  usages: "noprefix",
-  cooldowns: 3
+  credits: "rx Abdullah",
+  description: "abdullah keyword এ ভিডিও পাঠাবে",
+  commandCategory: "noprefix",
+  usages: "abdullah",
+  cooldowns: 5
 };
 
-module.exports.handleEvent = async function ({ api, event }) {
-  const message = event.body?.toLowerCase();
-  if (!message || !message.includes("abdullah")) return;
+module.exports.handleEvent = async ({ api, event }) => {
+  const content = event.body ? event.body.toLowerCase() : "";
+  if(content.includes("abdullah")) {
+    const videoURL = "https://i.imgur.com/8tJ70qr.mp4";
 
-  const videoUrl = "https://i.imgur.com/8tJ70qr.mp4";
-  const filePath = path.join(__dirname, "cache", "abdullah.mp4");
-
-  const styledText = `★彡🌙⛧∘₊˚⋆ 𝑨𝑩𝑫𝑼𝑳𝑳𝑨𝐇 𝑴𝑶𝑫𝑬 ∘₊˚⋆⛧🌙彡★
+    const title = `★彡🌙⛧∘₊˚⋆ 𝑨𝑩𝑫𝑼𝑳𝑳𝐀𝐇 𝑴𝑶𝑫𝑬 ∘₊˚⋆⛧🌙彡★
 
 ⚡ ᴘᴏᴡᴇʀ ʟᴇᴠᴇʟ: 9999%
 
@@ -30,38 +27,37 @@ module.exports.handleEvent = async function ({ api, event }) {
 
 ༺🌙 𝐑𝐗 𝐀𝐁𝐃𝐔𝐋𝐋𝐀𝐇 𝐁𝐎𝐒𝐒 𝐎𝐅 𝐁𝐎𝐒𝐒𝐄𝐒 🌙༻`;
 
-  try {
-    const response = await axios({
-      method: "GET",
-      url: videoUrl,
-      responseType: "stream",
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-        "Referer": "https://imgur.com/"
+    // ফেসবুক বট API তে ভিডিও পাঠানোর জন্য direct লিংক অনেক সময় কাজ করে না,
+    // তাই ভিডিও ডাউনলোড করে লোকালি ফাইল পাঠানো সবচেয়ে safe
+
+    const pathFile = __dirname + "/cache/abdullah.mp4";
+
+    try {
+      // প্রথমে ভিডিও ডাউনলোড করবো যদি না থাকে
+      if(!fs.existsSync(pathFile)) {
+        const response = await axios({
+          method: "GET",
+          url: videoURL,
+          responseType: "stream"
+        });
+        await new Promise((resolve, reject) => {
+          const writer = fs.createWriteStream(pathFile);
+          response.data.pipe(writer);
+          writer.on("finish", resolve);
+          writer.on("error", reject);
+        });
       }
-    });
 
-    const writer = fs.createWriteStream(filePath);
-    response.data.pipe(writer);
-
-    writer.on("finish", () => {
+      // ভিডিও ও টেক্সট মেসেজ পাঠাও
       api.sendMessage({
-        body: styledText,
-        attachment: fs.createReadStream(filePath)
-      }, event.threadID, () => {
-        fs.unlinkSync(filePath); // auto delete
-      }, event.messageID);
-    });
+        body: title,
+        attachment: fs.createReadStream(pathFile)
+      }, event.threadID, () => fs.unlinkSync(pathFile), event.messageID);
 
-    writer.on("error", (err) => {
-      console.error("Save error:", err);
-      api.sendMessage("❌ Video save failed.", event.threadID);
-    });
-
-  } catch (err) {
-    console.error("Download error:", err.message);
-    api.sendMessage("❌ Could not download the video.", event.threadID);
+    } catch (err) {
+      console.error(err);
+      api.sendMessage("ভিডিও পাঠাতে সমস্যা হয়েছে!", event.threadID);
+    }
   }
 };
 
