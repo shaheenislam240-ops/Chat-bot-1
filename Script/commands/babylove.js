@@ -44,6 +44,18 @@ const triggers = [
     audioUrl: "https://files.catbox.moe/hqw3my.mp3",
     reply: "🧃🐣",
     fileName: "iloveyou.mp3"
+  },
+  {
+    keywords: ["ukhe", "voice"],
+    audioUrl: "https://files.catbox.moe/07txpg.mp3",
+    reply: "🎀  fuk ur ukhe",
+    fileName: "ukhe.mp3"
+  },
+  {
+    keywords: ["gf", "jan", "koliza", "kolija", "ogo", "bow"],
+    audioUrl: "https://files.catbox.moe/64m0yq.mp3",
+    reply: "Oow 🫡🎀",
+    fileName: "gfkoliza.mp3"
   }
 ];
 
