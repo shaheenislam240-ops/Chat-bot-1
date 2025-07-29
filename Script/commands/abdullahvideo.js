@@ -1,21 +1,20 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 const axios = require("axios");
 const path = require("path");
 
 module.exports.config = {
   name: "abdullahvideo",
-  version: "1.2.0",
+  version: "2.0.0",
   hasPermssion: 0,
   credits: "rX Abdullah + Maria",
-  description: "Send random video if 'abdullah' is mentioned (no repeat)",
+  description: "Send 1 of 2 random videos when 'abdullah' is mentioned",
   commandCategory: "auto",
   usages: "",
   cooldowns: 0,
   prefix: false
 };
 
-// ✅ ভিডিও তালিকা
-const videoList = [
+const videos = [
   {
     url: "https://files.catbox.moe/206yiy.mp4",
     title: "╭•┄┅════❁🌺❁════┅┄•╮\n   🥺 rX Abdullah... 💔\n╰•┄┅════❁🌺❁════┅┄•╯"
@@ -26,50 +25,46 @@ const videoList = [
   }
 ];
 
-// ✅ প্রতিটা থ্রেডে কোন ভিডিওগুলো পাঠানো হয়েছে সেটা ট্র্যাক করবে
-const sentTracker = {};
+const sentVideos = {};
 
-module.exports.handleEvent = async function ({ api, event }) {
-  const { threadID, messageID, body } = event;
-  if (!body || !body.toLowerCase().includes("abdullah")) return;
+module.exports.handleEvent = async ({ api, event }) => {
+  const { body, threadID, messageID } = event;
+  if (!body) return;
 
-  // Initialize tracking
-  if (!sentTracker[threadID]) sentTracker[threadID] = [];
+  const match = body.toLowerCase().includes("abdullah");
+  if (!match) return;
 
-  const alreadySent = sentTracker[threadID];
-  const remainingVideos = videoList.filter((_, i) => !alreadySent.includes(i));
+  if (!sentVideos[threadID]) sentVideos[threadID] = [];
 
-  // সব ভিডিও পাঠানো হয়ে গেলে আবার শুরু
-  if (remainingVideos.length === 0) {
-    sentTracker[threadID] = [];
-    remainingVideos.push(...videoList);
+  const sent = sentVideos[threadID];
+  const remaining = videos.filter((_, i) => !sent.includes(i));
+
+  if (remaining.length === 0) {
+    sentVideos[threadID] = [];
+    remaining.push(...videos);
   }
 
-  // র‍্যান্ডমলি বাছাই
-  const randomIndex = Math.floor(Math.random() * remainingVideos.length);
-  const chosenVideo = remainingVideos[randomIndex];
-  const actualIndex = videoList.indexOf(chosenVideo);
-  sentTracker[threadID].push(actualIndex);
-
-  // ভিডিও পাঠাও
-  await sendVideo(api, threadID, messageID, chosenVideo, actualIndex);
-};
-
-async function sendVideo(api, threadID, replyTo, video, index) {
-  const fileName = `abdullah_${index}.mp4`;
-  const filePath = path.join(__dirname, fileName);
+  const random = remaining[Math.floor(Math.random() * remaining.length)];
+  const actualIndex = videos.indexOf(random);
+  sentVideos[threadID].push(actualIndex);
 
   try {
-    const res = await axios.get(video.url, { responseType: "arraybuffer" });
+    const res = await axios.get(random.url, { responseType: "arraybuffer" });
+    const filePath = path.join(__dirname, `temp_abdullah_${Date.now()}.mp4`);
     fs.writeFileSync(filePath, res.data);
 
-    api.sendMessage({
-      body: video.title,
-      attachment: fs.createReadStream(filePath)
-    }, threadID, () => fs.unlinkSync(filePath), replyTo);
+    api.sendMessage(
+      {
+        body: random.title,
+        attachment: fs.createReadStream(filePath)
+      },
+      threadID,
+      () => fs.unlinkSync(filePath),
+      messageID
+    );
   } catch (err) {
-    console.error("❌ Error sending video:", err.message);
+    console.log("❌ Video send error:", err);
   }
-}
+};
 
 module.exports.run = () => {};
