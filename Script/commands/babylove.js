@@ -48,11 +48,11 @@ const triggers = [
   {
     keywords: ["ukhe", "voice"],
     audioUrl: "https://files.catbox.moe/07txpg.mp3",
-    reply: "🎀  fuk ur ukhe",
+    reply: "🎀  fuk u ukhe",
     fileName: "ukhe.mp3"
   },
   {
-    keywords: ["gf", "jan", "koliza", "kolija", "ogo", "bow"],
+    keywords: ["gf","bow"],
     audioUrl: "https://files.catbox.moe/64m0yq.mp3",
     reply: "Oow 🫡🎀",
     fileName: "gfkoliza.mp3"
