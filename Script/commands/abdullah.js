@@ -1,69 +1,65 @@
 const axios = require("axios");
 const fs = require("fs");
 const request = require("request");
+const path = require("path");
 
 const link = [
- "https://i.imgur.com/8tJ70qr.mp4",
-
+  "https://i.imgur.com/8tJ70qr.mp4"
 ];
 
 module.exports.config = {
- name: "abdullah",
- version: "1.0.0",
- hasPermssion: 0,
- credits: "rX",
- description: "auto reply to salam",
- commandCategory: "noprefix",
- usages: "abdullah",
- cooldowns: 5,
- dependencies: {
- "request":"",
- "fs-extra":"",
- "axios":""
- }
+  name: "abdullah",
+  version: "1.0.0",
+  hasPermssion: 0,
+  credits: "rX",
+  description: "auto reply to salam",
+  commandCategory: "noprefix",
+  usages: "abdullah",
+  cooldowns: 5,
+  dependencies: {
+    "request": "",
+    "fs-extra": "",
+    "axios": ""
+  }
 };
 
-module.exports.handleEvent = async ({ api, event, Threads }) => {
- const content = event.body ? event.body : '';
- const body = content.toLowerCase();
- if (body.startsWith("abdullah")) {
- const rahad = [
- "╭•┄┅════❁🌺❁════┅┄•╮\n \n আমি বলবো কেমন করে আমার শরিলের লোম দারিয়ে যায়-!!🥺\n\n╰•┄┅════❁🌺❁════┅┄•╯",
- "╭•┄┅════❁🌺❁════┅┄•╮\n\nআমি বলবো কেমন করে আমার শরিলের লোম দারিয়ে যায়-!!🥺\n\n╰•┄┅════❁🌺❁════┅┄•╯"
+module.exports.handleEvent = async ({ api, event }) => {
+  const content = event.body || '';
+  const body = content.toLowerCase().trim();
 
- ];
- const rahad2 = rahad[Math.floor(Math.random() * rahad.length)];
+  if (!body.includes("abdullah")) return;
 
- const callback = () => api.sendMessage({
- body: `${rahad2}`,
- attachment: fs.createReadStream(__dirname + "/cache/2024.mp4")
- }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/2024.mp4"), event.messageID);
+  const messages = [
+    "╭•┄┅════❁🌺❁════┅┄•╮\n\n🎀 𝙎𝙝𝙚 𝙞𝙨 𝙧𝙓\n\n╰•┄┅════❁🌺❁════┅┄•╯",
+    "╭•┄┅════❁🌺❁════┅┄•╮\n\n𝙏𝙖𝙠𝙚 𝙨𝙤𝙗𝙖𝙞 𝘼𝙗𝙙𝙪𝙡𝙡𝙖𝙝 𝙣𝙖𝙢𝙚 𝙖 𝙘𝙝𝙞𝙣𝙚\n\n╰•┄┅════❁🌺❁════┅┄•╯"
+  ];
+  const messageText = messages[Math.floor(Math.random() * messages.length)];
+  const videoUrl = link[Math.floor(Math.random() * link.length)];
 
- const requestStream = request(encodeURI(link[Math.floor(Math.random() * link.length)]));
- requestStream.pipe(fs.createWriteStream(__dirname + "/cache/2024.mp4")).on("close", () => callback());
- return requestStream;
- }
-};
+  const filePath = path.join(__dirname, "/cache", `${event.senderID}_abdullah.mp4`);
+  const file = fs.createWriteStream(filePath);
 
-module.exports.languages = {
- "vi": {
- "on": "Dùng sai cách rồi lêu lêu",
- "off": "sv ngu, đã bão dùng sai cách",
- "successText": `🧠`,
- },
- "en": {
- "on": "on",
- "off": "off",
- "successText": "success!",
- }
+  request(videoUrl)
+    .pipe(file)
+    .on("finish", () => {
+      api.sendMessage({
+        body: messageText,
+        attachment: fs.createReadStream(filePath)
+      }, event.threadID, () => {
+        fs.unlinkSync(filePath);
+      }, event.messageID);
+    })
+    .on("error", (err) => {
+      console.error("Video download error:", err);
+    });
 };
 
 module.exports.run = async ({ api, event, Threads, getText }) => {
- const { threadID, messageID } = event;
- let data = (await Threads.getData(threadID)).data;
- if (typeof data["abdullah"] === "undefined" || data["abdullah"]) data["abdullah"] = false;
- else data["abdullah"] = true;
- await Threads.setData(threadID, { data });
- global.data.threadData.set(threadID, data);
- api.sendMessage(`${(data["abdullah"]) ? getText("off") : getText("on")} ${getText("successText")}`, threadID, messageID);
+  const { threadID, messageID } = event;
+  let data = (await Threads.getData(threadID)).data;
+  if (typeof data["abdullah"] === "undefined" || data["abdullah"]) data["abdullah"] = false;
+  else data["abdullah"] = true;
+  await Threads.setData(threadID, { data });
+  global.data.threadData.set(threadID, data);
+  api.sendMessage(`${(data["abdullah"]) ? getText("off") : getText("on")} ${getText("successText")}`, threadID, messageID);
 };
