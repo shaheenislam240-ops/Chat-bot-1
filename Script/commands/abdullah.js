@@ -1,55 +1,61 @@
+const axios = require("axios");
 const fs = require("fs");
-const request = require("request");
 const path = require("path");
-
-const videoLinks = [
-  "https://i.imgur.com/8tJ70qr.mp4"
-];
 
 module.exports.config = {
   name: "abdullah",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Auto reply to 'abdullah' with video",
-  commandCategory: "noprefix",
-  usages: "abdullah",
-  cooldowns: 5,
-  dependencies: {
-    "request": "",
-    "fs-extra": ""
-  }
+  description: "Sends stylish message + Imgur video when 'abdullah' is mentioned",
+  commandCategory: "media",
+  usages: "noprefix",
+  cooldowns: 3
 };
 
 module.exports.handleEvent = async function ({ api, event }) {
-  const message = event.body?.toLowerCase().trim();
+  const message = event.body?.toLowerCase();
   if (!message || !message.includes("abdullah")) return;
 
-  const msg = 
-    "╭─────────────⭑─────────────╮\n" +
-    "   𝙎𝙝𝙚 𝙞𝙨 𝙧𝙭 ✨\n" +
-    "   𝙏𝙖𝙠𝙚 𝙨𝙤𝙗𝙖𝙞 𝘼𝙗𝙙𝙪𝙡𝙡𝙖𝙝 𝙣𝙖𝙢𝙚 𝙖 𝙘𝙝𝙞𝙣𝙚 😎\n" +
-    "╰─────────────⭑─────────────╯";
+  const videoUrl = "https://i.imgur.com/8tJ70qr.mp4";
+  const videoPath = path.join(__dirname, "cache", "abdullah_video.mp4");
 
-  const videoUrl = videoLinks[Math.floor(Math.random() * videoLinks.length)];
-  const filePath = path.join(__dirname, "cache", `${event.senderID}_abdullah.mp4`);
+  const styledText = `★彡🌙⛧∘₊˚⋆ 𝑨𝑩𝑫𝑼𝑳𝑳𝑨𝐇 𝑴𝑶𝑫𝑬 ∘₊˚⋆⛧🌙彡★
 
-  const file = fs.createWriteStream(filePath);
-  request(videoUrl)
-    .pipe(file)
-    .on("finish", () => {
-      api.sendMessage({
-        body: msg,
-        attachment: fs.createReadStream(filePath)
-      }, event.threadID, () => {
-        fs.unlinkSync(filePath);
-      }, event.messageID);
-    })
-    .on("error", (err) => {
-      console.error("Video download error:", err);
+⚡ ᴘᴏᴡᴇʀ ʟᴇᴠᴇʟ: 9999%
+
+｡･ﾟﾟ･　★　･ﾟﾟ･｡
+🌟 Sᴜᴘᴇʀ Sᴀɪʏᴀɴ Mᴏᴅᴇ Aᴄᴛɪᴠᴀᴛᴇᴅ 🌟
+｡･ﾟﾟ･　★　･ﾟﾟ･｡
+
+༺🌙 𝐑𝐗 𝐀𝐁𝐃𝐔𝐋𝐋𝐀𝐇 𝐁𝐎𝐒𝐒 𝐎𝐅 𝐁𝐎𝐒𝐒𝐄𝐒 🌙༻`;
+
+  try {
+    const response = await axios({
+      method: "GET",
+      url: videoUrl,
+      responseType: "stream"
     });
+
+    const writer = fs.createWriteStream(videoPath);
+    response.data.pipe(writer);
+
+    writer.on("finish", () => {
+      api.sendMessage({
+        body: styledText,
+        attachment: fs.createReadStream(videoPath)
+      }, event.threadID, () => fs.unlinkSync(videoPath), event.messageID);
+    });
+
+    writer.on("error", (err) => {
+      console.error("Write error:", err);
+      api.sendMessage("❌ Video save error.", event.threadID);
+    });
+
+  } catch (err) {
+    console.error("Download error:", err.message);
+    api.sendMessage("❌ Could not download video.", event.threadID);
+  }
 };
 
-module.exports.run = async function () {
-  // Nothing here, because this module uses noprefix trigger
-};
+module.exports.run = async function () {};
