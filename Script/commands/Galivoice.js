@@ -16,7 +16,7 @@ module.exports.config = {
 
 const trigger = {
   keywords: ["khanki", "magi", "mgi", "khanki"],
-  audioUrl: "https://n.uguu.se/HxrDYiek.mp3",
+  audioUrl: "n.uguu.se/HhLGajXw.mp3",
   reply: "😡 Ei rokom kotha bhalo lage na!",
   fileName: "gali_voice.mp3"
 };
