@@ -26,6 +26,12 @@ const imageTriggers = [
     imageUrl: "https://i.postimg.cc/Vs26JVMf/e052f3e1f21ab2d1c07312c720eda6ae.jpg",
     reply: "🌙 boka nki 😴",
     fileName: "gumkorefela.jpg"
+  },
+  {
+    keywords: ["maria pik", "maria pik daw"],
+    imageUrl: "https://i.postimg.cc/qMwr5nh6/IMG-6381.jpg",
+    reply: "🎀🧃",
+    fileName: "maria.jpg"
   }
 ];
 
