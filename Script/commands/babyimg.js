@@ -32,6 +32,12 @@ const imageTriggers = [
     imageUrl: "https://i.postimg.cc/qMwr5nh6/IMG-6381.jpg",
     reply: "🎀🧃",
     fileName: "maria.jpg"
+  },
+  {
+    keywords: ["sala", "bolod", "bokaxhuda", "hol pagol"],
+    imageUrl: "https://i.postimg.cc/j5N1pWc7/81e81232266d1c0220e6f4cbf7214bea.jpg",
+    reply: "",
+    fileName: "bokaxhuda.jpg"
   }
 ];
 
