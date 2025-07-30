@@ -64,7 +64,8 @@ const deepSongs = [
   { url: "https://files.catbox.moe/v4i4uc.mp3", title: "🎶 Ekhane ami bolchi kmn" },
   { url: "https://files.catbox.moe/tbdd6q.mp3", title: "🎧kmn Hoise" },
   { url: "https://files.catbox.moe/5m6t42.mp3", title: "🔥 Created by rX" },
-  { url: "https://files.catbox.moe/ag634t.mp3", title: "💥 Created by maria" }
+  { url: "https://files.catbox.moe/ag634t.mp3", title: "💥 Created by maria" },
+  { url: "https://files.catbox.moe/vw58fi.mp3", title: "🎀 ukhe" }
 ];
 
 const songProgress = {};
@@ -106,7 +107,7 @@ module.exports.handleEvent = async function({ api, event }) {
   }
 
   // Handle song trigger
-  if (msg.includes("ekta gan bolo")) {
+  if (msg.includes("ekta gan bolo", "gan bolo")) {
     const randomIndex = Math.floor(Math.random() * deepSongs.length);
     await sendSong(api, threadID, randomIndex, messageID);
     return;
