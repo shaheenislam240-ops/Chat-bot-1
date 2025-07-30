@@ -1,5 +1,5 @@
 module.exports.config = {
-  name: "pair",
+  name: "pair3",
   version: "1.0.1",
   hasPermssion: 0,
   credits: "rX",
@@ -19,8 +19,8 @@ module.exports.onLoad = async () => {
   const { downloadFile } = global.utils;
   const dirMaterial = __dirname + `/cache/canvas/`;
   const path = resolve(__dirname, 'cache/canvas', 'pairing.png');
-  if (!existsSync(dirMaterial + "canvas")) mkdirSync(dirMaterial, { recursive: true });
-  if (!existsSync(path)) await downloadFile("https://i.postimg.cc/Jn1MpmF6/r07qxo-R-Download.jpg", path);
+  if (!existsSync(dirMaterial)) mkdirSync(dirMaterial, { recursive: true });
+  if (!existsSync(path)) await downloadFile("https://i.postimg.cc/TPKqsZ0L/r07qxo-R-Download.jpg", path);
 };
 
 async function makeImage({ one, two }) {
@@ -46,8 +46,8 @@ async function makeImage({ one, two }) {
 
   const avatarSize = 220;
   pairing_img
-    .composite(circleOne.resize(avatarSize, avatarSize), 55, 60)      // one = sender (left)
-    .composite(circleTwo.resize(avatarSize, avatarSize), 1070, 60);   // two = partner (right)
+    .composite(circleOne.resize(avatarSize, avatarSize), 250, 110)     // left
+    .composite(circleTwo.resize(avatarSize, avatarSize), 920, 110);    // right
 
   let raw = await pairing_img.getBufferAsync("image/png");
 
@@ -70,7 +70,7 @@ module.exports.run = async function ({ api, event }) {
   const fs = require("fs-extra");
   const { threadID, messageID, senderID } = event;
 
-  const percentages = ['21%', '67%', '19%', '37%', '17%', '96%', '52%', '62%', '76%', '83%', '100%', '99%', '0%', '48%'];
+  const percentages = ['21%', '67%', '19%', '37%', '17%', '96%', '52%', '62%', '76%', '83%', '100%', '99%', '0%', '48%', '71%', '85%', '43%'];
   const matchRate = percentages[Math.floor(Math.random() * percentages.length)];
 
   let senderInfo = await api.getUserInfo(senderID);
@@ -87,10 +87,15 @@ module.exports.run = async function ({ api, event }) {
     { id: partnerID, tag: partnerName }
   ];
 
-  // sender = one (left), partner = two (right)
   return makeImage({ one: senderID, two: partnerID }).then(path => {
+    const titleMsg = `🥰 Successful pairing\n` +
+                     `• ${senderName} 🎀\n` +
+                     `• ${partnerName} 🎀\n` +
+                     `💌 Wish you two hundred years of happiness ❤️❤️\n\n` +
+                     `Love percentage: ${matchRate} 💙`;
+
     api.sendMessage({
-      body: `🥰 Successful Pairing!\n💌 Wishing you two a lifetime of unexpected happiness – even with a ${matchRate} match!\n💕 Compatibility Score: ${matchRate}\nUnlikely but Unstoppable: [${senderName} + ${partnerName}]👨‍❤️‍👨`,
+      body: titleMsg,
       mentions,
       attachment: fs.createReadStream(path)
     }, threadID, () => fs.unlinkSync(path), messageID);
