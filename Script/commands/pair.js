@@ -1,103 +1,107 @@
 module.exports.config = {
- name: "pair",
- version: "1.0.1",
- hasPermssion: 0,
- credits: "rX",
- description: "Pair two users with a fun compatibility score",
- commandCategory: "Picture",
- cooldowns: 5,
- dependencies: {
-   "axios": "",
-   "fs-extra": "",
-   "jimp": ""
- }
+  name: "pair",
+  version: "1.0.1",
+  hasPermssion: 0,
+  credits: "rX + Maria Update",
+  description: "Pair two users with a fun compatibility score",
+  commandCategory: "Picture",
+  cooldowns: 5,
+  dependencies: {
+    "axios": "",
+    "fs-extra": "",
+    "jimp": ""
+  }
 };
 
 module.exports.onLoad = async () => {
- const { resolve } = global.nodemodule["path"];
- const { existsSync, mkdirSync } = global.nodemodule["fs-extra"];
- const { downloadFile } = global.utils;
- const dirMaterial = __dirname + `/cache/canvas/`;
- const path = resolve(__dirname, 'cache/canvas', 'pairing.png');
- if (!existsSync(dirMaterial + "canvas")) mkdirSync(dirMaterial, { recursive: true });
- if (!existsSync(path)) await downloadFile("https://i.postimg.cc/Jn1MpmF6/r07qxo-R-Download.jpg", path);
+  const { resolve } = global.nodemodule["path"];
+  const { existsSync, mkdirSync, unlinkSync } = global.nodemodule["fs-extra"];
+  const { downloadFile } = global.utils;
+  const dirMaterial = __dirname + `/cache/canvas/`;
+  const path = resolve(__dirname, 'cache/canvas', 'pairing.png');
+
+  if (!existsSync(dirMaterial)) mkdirSync(dirMaterial, { recursive: true });
+
+  // Always download fresh frame
+  if (existsSync(path)) unlinkSync(path);
+  await downloadFile("https://i.postimg.cc/Qx8Zp3bW/zv-love-frame.jpg", path);
 };
 
 async function makeImage({ one, two }) {
- const fs = global.nodemodule["fs-extra"];
- const path = global.nodemodule["path"];
- const axios = global.nodemodule["axios"];
- const jimp = global.nodemodule["jimp"];
- const __root = path.resolve(__dirname, "cache", "canvas");
+  const fs = global.nodemodule["fs-extra"];
+  const path = global.nodemodule["path"];
+  const axios = global.nodemodule["axios"];
+  const jimp = global.nodemodule["jimp"];
+  const __root = path.resolve(__dirname, "cache", "canvas");
 
- let pairing_img = await jimp.read(__root + "/pairing.png");
- let pathImg = __root + `/pairing_${one}_${two}.png`;
- let avatarOne = __root + `/avt_${one}.png`;
- let avatarTwo = __root + `/avt_${two}.png`;
+  let pairing_img = await jimp.read(__root + "/pairing.png");
+  let pathImg = __root + `/pairing_${one}_${two}.png`;
+  let avatarOne = __root + `/avt_${one}.png`;
+  let avatarTwo = __root + `/avt_${two}.png`;
 
- let getAvatarOne = (await axios.get(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
- fs.writeFileSync(avatarOne, Buffer.from(getAvatarOne, 'utf-8'));
+  let getAvatarOne = (await axios.get(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
+  fs.writeFileSync(avatarOne, Buffer.from(getAvatarOne, 'utf-8'));
 
- let getAvatarTwo = (await axios.get(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
- fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo, 'utf-8'));
+  let getAvatarTwo = (await axios.get(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
+  fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo, 'utf-8'));
 
- let circleOne = await jimp.read(await circle(avatarOne));
- let circleTwo = await jimp.read(await circle(avatarTwo));
+  let circleOne = await jimp.read(await circle(avatarOne));
+  let circleTwo = await jimp.read(await circle(avatarTwo));
 
- // ⬇️ Adjusted position & size for new frame
- pairing_img
-   .composite(circleOne.resize(180, 180), 110, 180)  // Left pic position
-   .composite(circleTwo.resize(180, 180), 750, 180); // Right pic position
+  // Adjusted for new ZV love frame
+  pairing_img
+    .composite(circleOne.resize(130, 130), 60, 75)    // Girl left
+    .composite(circleTwo.resize(130, 130), 560, 90);  // Boy right
 
- let raw = await pairing_img.getBufferAsync("image/png");
+  let raw = await pairing_img.getBufferAsync("image/png");
 
- fs.writeFileSync(pathImg, raw);
- fs.unlinkSync(avatarOne);
- fs.unlinkSync(avatarTwo);
+  fs.writeFileSync(pathImg, raw);
+  fs.unlinkSync(avatarOne);
+  fs.unlinkSync(avatarTwo);
 
- return pathImg;
+  return pathImg;
 }
 
 async function circle(image) {
- const jimp = require("jimp");
- image = await jimp.read(image);
- image.circle();
- return await image.getBufferAsync("image/png");
+  const jimp = require("jimp");
+  image = await jimp.read(image);
+  image.circle();
+  return await image.getBufferAsync("image/png");
 }
 
 module.exports.run = async function ({ api, event }) {
- const axios = require("axios");
- const fs = require("fs-extra");
- const { threadID, messageID, senderID } = event;
+  const axios = require("axios");
+  const fs = require("fs-extra");
+  const { threadID, messageID, senderID } = event;
 
- // Match percentage
- const percentages = ['21%', '67%', '19%', '37%', '17%', '96%', '52%', '62%', '76%', '83%', '100%', '99%', '0%', '48%'];
- const matchRate = percentages[Math.floor(Math.random() * percentages.length)];
+  // Match percentage
+  const percentages = ['21%', '67%', '19%', '37%', '17%', '96%', '52%', '62%', '76%', '83%', '100%', '99%', '0%', '48%'];
+  const matchRate = percentages[Math.floor(Math.random() * percentages.length)];
 
- // Sender info
- let senderInfo = await api.getUserInfo(senderID);
- let senderName = senderInfo[senderID].name;
+  // Sender info
+  let senderInfo = await api.getUserInfo(senderID);
+  let senderName = senderInfo[senderID].name;
 
- // Random partner
- let threadInfo = await api.getThreadInfo(threadID);
- let participants = threadInfo.participantIDs.filter(id => id !== senderID);
- let partnerID = participants[Math.floor(Math.random() * participants.length)];
- let partnerInfo = await api.getUserInfo(partnerID);
- let partnerName = partnerInfo[partnerID].name;
+  // Random partner
+  let threadInfo = await api.getThreadInfo(threadID);
+  let participants = threadInfo.participantIDs.filter(id => id !== senderID);
+  let partnerID = participants[Math.floor(Math.random() * participants.length)];
+  let partnerInfo = await api.getUserInfo(partnerID);
+  let partnerName = partnerInfo[partnerID].name;
 
- // Mentions
- let mentions = [
-   { id: senderID, tag: senderName },
-   { id: partnerID, tag: partnerName }
- ];
+  // Mentions
+  let mentions = [
+    { id: senderID, tag: senderName },
+    { id: partnerID, tag: partnerName }
+  ];
 
- // Generate and send image
- let one = senderID, two = partnerID;
- return makeImage({ one, two }).then(path => {
-   api.sendMessage({
-     body: `🥰 Successful Pairing!\n💌 Wishing you two a lifetime of unexpected happiness – even with a ${matchRate} match!\n💕 Compatibility Score: ${matchRate}\nUnlikely but Unstoppable: [${senderName} + ${partnerName}]👫`,
-     mentions,
-     attachment: fs.createReadStream(path)
-   }, threadID, () => fs.unlinkSync(path), messageID);
- });
+  // Generate and send image
+  let one = senderID, two = partnerID;
+  return makeImage({ one, two }).then(path => {
+    api.sendMessage({
+      body: `💞 Pairing Complete!\n💖 ${senderName} + ${partnerName}\n🔗 Compatibility: ${matchRate}`,
+      mentions,
+      attachment: fs.createReadStream(path)
+    }, threadID, () => fs.unlinkSync(path), messageID);
+  });
 };
