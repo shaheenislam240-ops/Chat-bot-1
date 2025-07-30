@@ -107,7 +107,7 @@ module.exports.handleEvent = async function({ api, event }) {
   }
 
   // Handle song trigger
-  if (msg.includes("ekta gan bolo", "gan bolo")) {
+  if (msg.includes("ekta gan bolo")) {
     const randomIndex = Math.floor(Math.random() * deepSongs.length);
     await sendSong(api, threadID, randomIndex, messageID);
     return;
