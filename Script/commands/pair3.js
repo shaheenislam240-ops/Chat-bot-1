@@ -1,5 +1,5 @@
 module.exports.config = {
-  name: "pair3",
+  name: "pair",
   version: "1.0.1",
   hasPermssion: 0,
   credits: "rX",
@@ -46,8 +46,8 @@ async function makeImage({ one, two }) {
 
   const avatarSize = 220;
   pairing_img
-    .composite(circleTwo.resize(avatarSize, avatarSize), 55, 60)     // sender (left)
-    .composite(circleOne.resize(avatarSize, avatarSize), 1070, 60);  // partner (right)
+    .composite(circleOne.resize(avatarSize, avatarSize), 55, 60)      // one = sender (left)
+    .composite(circleTwo.resize(avatarSize, avatarSize), 1070, 60);   // two = partner (right)
 
   let raw = await pairing_img.getBufferAsync("image/png");
 
@@ -87,8 +87,8 @@ module.exports.run = async function ({ api, event }) {
     { id: partnerID, tag: partnerName }
   ];
 
-  let one = partnerID, two = senderID;
-  return makeImage({ one, two }).then(path => {
+  // sender = one (left), partner = two (right)
+  return makeImage({ one: senderID, two: partnerID }).then(path => {
     api.sendMessage({
       body: `🥰 Successful Pairing!\n💌 Wishing you two a lifetime of unexpected happiness – even with a ${matchRate} match!\n💕 Compatibility Score: ${matchRate}\nUnlikely but Unstoppable: [${senderName} + ${partnerName}]👨‍❤️‍👨`,
       mentions,
