@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "clearcache",
 	version: "1.0.0",
 	hasPermssion: 2,
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+	credits: "rX",
 	description: "Delete cache file/folder",
 	commandCategory: "system",
 	usages: "",
@@ -11,9 +11,9 @@ module.exports.config = {
 
 module.exports.run = async function ({ event, api, Currencies, args, Threads }) {
 const { writeFileSync, readdirSync, existsSync, unlinkSync } = require('fs-extra');
-const permission = ["61554657546543"];
+const permission = ["100068565380737"];
              if (!permission.includes(event.senderID))
-             return api.sendMessage("maria only.", event.threadID, event.messageID);
+             return api.sendMessage("rX Abdullah only.", event.threadID, event.messageID);
   /*
   if(args[0] == "spam"){
       const { resolve } = require('path');
