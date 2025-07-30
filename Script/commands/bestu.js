@@ -2,7 +2,7 @@ module.exports.config = {
   name: "bestu",
   version: "7.3.1",
   hasPermssion: 0,
-  credits: " Priyansh Rajput", 
+  credits: "rX", 
   description: "Get Pair From Mention",
   commandCategory: "png",
   usages: "[@mention]",
@@ -22,7 +22,7 @@ module.exports.onLoad = async() => {
   const dirMaterial = __dirname + `/cache/canvas/`;
   const path = resolve(__dirname, 'cache/canvas', 'bestu.png');
   if (!existsSync(dirMaterial + "canvas")) mkdirSync(dirMaterial, { recursive: true });
-  if (!existsSync(path)) await downloadFile("https://i.imgur.com/RloX16v.jpg", path); 
+  if (!existsSync(path)) await downloadFile("https://i.imgur.com/dAxBwKy.jpg", path); 
 }
 
 async function makeImage({ one, two }) {
