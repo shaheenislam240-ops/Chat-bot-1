@@ -2,14 +2,14 @@ module.exports.config = {
  name: "pair",
  version: "1.0.1",
  hasPermssion: 0,
- credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+ credits: "rX",
  description: "Pair two users with a fun compatibility score",
  commandCategory: "Picture",
  cooldowns: 5,
  dependencies: {
- "axios": "",
- "fs-extra": "",
- "jimp": ""
+   "axios": "",
+   "fs-extra": "",
+   "jimp": ""
  }
 };
 
@@ -20,7 +20,7 @@ module.exports.onLoad = async () => {
  const dirMaterial = __dirname + `/cache/canvas/`;
  const path = resolve(__dirname, 'cache/canvas', 'pairing.png');
  if (!existsSync(dirMaterial + "canvas")) mkdirSync(dirMaterial, { recursive: true });
- if (!existsSync(path)) await downloadFile("https://i.postimg.cc/X7R3CLmb/267378493-3075346446127866-4722502659615516429-n.png", path);
+ if (!existsSync(path)) await downloadFile("https://i.postimg.cc/Jn1MpmF6/r07qxo-R-Download.jpg", path);
 };
 
 async function makeImage({ one, two }) {
@@ -43,7 +43,11 @@ async function makeImage({ one, two }) {
 
  let circleOne = await jimp.read(await circle(avatarOne));
  let circleTwo = await jimp.read(await circle(avatarTwo));
- pairing_img.composite(circleOne.resize(150, 150), 980, 200).composite(circleTwo.resize(150, 150), 140, 200);
+
+ // ⬇️ Adjusted position & size for new frame
+ pairing_img
+   .composite(circleOne.resize(180, 180), 110, 180)  // Left pic position
+   .composite(circleTwo.resize(180, 180), 750, 180); // Right pic position
 
  let raw = await pairing_img.getBufferAsync("image/png");
 
@@ -83,17 +87,17 @@ module.exports.run = async function ({ api, event }) {
 
  // Mentions
  let mentions = [
- { id: senderID, tag: senderName },
- { id: partnerID, tag: partnerName }
+   { id: senderID, tag: senderName },
+   { id: partnerID, tag: partnerName }
  ];
 
  // Generate and send image
  let one = senderID, two = partnerID;
  return makeImage({ one, two }).then(path => {
- api.sendMessage({
- body: `🥰 Successful Pairing!\n💌 Wishing you two a lifetime of unexpected happiness – even with a ${matchRate} match!\n💕 Compatibility Score: ${matchRate}\nUnlikely but Unstoppable: [${senderName} + ${partnerName}]👨‍❤️‍👨`,
- mentions,
- attachment: fs.createReadStream(path)
- }, threadID, () => fs.unlinkSync(path), messageID);
+   api.sendMessage({
+     body: `🥰 Successful Pairing!\n💌 Wishing you two a lifetime of unexpected happiness – even with a ${matchRate} match!\n💕 Compatibility Score: ${matchRate}\nUnlikely but Unstoppable: [${senderName} + ${partnerName}]👫`,
+     mentions,
+     attachment: fs.createReadStream(path)
+   }, threadID, () => fs.unlinkSync(path), messageID);
  });
 };
