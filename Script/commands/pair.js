@@ -1,4 +1,4 @@
-module.exports.config = {
+ module.exports.config = {
  name: "pair",
  version: "1.0.1",
  hasPermssion: 0,
@@ -44,8 +44,8 @@ async function makeImage({ one, two }) {
  let circleOne = await jimp.read(await circle(avatarOne));
 let circleTwo = await jimp.read(await circle(avatarTwo));
 pairing_img
- .composite(circleOne.resize(135, 135), 75, 120)
- .composite(circleTwo.resize(135, 135), 500, 190);
+ .composite(circleOne.resize(135, 135), 250, 110)
+ .composite(circleTwo.resize(135, 135), 500, 220);
 
  let raw = await pairing_img.getBufferAsync("image/png");
 
