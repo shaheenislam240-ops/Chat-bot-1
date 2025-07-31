@@ -44,8 +44,8 @@ async function makeImage({ one, two }) {
  let circleOne = await jimp.read(await circle(avatarOne));
 let circleTwo = await jimp.read(await circle(avatarTwo));
 pairing_img
- .composite(circleOne.resize(150, 150), 157, 180)
- .composite(circleTwo.resize(150, 150), 450, 175);
+ .composite(circleOne.resize(150, 150), 140, 180)
+ .composite(circleTwo.resize(150, 150), 445, 170);
 
  let raw = await pairing_img.getBufferAsync("image/png");
 
@@ -91,11 +91,16 @@ module.exports.run = async function ({ api, event }) {
 
  // Generate and send image
  let one = senderID, two = partnerID;
- return makeImage({ one, two }).then(path => {
- api.sendMessage({
- body: `🥰 Successful Pairing!\n💌 Wishing you two a lifetime of unexpected happiness – even with a ${matchRate} match!\n💕 Compatibility Score: ${matchRate}\nUnlikely but Unstoppable: [${senderName} + ${partnerName}]👨‍❤️‍👨`,
- mentions,
- attachment: fs.createReadStream(path)
- }, threadID, () => fs.unlinkSync(path), messageID);
- });
-};
+ return makeImage({ one: senderID, two: partnerID }).then(path => {
+  const titleMsg = `🥰 Successful pairing\n` +
+                   `• ${senderName} 🎀\n` +
+                   `• ${partnerName} 🎀\n` +
+                   `💌 Wish you two hundred years of happiness ❤️❤️\n\n` +
+                   `Love percentage: ${matchRate} 💙`;
+
+  api.sendMessage({
+    body: titleMsg,
+    mentions,
+    attachment: fs.createReadStream(path)
+  }, threadID, () => fs.unlinkSync(path), messageID);
+});
