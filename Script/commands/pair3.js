@@ -1,5 +1,5 @@
 module.exports.config = {
- name: "arshi",
+ name: "pair3",
  version: "1.0.1",
  hasPermssion: 0,
  credits: "rX",
@@ -91,16 +91,11 @@ module.exports.run = async function ({ api, event }) {
 
  // Generate and send image
  let one = senderID, two = partnerID;
- return makeImage({ one: senderID, two: partnerID }).then(path => {
-  const titleMsg = `🥰 Successful pairing\n` +
-                   `• ${senderName} 🎀\n` +
-                   `• ${partnerName} 🎀\n` +
-                   `💌 Wish you two hundred years of happiness ❤️❤️\n\n` +
-                   `Love percentage: ${matchRate} 💙`;
-
-  api.sendMessage({
-    body: titleMsg,
-    mentions,
-    attachment: fs.createReadStream(path)
-  }, threadID, () => fs.unlinkSync(path), messageID);
-});
+ return makeImage({ one, two }).then(path => {
+ api.sendMessage({
+ body: `🥰 Successful Pairing!\n💌 Wishing you two a lifetime of unexpected happiness – even with a ${matchRate} match!\n💕 Compatibility Score: ${matchRate}\nUnlikely but Unstoppable: [${senderName} + ${partnerName}]👨‍❤️‍👨`,
+ mentions,
+ attachment: fs.createReadStream(path)
+ }, threadID, () => fs.unlinkSync(path), messageID);
+ });
+};
