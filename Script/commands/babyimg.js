@@ -6,7 +6,7 @@ module.exports.config = {
   name: "babyimg",
   version: "1.0.1",
   hasPermssion: 0,
-  credits: "RX Abdullah",
+  credits: "rX", //don't chnage this cradit
   description: "Send image as reply to trigger word",
   commandCategory: "auto",
   usages: "",
@@ -34,7 +34,7 @@ const imageTriggers = [
     fileName: "maria.jpg"
   },
   {
-    keywords: ["sala", "bara", "bokaxhuda", "hol pagol"],
+    keywords: ["bara", "bokaxhuda", "hol pagol"],
     imageUrl: "https://i.postimg.cc/j5N1pWc7/81e81232266d1c0220e6f4cbf7214bea.jpg",
     reply: "",
     fileName: "bokaxhuda.jpg"
