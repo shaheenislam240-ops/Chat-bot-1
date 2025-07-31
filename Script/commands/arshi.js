@@ -1,5 +1,5 @@
 module.exports.config = {
- name: "match",
+ name: "arshi",
  version: "1.0.1",
  hasPermssion: 0,
  credits: "rX",
