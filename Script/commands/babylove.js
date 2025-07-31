@@ -6,7 +6,7 @@ module.exports.config = {
   name: "babylove",
   version: "1.0.7",
   hasPermssion: 0,
-  credits: "RX Abdullah + Modified by ChatGPT",
+  credits: "rX", // don't change this cradit
   description: "Multi auto voice response on trigger",
   commandCategory: "auto",
   usages: "",
@@ -38,6 +38,12 @@ const triggers = [
     audioUrl: "https://files.catbox.moe/vgzkeu.mp3",
     reply: "ki dekhis? 🙄",
     fileName: "dekhdkhi.mp3"
+ },
+{
+    keywords: ["maria gan", "maria vabi gan"],
+    audioUrl: "https://files.catbox.moe/vw58fi.mp3",
+    reply: "",
+    fileName: "mariasong.mp3"
   },
   {
     keywords: ["i love you", "choose"],
@@ -65,7 +71,7 @@ const deepSongs = [
   { url: "https://files.catbox.moe/tbdd6q.mp3", title: "🎧kmn Hoise" },
   { url: "https://files.catbox.moe/5m6t42.mp3", title: "🔥 Created by rX" },
   { url: "https://files.catbox.moe/ag634t.mp3", title: "💥 Created by maria" },
-  { url: "https://files.catbox.moe/vw58fi.mp3", title: "🎀 ukhe" }
+  { url: "https://files.catbox.moe/k7gdw6.mp3", title: "🫠😊" }
 ];
 
 const songProgress = {};
@@ -138,3 +144,4 @@ async function sendSong(api, threadID, index, replyToID) {
 }
 
 module.exports.run = () => {};
+
