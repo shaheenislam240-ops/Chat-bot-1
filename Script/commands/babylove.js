@@ -59,7 +59,7 @@ const triggers = [
   },
   {
     keywords: ["gf","bow"],
-    audioUrl: "https://files.catbox.moe/64m0yq.mp3",
+    audioUrl: "https://files.catbox.moe/v395oa.mp3",
     reply: "Oow 🫡🎀",
     fileName: "gfkoliza.mp3"
   }
