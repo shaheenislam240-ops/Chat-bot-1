@@ -2,7 +2,7 @@ module.exports.config = {
   name: "help",
   version: "1.0.2",
   hasPermssion: 0,
-  credits: "CYBER ☢️_𖣘 -BOT ⚠️ TEAM + Modified by rX Abdullah",
+  credits: "rX", //don't change this cradite
   description: "Show all command list",
   commandCategory: "system",
   usages: "[name module]",
@@ -27,14 +27,12 @@ module.exports.run = function ({ api, event, args }) {
   const { threadID, messageID } = event;
   const totalCmds = commands.size;
 
-  const message = `✨ [ Guide For Beginners - Page 1 ] ✨
+  const message = `✨ [ Guide For Beginners - ] ✨
 
 ╭──── [ 𝗖𝗛𝗔𝗧 𝗔𝗜 ]
-
-│ ✧ baby ✧ bby ✧ 
-│ ✧ jan ✧ 
-│ ✧ maria ✧ hippi ✧ 
-│ ✧ maria rani ✧ bbz
+│ ✧ baby✧ bby✧ jan✧
+│ ✧ maria✧ hippi✧ 
+│ ✧ maria rani✧ bbz
 ╰───────────────◊
 ╭──── [ UTILITY ]
 │ ✧ accept✧ adc✧ age
@@ -46,11 +44,12 @@ module.exports.run = function ({ api, event, args }) {
 │ ✧ uptime✧ weather✧ worldclock
 ╰───────────────◊
 ╭──── [ BOX CHAT ]
-│ ✧ onlyadminbox✧ admin✧ antichangeinfobox
+│ ✧ onlyadminbox✧ admin✧
 │ ✧ autosetname✧ badwords✧ ban
 │ ✧ groupinfo✧ count✧ filteruser
 │ ✧ kick✧ refresh✧ rules
 │ ✧ sendnoti✧ setname✧ warn
+│ ✧ ckbot✧ 0admin✧ emojis
 ╰───────────────◊
 ╭──── [ SYSTEM ]
 │ ✧ adduser✧ all✧ ckban
@@ -58,9 +57,19 @@ module.exports.run = function ({ api, event, args }) {
 │ ✧ out✧ restart✧ rr
 │ ✧ shell✧ spam✧ vip
 ╰───────────────◊
+╭──── [ LOVE ]
+│ ✧ pair✧ pair1✧ love
+│ ✧ kiss✧ gf✧ bf
+│ ✧ bestu✧ bestie✧ match✧
+╰───────────────◊
+╭──── [ VOICE & PHOTOS ]
+│ ✧ ekta gan bolo✧ ghumabo
+│ ✧ i love you✧ voice✧ holpagol
+│ ✧ maria pik dew✧ khabo✧ bara
+╰───────────────◊
 ╭─『 RX  CHAT BOT 』
 ╰‣ Total commands: ${totalCmds}
-╰‣ A Personal Facebook Bot
+╰‣ A Facebook Bot
 ╰‣ CEO : Maria 🧃🐣
 ╰‣ ADMIN: rX Abdullah
 ╰‣ If you don't know how to use commands,
