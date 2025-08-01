@@ -29,7 +29,7 @@ module.exports.handleEvent = async function ({ api, event, getText }) {
   if (event.type === "message_reaction") {
     const { reaction, messageID, userID } = event;
 
-    if (reaction === "😡" && userID !== botID) {
+    if (reaction === "🐣" && userID !== botID) {
       try {
         await api.unsendMessage(messageID);
       } catch (e) {
@@ -44,7 +44,7 @@ module.exports.handleEvent = async function ({ api, event, getText }) {
 
     // Only act if replied-to message is from the bot
     if (messageReply.senderID == botID) {
-      const triggers = ["/unsent", "/uns", "😡", "sorry", "Sorry"];
+      const triggers = ["unsent", "uns", "🐣", "sorry", "rmv"];
 
       if (triggers.includes(body.trim())) {
         try {
