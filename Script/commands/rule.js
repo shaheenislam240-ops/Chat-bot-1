@@ -3,10 +3,10 @@ const path = require("path");
 
 module.exports.config = {
   name: "rules",
-  version: "2.2.0",
+  version: "2.3.0",
   hasPermssion: 0,
-  credits: "Modified by rX Abdullah",
-  description: "Show only 1 rule when 'rules' is typed (noprefix)",
+  credits: "rX Abdullah",
+  description: "Only show 1 rule when 'rules' is typed (supports multiline add)",
   commandCategory: "noprefix",
   usages: "rules / !rules add/remove/all",
   cooldowns: 5,
@@ -22,7 +22,6 @@ module.exports.onLoad = () => {
   if (!fs.existsSync(pathData)) fs.writeFileSync(pathData, "[]", "utf-8");
 };
 
-// Handle noprefix 'rules'
 module.exports.handleEvent = async ({ event, api }) => {
   const { threadID, body } = event;
 
@@ -37,7 +36,6 @@ module.exports.handleEvent = async ({ event, api }) => {
   return api.sendMessage(`📌 Group Rule:\n${lastRule}`, threadID);
 };
 
-// Handle prefix commands like !rules add/remove
 module.exports.run = async ({ event, api, args, permssion }) => {
   const { threadID, messageID } = event;
   const dataJson = JSON.parse(fs.readFileSync(pathData, "utf-8"));
@@ -48,16 +46,15 @@ module.exports.run = async ({ event, api, args, permssion }) => {
     dataJson.push(thisThread);
   }
 
-  const action = args[0];
-  const content = args.slice(1).join(" ");
+  const action = args[0]?.toLowerCase();
+  const input = event.body.substring(event.body.indexOf(action) + action.length + 1);
 
   switch (action) {
     case "add": {
       if (permssion == 0) return api.sendMessage("❌ You don't have permission to add rules.", threadID, messageID);
-      if (!content) return api.sendMessage("⚠️ Please provide the rule content.", threadID, messageID);
+      if (!input || input.length < 3) return api.sendMessage("⚠️ Please provide the rule content.", threadID, messageID);
 
-      const rulesToAdd = content.includes("\n") ? content.split("\n") : [content];
-      thisThread.listRule.push(...rulesToAdd);
+      thisThread.listRule.push(input.trim());
 
       fs.writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
       return api.sendMessage("✅ Rule added successfully!", threadID, messageID);
@@ -67,21 +64,21 @@ module.exports.run = async ({ event, api, args, permssion }) => {
     case "rm":
     case "delete": {
       if (permssion == 0) return api.sendMessage("❌ You don't have permission to remove rules.", threadID, messageID);
-      if (!content) return api.sendMessage("⚠️ Please specify the rule number or use 'all'.", threadID, messageID);
+      if (!input) return api.sendMessage("⚠️ Please specify the rule number or use 'all'.", threadID, messageID);
 
-      if (content === "all") {
+      if (input === "all") {
         thisThread.listRule = [];
         fs.writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
         return api.sendMessage("🗑️ All rules have been deleted.", threadID, messageID);
       }
 
-      const index = parseInt(content) - 1;
+      const index = parseInt(input) - 1;
       if (isNaN(index) || index < 0 || index >= thisThread.listRule.length)
         return api.sendMessage("⚠️ Invalid rule number.", threadID, messageID);
 
       thisThread.listRule.splice(index, 1);
       fs.writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
-      return api.sendMessage(`🗑️ Rule number ${content} deleted.`, threadID, messageID);
+      return api.sendMessage(`🗑️ Rule number ${input} deleted.`, threadID, messageID);
     }
 
     case "all":
@@ -99,9 +96,9 @@ module.exports.run = async ({ event, api, args, permssion }) => {
     default: {
       return api.sendMessage(
         "📘 Command Usage:\n" +
-        "• !rules add [text] — Add a new rule\n" +
+        "• !rules add [text] — Add a new (multi-line) rule\n" +
         "• !rules remove [number/all] — Remove a rule\n" +
-        "• rules — Show latest rule (noprefix)",
+        "• rules — Show the latest rule (noprefix)",
         threadID, messageID
       );
     }
