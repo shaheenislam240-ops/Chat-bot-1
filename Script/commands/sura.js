@@ -3,7 +3,7 @@ module.exports.config = {
   name: "sura",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "Islamick Chat",
+  credits: "rX",
   description: "প্রিয় মুসলিম ভাই ও বন তুমাদের জন্য সূরা নিয়ে আসলাম",
   commandCategory: "M H BD",
   usages: "sura",
@@ -19,7 +19,7 @@ module.exports.run = async({api,event,args,client,Users,Threads,__GLOBAL,Currenc
 const axios = global.nodemodule["axios"];
 const request = global.nodemodule["request"];
 const fs = global.nodemodule["fs-extra"];
-   var hi = ["•┄┅════❁🌺❁════┅┄•\n\nপ্রিয় মুসলিম |ভাই ও বন| সূরা টি শুনো তুমার প্রান জুরিয়ে যাবে \n\n ইনশাআল্লাহ ❤️🌸 \n\n 𝐌𝐮𝐬𝐥𝐢𝐦 𝐇𝐚𝐤𝐜𝐞𝐫 𝐁𝐃\n\n•┄┅════❁🌺❁════┅┄•"];
+   var hi = ["•┄┅════❁🌺❁════┅┄•\n\n𝓲 𝓵𝓸 \n\n 𝓫𝓪𝓫𝔂 ❤️🌸 \n\n 𝓻𝔁 𝓬𝓱𝓪𝓽 𝓫𝓸𝓽\n\n•┄┅════❁🌺❁════┅┄•"];
   var know = hi[Math.floor(Math.random() * hi.length)];
   var link = [
    "https://drive.google.com/uc?id=1Ml6znasS_cajYJVS8OJ19DQO6aaLzWkc",
