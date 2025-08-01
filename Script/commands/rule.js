@@ -1,86 +1,109 @@
+const fs = require("fs-extra");
+const path = require("path");
+
 module.exports.config = {
-	name: "rule",
-	version: "1.0.1",
-	hasPermssion: 0,
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
-	description: "Customize the law for each group",
-	commandCategory: "Box Chat",
-	usages: "[add/remove/all] [content/ID]",
-	cooldowns: 5,
-	dependencies: {
-        "fs-extra": "",
-        "path": ""
-    }
-}
+  name: "rules",
+  version: "2.2.0",
+  hasPermssion: 0,
+  credits: "Modified by rX Abdullah",
+  description: "Show only 1 rule when 'rules' is typed (noprefix)",
+  commandCategory: "noprefix",
+  usages: "rules / !rules add/remove/all",
+  cooldowns: 5,
+  dependencies: {
+    "fs-extra": "",
+    "path": ""
+  }
+};
+
+const pathData = path.join(__dirname, "cache", "rules.json");
 
 module.exports.onLoad = () => {
-    const { existsSync, writeFileSync } = global.nodemodule["fs-extra"];
-    const { join } = global.nodemodule["path"];
-    const pathData = join(__dirname, "cache", "rules.json");
-    if (!existsSync(pathData)) return writeFileSync(pathData, "[]", "utf-8"); 
-}
+  if (!fs.existsSync(pathData)) fs.writeFileSync(pathData, "[]", "utf-8");
+};
 
-module.exports.run = ({ event, api, args, permssion }) => {
-    const { threadID, messageID } = event;
-    const { readFileSync, writeFileSync } = global.nodemodule["fs-extra"];
-    const { join } = global.nodemodule["path"];
+// Handle noprefix 'rules'
+module.exports.handleEvent = async ({ event, api }) => {
+  const { threadID, body } = event;
 
-    const pathData = join(__dirname, "cache", "rules.json");
-    const content = (args.slice(1, args.length)).join(" ");
-    var dataJson = JSON.parse(readFileSync(pathData, "utf-8"));
-    var thisThread = dataJson.find(item => item.threadID == threadID) || { threadID, listRule: [] };
+  if (!body || body.toLowerCase() !== "rules") return;
 
-    switch (args[0]) {
-        case "add": {
-            if (permssion == 0) return api.sendMessage("[Rule] You don't have enough powers to use more rules!", threadID, messageID);
-            if (content.length == 0) return api.sendMessage("[Rule] Entering information is not left blank", threadID, messageID);
-            if (content.indexOf("\n") != -1) {
-                const contentSplit = content.split("\n");
-                for (const item of contentSplit) thisThread.listRule.push(item);
-            }
-            else {
-                thisThread.listRule.push(content);
-            }
-            writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
-            api.sendMessage('[Rule] added a new law to the team successfully!', threadID, messageID);
-            break;
-        }
-        case "list":
-        case"all": {
-            var msg = "", index = 0;
-            for (const item of thisThread.listRule) msg += `${index+=1}/ ${item}\n`;
-            if (msg.length == 0) return api.sendMessage("[Rule] Your team does not have a law list to show!", threadID, messageID);
-            api.sendMessage(`=== Group law ===\n\n${msg}`, threadID, messageID);
-            break;
-        }
-        case "rm":
-        case "remove":
-        case "delete": {
-            if (!isNaN(content) && content > 0) {
-                if (permssion == 0) return api.sendMessage("[Rule] You don't have enough powers to be able to use the Law!", threadID, messageID);
-                if (thisThread.listRule.length == 0) return api.sendMessage("[Rule] Your team does not have a law list to be able to delete!", threadID, messageID);
-                thisThread.listRule.splice(content - 1, 1);
-                api.sendMessage(`[Rule] has successfully deleted the law with something ${content}`, threadID, messageID);
-                break;
-            }
-            else if (content == "all") {
-                if (permssion == 0) return api.sendMessage("[Rule] You don't have enough powers to be able to use the Law!", threadID, messageID);
-                if (thisThread.listRule.length == 0) return api.sendMessage("[Rule] Your team does not have a law list to be able to delete!", threadID, messageID);
-                thisThread.listRule = [];
-                api.sendMessage(`[Rule] Your team does not have a law list to be able to delete!`, threadID, messageID);
-                break;
-            }
-        }
-        default: {
-            if (thisThread.listRule.length != 0) {
-                var msg = "", index = 0;
-                for (const item of thisThread.listRule) msg += `${index+=1}/ ${item}\n`;
-                return api.sendMessage(`=== Group law ===\n\n${msg} \n[Compliance with the group's law will contribute positively to your community!]`, threadID, messageID);
-            }
-            else return global.utils.throwError(this.config.name, threadID, messageID);
-        }
+  const dataJson = JSON.parse(fs.readFileSync(pathData, "utf-8"));
+  const thisThread = dataJson.find(item => item.threadID == threadID);
+  if (!thisThread || thisThread.listRule.length === 0)
+    return api.sendMessage("⚠️ This group has no rules saved yet.", threadID);
+
+  const lastRule = thisThread.listRule[thisThread.listRule.length - 1];
+  return api.sendMessage(`📌 Group Rule:\n${lastRule}`, threadID);
+};
+
+// Handle prefix commands like !rules add/remove
+module.exports.run = async ({ event, api, args, permssion }) => {
+  const { threadID, messageID } = event;
+  const dataJson = JSON.parse(fs.readFileSync(pathData, "utf-8"));
+  let thisThread = dataJson.find(item => item.threadID == threadID);
+
+  if (!thisThread) {
+    thisThread = { threadID, listRule: [] };
+    dataJson.push(thisThread);
+  }
+
+  const action = args[0];
+  const content = args.slice(1).join(" ");
+
+  switch (action) {
+    case "add": {
+      if (permssion == 0) return api.sendMessage("❌ You don't have permission to add rules.", threadID, messageID);
+      if (!content) return api.sendMessage("⚠️ Please provide the rule content.", threadID, messageID);
+
+      const rulesToAdd = content.includes("\n") ? content.split("\n") : [content];
+      thisThread.listRule.push(...rulesToAdd);
+
+      fs.writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
+      return api.sendMessage("✅ Rule added successfully!", threadID, messageID);
     }
 
-    if (!dataJson.some(item => item.threadID == threadID)) dataJson.push(thisThread);
-    return writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
-}
+    case "remove":
+    case "rm":
+    case "delete": {
+      if (permssion == 0) return api.sendMessage("❌ You don't have permission to remove rules.", threadID, messageID);
+      if (!content) return api.sendMessage("⚠️ Please specify the rule number or use 'all'.", threadID, messageID);
+
+      if (content === "all") {
+        thisThread.listRule = [];
+        fs.writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
+        return api.sendMessage("🗑️ All rules have been deleted.", threadID, messageID);
+      }
+
+      const index = parseInt(content) - 1;
+      if (isNaN(index) || index < 0 || index >= thisThread.listRule.length)
+        return api.sendMessage("⚠️ Invalid rule number.", threadID, messageID);
+
+      thisThread.listRule.splice(index, 1);
+      fs.writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
+      return api.sendMessage(`🗑️ Rule number ${content} deleted.`, threadID, messageID);
+    }
+
+    case "all":
+    case "list": {
+      if (!thisThread.listRule.length) return api.sendMessage("⚠️ No rules to show.", threadID, messageID);
+
+      let msg = "";
+      thisThread.listRule.forEach((item, i) => {
+        msg += `${i + 1}/ ${item}\n`;
+      });
+
+      return api.sendMessage(`📜 All Group Rules:\n\n${msg}`, threadID, messageID);
+    }
+
+    default: {
+      return api.sendMessage(
+        "📘 Command Usage:\n" +
+        "• !rules add [text] — Add a new rule\n" +
+        "• !rules remove [number/all] — Remove a rule\n" +
+        "• rules — Show latest rule (noprefix)",
+        threadID, messageID
+      );
+    }
+  }
+};
