@@ -34,7 +34,7 @@ const triggers = [
     fileName: "explain.mp3"
   },
   {
-    keywords: ["dekho", "🙄"],
+    keywords: ["dekho", "🙄🙄"],
     audioUrl: "https://files.catbox.moe/vgzkeu.mp3",
     reply: "ki dekhis? 🙄",
     fileName: "dekhdkhi.mp3"
