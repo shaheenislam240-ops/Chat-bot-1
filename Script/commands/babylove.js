@@ -10,7 +10,7 @@ module.exports.config = {
   description: "Multi auto voice response on trigger",
   commandCategory: "auto",
   usages: "",
-  cooldowns: 5,
+  cooldowns: 0,
   prefix: false
 };
 
