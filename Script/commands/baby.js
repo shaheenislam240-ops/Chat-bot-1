@@ -1,5 +1,5 @@
 const axios = require("axios");
-const simsim = "https://rx-simisimi-api.onrender.com";
+const simsim = "https://rx-simisimi-api-9key.onrender.com";
 
 module.exports.config = {
   name: "baby",
