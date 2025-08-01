@@ -34,12 +34,6 @@ const triggers = [
     fileName: "explain.mp3"
   },
   {
-    keywords: ["dekho", "🙄🙄"],
-    audioUrl: "https://files.catbox.moe/vgzkeu.mp3",
-    reply: "ki dekhis? 🙄",
-    fileName: "dekhdkhi.mp3"
- },
-{
     keywords: ["maria gan", "maria vabi gan"],
     audioUrl: "https://files.catbox.moe/vw58fi.mp3",
     reply: "",
