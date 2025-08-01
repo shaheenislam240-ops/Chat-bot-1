@@ -10,7 +10,7 @@ module.exports.config = {
   description: "Send image as reply to trigger word",
   commandCategory: "auto",
   usages: "",
-  cooldowns: 5,
+  cooldowns: 0,
   prefix: false
 };
 
