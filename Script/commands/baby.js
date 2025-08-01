@@ -1,11 +1,16 @@
 const axios = require("axios");
 const simsim = "https://rx-simisimi-api-tllc.onrender.com";
 
+// 🧹 Function to remove emoji/symbols
+function cleanMessage(message) {
+  return message.replace(/[^\p{L}\p{N}\s]/gu, "").trim().toLowerCase();
+}
+
 module.exports.config = {
   name: "baby",
-  version: "1.0.5",
+  version: "1.0.6",
   hasPermssion: 0,
-  credits: "rX",
+  credits: "rX + Maria (clean fix)",
   description: "AI Chatbot with Teach & List support",
   commandCategory: "chat",
   usages: "[query]",
@@ -16,7 +21,8 @@ module.exports.config = {
 module.exports.run = async function ({ api, event, args, Users }) {
   const uid = event.senderID;
   const senderName = await Users.getNameUser(uid);
-  const query = args.join(" ").toLowerCase();
+  const rawInput = args.join(" ");
+  const query = cleanMessage(rawInput);
 
   try {
     if (args[0] === "autoteach") {
@@ -39,7 +45,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
     }
 
     if (args[0] === "msg") {
-      const trigger = query.replace("msg ", "").trim();
+      const trigger = cleanMessage(rawInput.replace("msg ", "").trim());
       if (!trigger) return api.sendMessage("❌ | Use: !baby msg [trigger]", event.threadID, event.messageID);
 
       const res = await axios.get(`${simsim}/simsimi-list?ask=${encodeURIComponent(trigger)}`);
@@ -53,32 +59,51 @@ module.exports.run = async function ({ api, event, args, Users }) {
     }
 
     if (args[0] === "teach") {
-      const parts = query.replace("teach ", "").split(" - ");
+      const parts = rawInput.replace("teach ", "").split(" - ");
       if (parts.length < 2)
         return api.sendMessage("❌ | Use: teach [Question] - [Reply]", event.threadID, event.messageID);
 
-      const [ask, ans] = parts;
-      const res = await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}&senderID=${uid}&senderName=${encodeURIComponent(senderName)}`);
+      const [askRaw, ansRaw] = parts;
+      const ask = cleanMessage(askRaw);
+      const ans = ansRaw.trim();
+
+      const res = await axios.post(`${simsim}/teach`, {
+        ask,
+        ans,
+        senderID: uid,
+        senderName
+      });
+
       return api.sendMessage(`✅ ${res.data.message}`, event.threadID, event.messageID);
     }
 
     if (args[0] === "edit") {
-      const parts = query.replace("edit ", "").split(" - ");
+      const parts = rawInput.replace("edit ", "").split(" - ");
       if (parts.length < 3)
         return api.sendMessage("❌ | Use: edit [Question] - [OldReply] - [NewReply]", event.threadID, event.messageID);
 
-      const [ask, oldR, newR] = parts;
-      const res = await axios.get(`${simsim}/edit?ask=${encodeURIComponent(ask)}&old=${encodeURIComponent(oldR)}&new=${encodeURIComponent(newR)}`);
+      const [askRaw, oldR, newR] = parts;
+      const ask = cleanMessage(askRaw);
+
+      const res = await axios.post(`${simsim}/edit`, {
+        ask,
+        old: oldR.trim(),
+        new: newR.trim()
+      });
+
       return api.sendMessage(res.data.message, event.threadID, event.messageID);
     }
 
     if (["remove", "rm"].includes(args[0])) {
-      const parts = query.replace(/^(remove|rm)\s*/, "").split(" - ");
+      const parts = rawInput.replace(/^(remove|rm)\s*/, "").split(" - ");
       if (parts.length < 2)
         return api.sendMessage("❌ | Use: remove [Question] - [Reply]", event.threadID, event.messageID);
 
-      const [ask, ans] = parts;
-      const res = await axios.get(`${simsim}/delete?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}`);
+      const [askRaw, ansRaw] = parts;
+      const ask = cleanMessage(askRaw);
+      const ans = ansRaw.trim();
+
+      const res = await axios.post(`${simsim}/delete`, { ask, ans });
       return api.sendMessage(res.data.message, event.threadID, event.messageID);
     }
 
@@ -106,7 +131,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
 
 module.exports.handleReply = async function ({ api, event, Users }) {
   const senderName = await Users.getNameUser(event.senderID);
-  const text = event.body?.toLowerCase();
+  const text = cleanMessage(event.body || "");
   if (!text) return;
 
   try {
@@ -127,7 +152,7 @@ module.exports.handleReply = async function ({ api, event, Users }) {
 };
 
 module.exports.handleEvent = async function ({ api, event, Users }) {
-  const text = event.body?.toLowerCase().trim();
+  const text = cleanMessage(event.body || "");
   if (!text) return;
 
   const senderName = await Users.getNameUser(event.senderID);
@@ -159,7 +184,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
   const matchPrefix = /^(baby|bot|jan|bbz|maria|hippi)\s+/i;
   if (matchPrefix.test(text)) {
-    const query = text.replace(matchPrefix, "").trim();
+    const query = cleanMessage(text.replace(matchPrefix, "").trim());
     if (!query) return;
 
     try {
@@ -184,11 +209,15 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
       const setting = await axios.get(`${simsim}/setting`);
       if (!setting.data.autoTeach) return;
 
-      const ask = event.messageReply.body?.toLowerCase().trim();
-      const ans = event.body?.toLowerCase().trim();
+      const ask = cleanMessage(event.messageReply.body || "");
+      const ans = cleanMessage(event.body || "");
       if (!ask || !ans || ask === ans) return;
 
-      await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}&senderName=${encodeURIComponent(senderName)}`);
+      await axios.post(`${simsim}/teach`, {
+        ask,
+        ans,
+        senderName
+      });
     } catch (e) {
       console.log("Auto teach error:", e.message);
     }
