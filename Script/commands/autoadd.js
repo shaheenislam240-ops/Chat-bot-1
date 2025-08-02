@@ -1,40 +1,61 @@
 const fs = require("fs");
 const path = __dirname + "/cache/autoadd.json";
 
+if (!fs.existsSync(path)) fs.writeFileSync(path, JSON.stringify({}));
+
 module.exports.config = {
   name: "autoadd",
-  version: "1.0.2",
+  version: "1.0.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Only bot owner can turn on/off auto-add system",
-  commandCategory: "admin",
-  usages: "!autoadd on / off",
-  cooldowns: 3
+  description: "Auto re-add user when they leave the group",
+  commandCategory: "group",
+  usages: "[on/off]",
+  cooldowns: 5
 };
 
-module.exports.run = async function({ api, event, args }) {
+module.exports.handleEvent = async function ({ api, event }) {
+  const data = JSON.parse(fs.readFileSync(path));
+  const threadID = event.threadID;
+
+  if (event.logMessageType === "log:unsubscribe" && data[threadID] === true) {
+    const leftUID = event.logMessageData?.leftParticipantFbId;
+    if (leftUID && leftUID !== api.getCurrentUserID()) {
+      try {
+        await api.addUserToGroup(leftUID, threadID);
+      } catch (err) {
+        console.log("[AutoAdd Error]:", err.message);
+      }
+    }
+  }
+};
+
+module.exports.run = async function ({ api, event, args }) {
   const threadID = event.threadID;
   const senderID = event.senderID;
 
-  // Only this UID can use the command
-  const botAdminUID = "100068565380737";
-
-  if (senderID !== botAdminUID) {
-    return api.sendMessage("❌ শুধু rX Abdullah এই কমান্ডটি ব্যবহার করতে পারবে।", threadID, event.messageID);
+  const threadInfo = await api.getThreadInfo(threadID);
+  if (!threadInfo.adminIDs.some(e => e.id === api.getCurrentUserID())) {
+    return api.sendMessage("⚠️ বট এই গ্রুপের এডমিন না, তাই AutoAdd কাজ করবে না।", threadID);
   }
 
-  if (!fs.existsSync(path)) fs.writeFileSync(path, JSON.stringify({}));
-  let data = JSON.parse(fs.readFileSync(path));
+  // Only bot admin can toggle this
+  if (senderID !== api.getCurrentUserID()) {
+    return api.sendMessage("❌ এই কমান্ড শুধু বট এডমিন দিতে পারবে।", threadID);
+  }
 
-  if (args[0] === "on") {
+  const data = JSON.parse(fs.readFileSync(path));
+  const input = args[0];
+
+  if (input === "on") {
     data[threadID] = true;
-    api.sendMessage("✅ AutoAdd সিস্টেম চালু হয়েছে। কেউ গ্রুপ ছাড়লে আবার অটো অ্যাড হবে।", threadID);
-  } else if (args[0] === "off") {
-    delete data[threadID];
-    api.sendMessage("❌ AutoAdd সিস্টেম বন্ধ করা হয়েছে।", threadID);
+    fs.writeFileSync(path, JSON.stringify(data, null, 2));
+    return api.sendMessage("✅ AutoAdd চালু হয়েছে। কেউ লিভ করলে তাকে আবার অ্যাড করা হবে।", threadID);
+  } else if (input === "off") {
+    data[threadID] = false;
+    fs.writeFileSync(path, JSON.stringify(data, null, 2));
+    return api.sendMessage("❌ AutoAdd বন্ধ করা হয়েছে।", threadID);
   } else {
-    api.sendMessage("ℹ️ ব্যবহার: !autoadd on / off", threadID);
+    return api.sendMessage("ℹ️ ব্যবহার:\n!autoadd on\n!autoadd off", threadID);
   }
-
-  fs.writeFileSync(path, JSON.stringify(data, null, 2));
 };
