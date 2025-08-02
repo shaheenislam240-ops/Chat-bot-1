@@ -39,7 +39,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
     }
 
     if (args[0] === "msg") {
-      const trigger = query.replace("msg ", "").trim();
+      const trigger = args.slice(1).join(" ").trim();
       if (!trigger) return api.sendMessage("❌ | Use: !baby msg [trigger]", event.threadID, event.messageID);
 
       const res = await axios.get(`${simsim}/simsimi-list?ask=${encodeURIComponent(trigger)}`);
@@ -47,7 +47,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
         return api.sendMessage("❌ No replies found.", event.threadID, event.messageID);
       }
 
-      const formatted = res.data.replies.map((rep, i) => `${i + 1}. ${rep}`).join("\n");
+      const formatted = res.data.replies.map((rep, i) => `➤ ${i + 1}. ${rep}`).join("\n");
       const msg = `📌 𝗧𝗿𝗶𝗴𝗴𝗲𝗿: ${trigger.toUpperCase()}\n📋 𝗧𝗼𝘁𝗮𝗹: ${res.data.total}\n━━━━━━━━━━━━━━\n${formatted}`;
       return api.sendMessage(msg, event.threadID, event.messageID);
     }
