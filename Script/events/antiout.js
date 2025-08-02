@@ -24,7 +24,7 @@ module.exports.run = async ({ event, api, Threads, Users }) => {
   if (event.author == event.logMessageData.leftParticipantFbId) {
     api.addUserToGroup(event.logMessageData.leftParticipantFbId, event.threadID, (error) => {
       if (error) {
-        api.sendMessage(`${name} কে আবার এড করা গেল না। হয়তো ব্লক করেছে বা প্রোফাইলে সমস্যা আছে।`, event.threadID);
+        api.sendMessage(`${name} Sorry rx this parsion is undifind`, event.threadID);
       } else {
         api.sendMessage(`${name} Added you back।`, event.threadID);
       }
