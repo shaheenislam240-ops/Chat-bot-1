@@ -19,6 +19,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
   const query = args.join(" ").toLowerCase();
 
   try {
+    // AUTO TEACH ON/OFF
     if (args[0] === "autoteach") {
       const mode = args[1];
       if (!["on", "off"].includes(mode)) {
@@ -29,6 +30,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(`✅ Auto teach is now ${status ? "ON 🟢" : "OFF 🔴"}`, event.threadID, event.messageID);
     }
 
+    // LIST
     if (args[0] === "list") {
       const res = await axios.get(`${simsim}/list`);
       return api.sendMessage(
@@ -38,9 +40,10 @@ module.exports.run = async function ({ api, event, args, Users }) {
       );
     }
 
+    // MSG
     if (args[0] === "msg") {
       const trigger = args.slice(1).join(" ").trim();
-      if (!trigger) return api.sendMessage("❌ | Use: !baby msg [trigger]", event.threadID, event.messageID);
+      if (!trigger) return api.sendMessage("❌ | Use: baby msg [trigger]", event.threadID, event.messageID);
 
       const res = await axios.get(`${simsim}/simsimi-list?ask=${encodeURIComponent(trigger)}`);
       if (!res.data.replies || res.data.replies.length === 0) {
@@ -52,6 +55,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(msg, event.threadID, event.messageID);
     }
 
+    // TEACH
     if (args[0] === "teach") {
       const parts = query.replace("teach ", "").split(" - ");
       if (parts.length < 2)
@@ -62,6 +66,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(`✅ ${res.data.message}`, event.threadID, event.messageID);
     }
 
+    // EDIT
     if (args[0] === "edit") {
       const parts = query.replace("edit ", "").split(" - ");
       if (parts.length < 3)
@@ -72,6 +77,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(res.data.message, event.threadID, event.messageID);
     }
 
+    // REMOVE
     if (["remove", "rm"].includes(args[0])) {
       const parts = query.replace(/^(remove|rm)\s*/, "").split(" - ");
       if (parts.length < 2)
@@ -82,6 +88,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(res.data.message, event.threadID, event.messageID);
     }
 
+    // BASIC CHAT
     if (!query) {
       const texts = ["Hey baby 💖", "Yes, I'm here 😘"];
       const reply = texts[Math.floor(Math.random() * texts.length)];
@@ -179,14 +186,18 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     }
   }
 
+  // ✅ FIXED AUTO TEACH
   if (event.type === "message_reply") {
     try {
       const setting = await axios.get(`${simsim}/setting`);
       if (!setting.data.autoTeach) return;
 
-      const ask = event.messageReply.body?.toLowerCase().trim();
-      const ans = event.body?.toLowerCase().trim();
+      const ask = event.messageReply.body?.toLowerCase()?.trim();
+      const ans = event.body?.toLowerCase()?.trim();
+
+      // Prevent self-teach, empty or duplicate
       if (!ask || !ans || ask === ans) return;
+      if (event.messageReply.senderID === global.data.botID) return;
 
       await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}&senderName=${encodeURIComponent(senderName)}`);
     } catch (e) {
