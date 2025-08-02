@@ -21,12 +21,17 @@ module.exports.run = async function ({ api, event }) {
   const replyMessage = "ki dekhis? 🙄🙄";
 
   try {
-    const response = await axios.get(audioUrl, { responseType: "stream" });
+    const response = await axios.get(audioUrl, {
+      responseType: "stream",
+      headers: {
+        "User-Agent": "Mozilla/5.0"
+      }
+    });
 
     return api.sendMessage({
       body: replyMessage,
       attachment: response.data
-    }, event.threadID, event.messageID);
+    }, event.threadID, null, event.messageID);
 
   } catch (err) {
     console.error("Audio download failed:", err.message);
