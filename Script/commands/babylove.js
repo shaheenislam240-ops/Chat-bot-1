@@ -61,11 +61,12 @@ const triggers = [
 
 const deepSongs = [
   { url: "https://files.catbox.moe/uodwqm.mp3", title: "🎵 Ei ta tmr jonno" },
-  { url: "https://files.catbox.moe/v4i4uc.mp3", title: "🎶 Ekhane ami bolchi kmn" },
+  { url: "https://files.catbox.moe/v4i4uc.mp3", title: "🎶" },
   { url: "https://files.catbox.moe/tbdd6q.mp3", title: "🎧kmn Hoise" },
   { url: "https://files.catbox.moe/5m6t42.mp3", title: "🔥 Created by rX" },
-  { url: "https://files.catbox.moe/ag634t.mp3", title: "💥 Created by maria" },
-  { url: "https://files.catbox.moe/k7gdw6.mp3", title: "🫠😊" }
+  { url: "https://files.catbox.moe/ag634t.mp3", title: "💥 ❤️‍🩹" },
+  { url: "https://files.catbox.moe/k7gdw6.mp3", title: "🫠😊" },
+  { url: "https://files.catbox.moe/wqrc2m.mp3", title: "🎀🧃" } 
 ];
 
 const songProgress = {};
