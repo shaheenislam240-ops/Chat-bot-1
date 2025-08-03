@@ -2,7 +2,7 @@ module.exports.config = {
  name: "pp",
  version: "1.0.0",
  hasPermssion: 0,
- credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+ credits: "rX",
  description: "Lấy ID người dùng.",
  commandCategory: "Công cụ",
  cooldowns: 0
