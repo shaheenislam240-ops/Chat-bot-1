@@ -30,14 +30,13 @@ module.exports.run = async function ({ api, event, args, Users }) {
     }
 
     if (args[0] === "list") {
-      const res = await axios.get(`${simsim}/list`);
-      return api.sendMessage(
-        `🤖 Total Questions Learned: ${res.data.totalQuestions}\n💬 Total Replies Stored: ${res.data.totalReplies}\n📚 Developer: rX Abdullah`,
-        event.threadID,
-        event.messageID
-      );
-    }
-
+  const res = await axios.get(`${simsim}/list`);
+  return api.sendMessage(
+    `╭─╼🌟 𝐁𝐚𝐛𝐲.𝐀𝐈 𝐒𝐭𝐚𝐭𝐬\n├ 📝 𝐓𝐞𝐚𝐜𝐡𝐞𝐝 𝐐𝐮𝐞𝐬𝐭𝐢𝐨𝐧𝐬: ${res.data.totalQuestions}\n├ 📦 𝐒𝐭𝐨𝐫𝐞𝐝 𝐑𝐞𝐩𝐥𝐢𝐞𝐬: ${res.data.totalReplies}\n╰─╼👤 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫: rX Abdullah`,
+    event.threadID,
+    event.messageID
+  );
+}
     if (args[0] === "msg") {
       const trigger = args.slice(1).join(" ").trim();
       if (!trigger) return api.sendMessage("❌ | Use: !baby msg [trigger]", event.threadID, event.messageID);
@@ -188,9 +187,16 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
       const ans = event.body?.toLowerCase().trim();
       if (!ask || !ans || ask === ans) return;
 
-      await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}&senderName=${encodeURIComponent(senderName)}`);
+      setTimeout(async () => {
+        try {
+          await axios.get(`${simsim}/teach?ask=${encodeURIComponent(ask)}&ans=${encodeURIComponent(ans)}&senderName=${encodeURIComponent(senderName)}`);
+          console.log("✅ Auto-taught:", ask, "→", ans);
+        } catch (err) {
+          console.error("❌ Auto-teach internal error:", err.message);
+        }
+      }, 300); // Delay to avoid overload
     } catch (e) {
-      console.log("Auto teach error:", e.message);
+      console.log("❌ Auto-teach setting error:", e.message);
     }
   }
 };
