@@ -4,6 +4,7 @@ const request = require("request");
 
 const link = [
   "https://i.imgur.com/kKYsCkX.mp4",
+  "https://i.imgur.com/RSidEBN.mp4",
   "https://i.imgur.com/MvjfMcQ.mp4",
   "https://i.imgur.com/vgQeoyZ.mp4"
 ];
@@ -12,7 +13,7 @@ module.exports.config = {
   name: "🥺",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "Islamick Chat + RX Abdullah",
+  credits: "rX Abdullah",
   description: "auto reply to 🥺 with text and video",
   commandCategory: "noprefix",
   usages: "🥺",
@@ -30,7 +31,7 @@ module.exports.handleEvent = async ({ api, event, Threads }) => {
 
   if (body.startsWith("🥺")) {
     const texts = [
-      "╭•┄┅════❁🌺❁════┅┄•╮\n\nআমি তাকে সারবার জন্য ভালোবাসি নি 🥺\n\n╰•┄┅════❁🌺❁════┅┄•╯",
+      "╭•┄┅════❁🎀❁════┅┄•╮\n\n𝙈𝙖𝙧𝙞𝙖 ᰔ 𝘼𝙗𝙙𝙪𝙡𝙡𝙖𝙝\n\n╰•┄┅════❁🎀❁════┅┄•╯",
       "╭•┄┅════❁🌺❁════┅┄•╮\n\nসে জে আমার রক্তে মিসে আছে-!!🥺\n\n╰•┄┅════❁🌺❁════┅┄•╯"
     ];
 
