@@ -28,6 +28,12 @@ const triggers = [
     fileName: "bhalobashi.mp3"
   },
   {
+    keywords: ["busy naki"],
+    audioUrl: "https://files.catbox.moe/cw9bdy.mp3",
+    reply: "🥴🤔",
+    fileName: "busy.mp3"
+  },
+  {
     keywords: ["bby explain"],
     audioUrl: "https://files.catbox.moe/ijgma4.mp3",
     reply: "📝 go away!",
