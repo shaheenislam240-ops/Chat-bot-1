@@ -1,71 +1,82 @@
 const axios = require("axios");
+const ytdl = require("ytdl-core");
 const fs = require("fs");
+const path = require("path");
 
-const baseApiUrl = async () => {
-  const base = await axios.get("https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json");
-  return base.data.api;
+module.exports.config = {
+  name: "gan",
+  version: "1.0.0",
+  hasPermssion: 0,
+  credits: "rX",
+  description: "Searches and sends YouTube video",
+  commandCategory: "media",
+  usages: "[song name]",
+  cooldowns: 5
 };
 
-module.exports = {
-  config: {
-    name: "gan",
-    version: "1.0.0",
-    credits: "dipto + modified by Rx Abdullah",
-    description: "Directly download and send first YouTube video by song name",
-    hasPermssion: 0,
-    commandCategory: "media",
-    usages: "{pn} [song name]",
-    cooldowns: 3
-  },
+module.exports.run = async ({ api, event, args }) => {
+  const config = require("./config.json");
+const apiKey = config.YOUTUBE_API_KEY;
 
-  run: async ({ api, event, args }) => {
-    const { threadID, messageID } = event;
-    const query = args.join(" ");
-    if (!query) return api.sendMessage("❌ গানটির নাম দিন!\nযেমন: !gan tumi amar", threadID, messageID);
+  if (!query) return api.sendMessage("❌ Please provide a song name.", event.threadID, event.messageID);
 
-    // Step 1: Searching message
-    const searchMsg = await api.sendMessage("🔍 Searching video...", threadID, messageID);
+  const searchingMsg = `🔍 Searching for: ${query}...`;
+  const sentMsg = await api.sendMessage(searchingMsg, event.threadID);
 
-    try {
-      // Step 2: Search first result
-      const result = (await axios.get(`${await baseApiUrl()}/ytFullSearch?songName=${encodeURIComponent(query)}`)).data[0];
-      if (!result) {
-        await api.unsendMessage(searchMsg.messageID);
-        return api.sendMessage("❌ কোনো ভিডিও পাওয়া যায়নি!", threadID, messageID);
+  try {
+    // ইউটিউব সার্চ
+    const res = await axios.get(`https://www.googleapis.com/youtube/v3/search`, {
+      params: {
+        part: "snippet",
+        q: query,
+        key: apiKey,
+        maxResults: 1,
+        type: "video"
       }
+    });
 
-      const videoID = result.id;
-      const format = "mp4";
-      const path = `ytb_${videoID}.${format}`;
-
-      // Step 3: Get download link
-      const { data: { title, downloadLink, quality } } = await axios.get(`${await baseApiUrl()}/ytDl3?link=${videoID}&format=${format}&quality=3`);
-
-      // Step 4: Download video
-      const res = await axios.get(downloadLink, { responseType: "arraybuffer" });
-      fs.writeFileSync(path, Buffer.from(res.data));
-
-      const size = fs.statSync(path).size;
-
-      // Step 5: Unsend searching message
-      await api.unsendMessage(searchMsg.messageID);
-
-      // Step 6: Check file size
-      if (size > 26 * 1024 * 1024) {
-        fs.unlinkSync(path);
-        return api.sendMessage("❌ ভিডিওটি ২৬MB এর বেশি, তাই পাঠানো যাচ্ছে না।", threadID, messageID);
-      }
-
-      // Step 7: Send video
-      return api.sendMessage({
-        body: `✅ Title: ${title}\n📥 Quality: ${quality}`,
-        attachment: fs.createReadStream(path)
-      }, threadID, () => fs.unlinkSync(path), messageID);
-
-    } catch (err) {
-      console.error(err);
-      try { await api.unsendMessage(searchMsg.messageID); } catch (_) {}
-      return api.sendMessage("❌ কোনো সমস্যা হয়েছে। আবার চেষ্টা করুন।", threadID, messageID);
+    const video = res.data.items[0];
+    if (!video) {
+      api.unsendMessage(sentMsg.messageID);
+      return api.sendMessage("❌ No results found.", event.threadID);
     }
+
+    const videoId = video.id.videoId;
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const title = video.snippet.title.replace(/[\\/:*?"<>|]/g, "_"); // ফাইলের নাম safe করার জন্য
+    const filePath = path.join(__dirname, "cache", `${title}_${videoId}.mp4`);
+
+    // ভিডিও ডাউনলোড (lowest quality for size limit)
+    const stream = ytdl(videoUrl, { quality: "lowest", filter: "audioandvideo" });
+    const file = fs.createWriteStream(filePath);
+    stream.pipe(file);
+
+    stream.on("end", async () => {
+      api.unsendMessage(sentMsg.messageID);
+
+      const stats = fs.statSync(filePath);
+      const fileSizeInMB = stats.size / (1024 * 1024);
+
+      if (fileSizeInMB > 26) {
+        fs.unlinkSync(filePath);
+        return api.sendMessage(`❌ The video is too large (${fileSizeInMB.toFixed(2)}MB). Must be under 26MB.`, event.threadID);
+      }
+
+      return api.sendMessage({
+        body: `🎬 ${title}`,
+        attachment: fs.createReadStream(filePath)
+      }, event.threadID, () => fs.unlinkSync(filePath));
+    });
+
+    stream.on("error", (err) => {
+      console.error(err);
+      api.unsendMessage(sentMsg.messageID);
+      api.sendMessage("❌ Error downloading video.", event.threadID);
+    });
+
+  } catch (err) {
+    console.error(err);
+    api.unsendMessage(sentMsg.messageID);
+    api.sendMessage("❌ Something went wrong while searching.", event.threadID);
   }
 };
