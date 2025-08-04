@@ -1,51 +1,47 @@
+const axios = require("axios");
 const fs = require("fs");
-const request = require("request");
 const path = require("path");
+
+const VIDEO_URL = "https://i.imgur.com/FcSfdXb.mp4";
+const FILE_PATH = path.join(__dirname, "cache", "rumana.mp4");
 
 module.exports.config = {
   name: "rumana",
-  version: "1.0.2",
+  version: "1.0.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Send Rumana video with fixed title",
-  commandCategory: "noprefix",
-  usages: "rumana",
-  cooldowns: 5,
-  dependencies: {
-    "request": "",
-    "fs-extra": ""
-  }
+  description: "Send Rumana video on trigger",
+  commandCategory: "auto",
+  usages: "",
+  cooldowns: 0,
+  prefix: false
 };
 
 module.exports.handleEvent = async function ({ api, event }) {
-  const content = event.body ? event.body.toLowerCase() : "";
+  try {
+    const trigger = event.body?.toLowerCase();
+    if (trigger !== "rumana") return;
 
-  if (content.startsWith("rumana")) {
-    const videoUrl = "https://i.imgur.com/FcSfdXb.mp4";
-    const filePath = path.join(__dirname, "cache", "rumana.mp4");
+    // Check if file exists
+    if (!fs.existsSync(FILE_PATH)) {
+      const res = await axios.get(VIDEO_URL, { responseType: "stream" });
+      const writer = fs.createWriteStream(FILE_PATH);
+      res.data.pipe(writer);
+      await new Promise((resolve, reject) => {
+        writer.on("finish", resolve);
+        writer.on("error", reject);
+      });
+    }
 
-    const fixedTitle = "🔥 Why u call Rumana? Watch this video! 🔥";
-
-    const sendVideo = () => {
-      api.sendMessage({
-        body: fixedTitle,
-        attachment: fs.createReadStream(filePath)
-      }, event.threadID, () => {
-        try {
-          fs.unlinkSync(filePath);
-        } catch (e) {}
-      }, event.messageID);
+    const message = {
+      body: "🙄 কেন ডাকো আমাকে 'রুমানা' বলে?",
+      attachment: fs.createReadStream(FILE_PATH)
     };
 
-    if (fs.existsSync(filePath)) {
-      // If file already downloaded, send it directly
-      sendVideo();
-    } else {
-      // Download then send
-      const stream = request(videoUrl);
-      stream.pipe(fs.createWriteStream(filePath)).on("close", sendVideo);
-    }
+    return api.sendMessage(message, event.threadID, event.messageID);
+
+  } catch (err) {
+    console.error("❌ Rumana module error:", err);
+    return api.sendMessage("❌ Rumana video পাঠাতে সমস্যা হয়েছে।", event.threadID);
   }
 };
-
-module.exports.run = async () => {};
