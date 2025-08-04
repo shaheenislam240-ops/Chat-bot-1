@@ -1,6 +1,6 @@
 const fs = require("fs");
 module.exports.config = {
-  name: "abdullah",
+  name: "abdullah", // এখানে নাম পরিবর্তন করা হয়েছে
   version: "1.0.1",
   hasPermssion: 0,
   credits: "rX", 
@@ -14,21 +14,13 @@ module.exports.handleEvent = function({ api, event, client, __GLOBAL }) {
   const { threadID, messageID, body } = event;
   if (!body) return;
 
-  const keywordList = ["abdullah", "Abdullah", "ABDULLA", "abdulla"];
+  const keywordList = ["abdullah", "ABDULLAH", "Abdullah", "আব্দুল্লাহ"];
   const isMatch = keywordList.some(word => body.toLowerCase().includes(word.toLowerCase()));
 
   if (isMatch) {
     const msg = {
-      body: "★彡🌙⛧∘₊˚⋆rX Abdullah ∘₊˚⋆⛧🌙彡★
-
-⚡ ᴘᴏᴡᴇʀ ʟᴇᴠᴇʟ: 9999%
-
-｡･ﾟﾟ･　★　･ﾟﾟ･｡
-🌟 Sᴜᴘᴇʀ Sᴀɪʏᴀɴ Mᴏᴅᴇ Aᴄᴛɪᴠᴀᴛᴇᴅ 🌟
-｡･ﾟﾟ･　★　･ﾟﾟ･｡
-
-༺🌙  keyword rX Abdullah🌙༻",
-      attachment: fs.createReadStream(__dirname + `/noprefix/abdullah.mp4`)
+      body: "Keyword ABDULLAH",
+      attachment: fs.createReadStream(__dirname + `/noprefix/abdullah.mp4`) // ফাইল নামও পরিবর্তন করো
     };
     api.sendMessage(msg, threadID, messageID);
     api.setMessageReaction("⚡️", event.messageID, (err) => {}, true);
