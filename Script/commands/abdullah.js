@@ -1,6 +1,6 @@
 const fs = require("fs");
 module.exports.config = {
-  name: "abdullah", // এখানে নাম পরিবর্তন করা হয়েছে
+  name: "abdullah",
   version: "1.0.1",
   hasPermssion: 0,
   credits: "rX", 
@@ -19,11 +19,11 @@ module.exports.handleEvent = function({ api, event, client, __GLOBAL }) {
 
   if (isMatch) {
     const msg = {
-      body: "Keyword ABDULLAH",
-      attachment: fs.createReadStream(__dirname + `/noprefix/abdullah.mp4`) // ফাইল নামও পরিবর্তন করো
+      body: "keyword ABDULLAH",
+      attachment: fs.createReadStream(__dirname + `/noprefix/abdullah.mp4`)
     };
     api.sendMessage(msg, threadID, messageID);
-    api.setMessageReaction("⚡️", event.messageID, (err) => {}, true);
+    api.setMessageReaction("😡", event.messageID, (err) => {}, true);
   }
 };
 
