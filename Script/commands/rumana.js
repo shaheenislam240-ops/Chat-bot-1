@@ -1,16 +1,18 @@
 const fs = require("fs");
+const path = require("path");
+
 module.exports.config = {
   name: "rumana",
   version: "1.0.1",
   hasPermssion: 0,
-  credits: "rX", 
+  credits: "rX",
   description: "Detects 'rumana' in any message",
   commandCategory: "no prefix",
   usages: "Just type anything with rumana",
-  cooldowns: 5, 
+  cooldowns: 5,
 };
 
-module.exports.handleEvent = function({ api, event, client, __GLOBAL }) {
+module.exports.handleEvent = function({ api, event }) {
   const { threadID, messageID, body } = event;
   if (!body) return;
 
@@ -18,15 +20,22 @@ module.exports.handleEvent = function({ api, event, client, __GLOBAL }) {
   const isMatch = keywordList.some(word => body.toLowerCase().includes(word.toLowerCase()));
 
   if (isMatch) {
+    // List of video filenames
+    const videoFiles = ["rumana1.mp4", "rumana2.mp4"];
+
+    // Randomly choose one
+    const selectedVideo = videoFiles[Math.floor(Math.random() * videoFiles.length)];
+
     const msg = {
       body: "keyword RUMANA",
-      attachment: fs.createReadStream(__dirname + `/noprefix/rumana.mp4`)
+      attachment: fs.createReadStream(path.join(__dirname, "noprefix", selectedVideo))
     };
+
     api.sendMessage(msg, threadID, messageID);
-    api.setMessageReaction("😡", event.messageID, (err) => {}, true);
+    api.setMessageReaction("😡", event.messageID, () => {}, true);
   }
 };
 
-module.exports.run = function({ api, event, client, __GLOBAL }) {
-  // no command usage
+module.exports.run = function({ api, event }) {
+  // No prefix command used
 };
