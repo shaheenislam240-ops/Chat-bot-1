@@ -2,37 +2,41 @@ const Replicate = require("replicate");
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+require("dotenv").config();
 
 module.exports.config = {
   name: "dress",
-  version: "1.0.0",
+  version: "1.0.1",
   hasPermssion: 0,
   credits: "Rx Abdullah",
-  description: "Change dress using AI",
+  description: "Change dress using AI (photo reply)",
   commandCategory: "ai",
-  usages: "[reply with image]",
+  usages: "[reply image]",
   cooldowns: 5,
 };
 
-module.exports.run = async ({ api, event }) => {
+module.exports.run = async function ({ api, event }) {
   const replicate = new Replicate({
-    auth: process.env.REPLICATE_API_TOKEN,
+    auth: process.env.REPLICATE_API_TOKEN
   });
 
-  // Check if user replied to an image
-  if (!event.messageReply || event.messageReply.attachments.length === 0) {
-    return api.sendMessage("❌ Please reply to a photo!", event.threadID, event.messageID);
+  const { messageReply, threadID, messageID } = event;
+
+  // Check if replied to a photo
+  if (!messageReply || !messageReply.attachments || messageReply.attachments.length === 0) {
+    return api.sendMessage("❌ Please reply to a photo!", threadID, messageID);
   }
 
-  const attachment = event.messageReply.attachments[0];
+  const attachment = messageReply.attachments[0];
   if (attachment.type !== "photo") {
-    return api.sendMessage("❌ Only photo replies are supported.", event.threadID, event.messageID);
+    return api.sendMessage("❌ Only photo replies are supported.", threadID, messageID);
   }
 
   const imageUrl = attachment.url;
-  const prompt = "Change the dress to a red saree"; // you can customize or parse args
+  const prompt = "Change the dress to a red saree"; // Change this if you want
 
-  const sent = await api.sendMessage("🧠 AI is editing the dress...", event.threadID);
+  // Send temp message
+  const sentMsg = await api.sendMessage("🧠 Changing dress using AI. Please wait...", threadID);
 
   try {
     const output = await replicate.run(
@@ -40,30 +44,30 @@ module.exports.run = async ({ api, event }) => {
       {
         input: {
           image: imageUrl,
-          prompt: prompt,
-        },
+          prompt: prompt
+        }
       }
     );
 
-    const resultImage = output[0];
-    const filePath = path.join(__dirname, "dress_output.png");
-    const response = await axios.get(resultImage, { responseType: "arraybuffer" });
-    fs.writeFileSync(filePath, Buffer.from(response.data, "binary"));
+    const resultUrl = output[0];
+    const filePath = path.join(__dirname, "dress_result.png");
 
-    api.sendMessage(
-      {
-        body: "✅ Done! Here's the edited photo.",
-        attachment: fs.createReadStream(filePath),
-      },
-      event.threadID,
-      () => fs.unlinkSync(filePath),
-      event.messageID
-    );
+    const imgRes = await axios.get(resultUrl, { responseType: "arraybuffer" });
+    fs.writeFileSync(filePath, Buffer.from(imgRes.data, "binary"));
+
+    // Send edited photo
+    api.sendMessage({
+      body: "✅ Done! Here's the new look.",
+      attachment: fs.createReadStream(filePath)
+    }, threadID, () => fs.unlinkSync(filePath), messageID);
+
   } catch (err) {
-    console.error(err);
-    api.sendMessage("❌ Something went wrong while editing the dress.", event.threadID, event.messageID);
+    console.error("❌ AI Error:", err.message || err);
+    api.sendMessage("❌ Something went wrong. Please try again.", threadID, messageID);
   }
 
-  // Unsend the "editing..." message
-  api.unsendMessage(sent.messageID);
+  // Unsend 'processing...' message
+  if (sentMsg?.messageID) {
+    api.unsendMessage(sentMsg.messageID);
+  }
 };
