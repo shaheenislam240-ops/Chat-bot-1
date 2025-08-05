@@ -2,11 +2,11 @@ const fs = require("fs");
 const request = require("request");
 
 module.exports.config = {
-  name: "boxinfo",
+  name: "groupinfo",
   version: "2.1.0",
   hasPermssion: 1,
   credits: "Modified by RX Abdullah",
-  description: "Get detailed and stylish group info",
+  description: "Get stylish group info with same image system",
   commandCategory: "Box",
   usages: "groupinfo",
   cooldowns: 2
@@ -23,14 +23,14 @@ module.exports.run = async function ({ api, event }) {
   const approvalMode = threadInfo.approvalMode ? "🟢 Turned ON" : "🔴 Turned OFF";
   const groupImage = threadInfo.imageSrc;
 
-  // Count genders
+  // Gender Count
   let male = 0, female = 0;
   for (const user of threadInfo.userInfo) {
     if (user.gender === "MALE") male++;
     else if (user.gender === "FEMALE") female++;
   }
 
-  // Admin list
+  // Admin List
   const adminList = threadInfo.adminIDs.map(admin => {
     const user = threadInfo.userInfo.find(u => u.id === admin.id);
     return user ? `• ${user.name}` : null;
@@ -56,20 +56,26 @@ ${adminList.join("\n")}
 💬 𝗧𝗼𝘁𝗮𝗹 𝗠𝗲𝘀𝘀𝗮𝗴𝗲𝘀: ${totalMsg} msgs
 
 ╔═════════════★═════════════╗
-🎀  𝗠𝗮𝗱𝗲 𝘄𝗶𝘁𝗵 : 𝗥𝗫 𝗔𝗯𝗱𝘂𝗹𝗹𝗮𝗵   🎀
+🎀   𝗠𝗮𝗱𝗲 𝘄𝗶𝘁𝗵 : 𝗥𝗫 𝗔𝗯𝗱𝘂𝗹𝗹𝗮𝗵  🎀
 ╚═════════════★═════════════╝
-  `.trim();
+`.trim();
+
+  const callback = () => {
+    api.sendMessage(
+      {
+        body: msg,
+        attachment: fs.createReadStream(__dirname + "/cache/1.png")
+      },
+      event.threadID,
+      () => fs.unlinkSync(__dirname + "/cache/1.png"),
+      event.messageID
+    );
+  };
 
   if (groupImage) {
-    const path = __dirname + "/cache/1.png";
     request(encodeURI(groupImage))
-      .pipe(fs.createWriteStream(path))
-      .on("close", () => {
-        api.sendMessage({
-          body: msg,
-          attachment: fs.createReadStream(path)
-        }, event.threadID, () => fs.unlinkSync(path), event.messageID);
-      });
+      .pipe(fs.createWriteStream(__dirname + "/cache/1.png"))
+      .on("close", () => callback());
   } else {
     api.sendMessage(msg, event.threadID, event.messageID);
   }
