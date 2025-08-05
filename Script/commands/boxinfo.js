@@ -2,7 +2,7 @@ const fs = require("fs");
 const request = require("request");
 
 module.exports.config = {
-  name: "groupinfo",
+  name: "boxinfo",
   version: "2.1.0",
   hasPermssion: 1,
   credits: "Modified by RX Abdullah",
