@@ -48,7 +48,7 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
                         let newAdmin = await Users.getNameUser(logMessageData.TARGET_ID);
 
                         const msg = `[ ADMIN ADDED ]
-・${toBold("By")}       : ${toBold(addedBy)}
+・${toBold("By")}        : ${toBold(addedBy)}
 ・${toBold("Made Admin")} : ${toBold(newAdmin)}
 ・${toBold("Time")}     : ${toBold(timeNow)}`;
 
@@ -61,9 +61,9 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
                         let removedAdmin = await Users.getNameUser(logMessageData.TARGET_ID);
 
                         const msg = `[ ADMIN REMOVED ]
-・${toBold("By")}         : ${toBold(removedBy)}
+・${toBold("By")}        : ${toBold(removedBy)}
 ・${toBold("Removed")}    : ${toBold(removedAdmin)}
-・${toBold("Time")}       : ${toBold(timeNow)}`;
+・${toBold("Time")}     : ${toBold(timeNow)}`;
 
                         api.sendMessage(msg, threadID);
                     }
