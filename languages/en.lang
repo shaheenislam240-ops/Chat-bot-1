@@ -1,37 +1,37 @@
-# If you want to move down the line, please use \n. e.g: tina\nABDULLAH.
+# If you want to move down the line, please use \n. e.g: tina\nULLASH.
 # After changed, you have to restart the bot to use.
 # Put the # character at the beginning of each sentence if you don't want the code to run those lines. 
 # Thanks to https://www.facebook.com/duong.than.net for translate to English!
 
-# Abdullah.js 
+# Cyber.js 
 
-Abdullah.newVersionDetected=𝐘𝐨𝐮 𝐚𝐫𝐞 𝐮𝐬𝐢𝐧𝐠 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 %1, 𝐭𝐡𝐞 𝐥𝐚𝐭𝐞𝐬𝐭 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 𝐢𝐬 %2. 
-Abdullah.errorFormat=Malformed module!
-Abdullah.nameExist=Module's name is similar to another module!
-Abdullah.notFoundLanguage=Module %1 don't support your language
-Abdullah.notFoundPackage=Can't find package %1 support for module %2, installing...
-Abdullah.cantInstallPackage=Can't install package %1 for module %2, error: %3
-Abdullah.loadedPackage=Installed whole package successfully for module %1
-Abdullah.loadedConfig=Installed config successfully for module %1
-Abdullah.cantLoadConfig=Can't install config of module %1, error: %2
-Abdullah.cantOnload=Can't launch setup of module %1, error: %1
-Abdullah.successLoadModule=Successfully installed module %1
-Abdullah.failLoadModule=Can't install module %1, error: %2
-Abdullah.finishLoadModule=Installed %1 module commands and %2 module events successfully 
-Abdullah.foundPathAppstate=Ullashstate successfully
-Abdullah.notFoundPathAppstate=Error can't find appstate file maybe file is malformed!
-Abdullah.checkListGban=Checking global ban list...
-Abdullah.banDevice=Your device have been banned from ULLASH, please contact to facebook m.me/100086680386976 to know more information or asking for unban key, if you already have unban key, please fill it below.
-Abdullah.keyNotSameFormat=Wrong format, code must contain 6 number.
-Abdullah.codeInputExpired=Your code is wrong or out of date.
-Abdullah.unbanDeviceSuccess=Your device are unban now, please restart to use.
-Abdullah.userBanned=You had been banned from ullash when %1 with reason: %2. Please contact to facebook m.me/100086680386976 to have more information!
-Abdullah.finishCheckListGban=Checked global ban list
-Abdullah.handleListenError=handleListene has occurred some unexpected errorr, error : %1
-Abdullah.warningSourceCode=DETECTED THAT SOURCE CODE'S STRUCTURE HAD BEEN CHANGED , STOP NOW!
-Abdullah.refreshListen=Refreshed handleListener...
-Abdullah.successConnectDatabase=Connected to database successfully!
-Abdullah.failConnectDatabase=Failed to connect to database, error: %1
+Cyber.newVersionDetected=𝐘𝐨𝐮 𝐚𝐫𝐞 𝐮𝐬𝐢𝐧𝐠 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 %1, 𝐭𝐡𝐞 𝐥𝐚𝐭𝐞𝐬𝐭 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 𝐢𝐬 %2. 
+Cyber.errorFormat=Malformed module!
+Cyber.nameExist=Module's name is similar to another module!
+Cyber.notFoundLanguage=Module %1 don't support your language
+Cyber.notFoundPackage=Can't find package %1 support for module %2, installing...
+Cyber.cantInstallPackage=Can't install package %1 for module %2, error: %3
+Cyber.loadedPackage=Installed whole package successfully for module %1
+Cyber.loadedConfig=Installed config successfully for module %1
+Cyber.cantLoadConfig=Can't install config of module %1, error: %2
+Cyber.cantOnload=Can't launch setup of module %1, error: %1
+Cyber.successLoadModule=Successfully installed module %1
+Cyber.failLoadModule=Can't install module %1, error: %2
+Cyber.finishLoadModule=Installed %1 module commands and %2 module events successfully 
+Cyber.foundPathAppstate=Ullashstate successfully
+Cyber.notFoundPathAppstate=Error can't find appstate file maybe file is malformed!
+Cyber.checkListGban=Checking global ban list...
+Cyber.banDevice=Your device have been banned from ULLASH, please contact to facebook m.me/100086680386976 to know more information or asking for unban key, if you already have unban key, please fill it below.
+Cyber.keyNotSameFormat=Wrong format, code must contain 6 number.
+Cyber.codeInputExpired=Your code is wrong or out of date.
+Cyber.unbanDeviceSuccess=Your device are unban now, please restart to use.
+Cyber.userBanned=You had been banned from ullash when %1 with reason: %2. Please contact to facebook m.me/100086680386976 to have more information!
+Cyber.finishCheckListGban=Checked global ban list
+Cyber.handleListenError=handleListene has occurred some unexpected errorr, error : %1
+Cyber.warningSourceCode=DETECTED THAT SOURCE CODE'S STRUCTURE HAD BEEN CHANGED , STOP NOW!
+Cyber.refreshListen=Refreshed handleListener...
+Cyber.successConnectDatabase=Connected to database successfully!
+Cyber.failConnectDatabase=Failed to connect to database, error: %1
 
 # includes/listen.js
 
