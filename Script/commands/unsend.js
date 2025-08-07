@@ -1,27 +1,24 @@
 module.exports.config = {
 	name: "unsend",
+	eventType: ["message_reply"],
 	version: "1.0.1",
 	hasPermssion: 0,
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
-	description: "Gỡ tin nhắn của bot",
+	credits: "rX",
+	description: "Reply to bot's message to unsend it",
 	commandCategory: "system",
-	usages: "unsend",
+	usages: "Just reply to bot's message",
 	cooldowns: 0
 };
 
 module.exports.languages = {
-	"vi": {
-		"returnCant": "Không thể gỡ tin nhắn của người khác.",
-		"missingReply": "Hãy reply tin nhắn cần gỡ."
-	},
 	"en": {
-		"returnCant": "আরে বলদ অন্য কারো মেসেজ আমি আনসেন্ড করবো কিভাবে পাগল ছাগল",
-		"missingReply": "আপনি আমার কোন মেসেজটি আনসেন্ড করবেন , তা রিপ্লাই করুন 🌺"
+		"returnCant": "I can only unsend messages sent by me.",
+		"missingReply": "Please reply to a message you want me to unsend."
 	}
-}
+};
 
-module.exports.run = function({ api, event, getText }) {
-	if (event.messageReply.senderID != api.getCurrentUserID()) return api.sendMessage(getText("returnCant"), event.threadID, event.messageID);
-	if (event.type != "message_reply") return api.sendMessage(getText("missingReply"), event.threadID, event.messageID);
+module.exports.handleEvent = async function({ api, event, getText }) {
+	if (event.type !== "message_reply") return;
+	if (event.messageReply.senderID !== api.getCurrentUserID()) return api.sendMessage(getText("returnCant"), event.threadID, event.messageID);
 	return api.unsendMessage(event.messageReply.messageID);
-	}
+};
