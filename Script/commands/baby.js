@@ -5,7 +5,7 @@ module.exports.config = {
   name: "baby",
   version: "1.0.5",
   hasPermssion: 0,
-  credits: "rX",
+  credits: "rX", //prodct of. rX Abdullah. 
   description: "AI Chatbot with Teach & List support",
   commandCategory: "chat",
   usages: "[query]",
@@ -32,7 +32,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
     if (args[0] === "list") {
   const res = await axios.get(`${simsim}/list`);
   return api.sendMessage(
-    `╭─╼🌟 𝐁𝐚𝐛𝐲.𝐀𝐈 𝐒𝐭𝐚𝐭𝐬\n├ 📝 𝐓𝐞𝐚𝐜𝐡𝐞𝐝 𝐐𝐮𝐞𝐬𝐭𝐢𝐨𝐧𝐬: ${res.data.totalQuestions}\n├ 📦 𝐒𝐭𝐨𝐫𝐞𝐝 𝐑𝐞𝐩𝐥𝐢𝐞𝐬: ${res.data.totalReplies}\n╰─╼👤 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫: rX Abdullah`,
+    `╭─╼🌟 𝐁𝐚𝐛𝐲 𝐀𝐈 𝐒𝐭𝐚𝐭𝐬\n├ 📝 𝐓𝐞𝐚𝐜𝐡𝐞𝐝 𝐐𝐮𝐞𝐬𝐭𝐢𝐨𝐧𝐬: ${res.data.totalQuestions}\n├ 📦 𝐒𝐭𝐨𝐫𝐞𝐝 𝐑𝐞𝐩𝐥𝐢𝐞𝐬: ${res.data.totalReplies}\n╰─╼👤 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫: rX Abdullah`,
     event.threadID,
     event.messageID
   );
@@ -136,8 +136,11 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     const replies = [
       "𝘼𝙨𝙨𝙖𝙡𝙖𝙢𝙪𝙖𝙡𝙖𝙞𝙠𝙪𝙢♥",
       "বলেন sir__😌",
+      "𝗔𝗶 𝗻𝗼𝘄 𝗹𝗲𝗺𝗼𝗻 𝗷𝘂𝘀𝘀 🍋🍹 𝗗𝗮𝗸𝘁𝗲 𝗱𝗮𝗸𝘁𝗲, 𝗧𝗼 𝗵𝗮𝗽𝗮𝘆 𝗴𝗮𝘀𝗼",
+      "𝐆𝐚𝐣𝐚 𝐤𝐡𝐚 𝐦𝐚𝐧𝐮𝐬𝐡 𝐡𝐨 🍁🤡",
       "𝙇𝙚𝙢𝙤𝙣 𝙩𝙪𝙨 🍋",
       "𝙈𝙪𝙧𝙞 𝙠𝙝𝙖 🤌🫥",
+      "আম গাছে আম নাই ঢিল কেন মারো, /nতোমার সাথে প্রেম নাই বেবি কেন ডাকো 😒🐸",
       "কি হলো, মিস টিস করচ্ছো নাকি 🤣",
       "𝘽𝙤𝙡𝙤 𝙗𝙖𝙗𝙮 🥹",
       "৮১ , ৮২ , ৮৩ আমি তোমাকে ভালবাসি",
