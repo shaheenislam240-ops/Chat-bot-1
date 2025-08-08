@@ -5,9 +5,9 @@ const path = require("path");
 
 module.exports.config = {
   name: "pixup",
-  version: "1.1.0",
+  version: "1.1.2",
   hasPermssion: 0,
-  credits: "rX", //project. of. rX. Abdullah
+  credits: "rX", //. rX Project
   description: "Upload replied file to Pixeldrain and return link",
   commandCategory: "tool",
   usages: "[filename (optional) | reply a file]",
@@ -22,6 +22,14 @@ module.exports.run = async function ({ api, event, args }) {
     return api.sendMessage("⚠️ Please reply to a video, photo, or file to upload to Pixeldrain.", threadID, messageID);
   }
 
+  // 1. Send [OK] Reloading config...
+  const reloadMsg = await api.sendMessage("[OK] Reloading config...", threadID);
+
+  // 2. Wait 3 seconds and unsend that message
+  await new Promise(resolve => setTimeout(resolve, 3000));
+  await api.unsendMessage(reloadMsg.messageID);
+
+  // 3. Proceed with download & upload
   const attachment = messageReply.attachments[0];
   const url = attachment.url;
   const ext = path.extname(url) || ".mp4";
@@ -29,7 +37,7 @@ module.exports.run = async function ({ api, event, args }) {
   const tempFile = path.join(__dirname, `/tmp_${Date.now()}${ext}`);
 
   try {
-    // Step 1: Download file
+    // Download file
     const file = (await axios.get(url, { responseType: "stream" })).data;
     const writer = fs.createWriteStream(tempFile);
     file.pipe(writer);
@@ -39,10 +47,10 @@ module.exports.run = async function ({ api, event, args }) {
       writer.on("error", reject);
     });
 
-    // Step 2: Upload to Pixeldrain
+    // Upload file to Pixeldrain
     const form = new FormData();
     form.append("file", fs.createReadStream(tempFile));
-    form.append("name", customName + ext); // optional custom name
+    form.append("name", customName + ext);
 
     const uploadRes = await axios.post("https://pixeldrain.com/api/file/", form, {
       headers: {
@@ -51,7 +59,7 @@ module.exports.run = async function ({ api, event, args }) {
       }
     });
 
-    fs.unlinkSync(tempFile); // Clean temp file
+    fs.unlinkSync(tempFile);
 
     if (!uploadRes.data || !uploadRes.data.id) {
       return api.sendMessage("❌ Upload failed. Try again later.", threadID, messageID);
@@ -64,14 +72,14 @@ module.exports.run = async function ({ api, event, args }) {
     const link = `https://pixeldrain.com/u/${fileId}`;
     const sizeMB = (info.size / (1024 * 1024)).toFixed(2);
 
+    // 4. Send final success message ONLY (no unsend)
     return api.sendMessage(
       `✅ **File Uploaded Successfully!**\n` +
-      `📄 Name: ${info.name}\n` +
+      `📄 Name: rX Project\n` +
       `📦 Size: ${sizeMB} MB\n` +
       `🆔 ID: ${info.id}\n` +
       `🔗 Link: ${link}`,
-      threadID,
-      messageID
+      threadID
     );
 
   } catch (err) {
