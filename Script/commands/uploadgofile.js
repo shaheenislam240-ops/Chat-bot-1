@@ -5,9 +5,9 @@ const FormData = require("form-data");
 
 module.exports.config = {
   name: "uploadgofile",
-  version: "1.0",
+  version: "1.1",
   hasPermssion: 0,
-  credits: "rX",
+  credits: "rX (Fixed by ChatGPT)",
   description: "Upload replied file or video to GoFile.io",
   commandCategory: "tools",
   usages: "[reply to a file]",
@@ -17,7 +17,6 @@ module.exports.config = {
 module.exports.run = async function ({ api, event }) {
   const { threadID, messageID, messageReply } = event;
 
-  // Make sure user replied to a file or video
   if (!messageReply || !messageReply.attachments || messageReply.attachments.length === 0)
     return api.sendMessage("❌ Please reply to a video or file to upload.", threadID, messageID);
 
@@ -28,12 +27,12 @@ module.exports.run = async function ({ api, event }) {
     const fileName = `file_${Date.now()}${fileExt}`;
     const filePath = __dirname + `/cache/${fileName}`;
 
-    // Create cache folder if not exists
+    // Create cache folder if missing
     if (!fs.existsSync(__dirname + "/cache")) {
       fs.mkdirSync(__dirname + "/cache");
     }
 
-    // Download file
+    // Download the file
     const response = await axios({
       method: "GET",
       url: fileUrl,
@@ -48,32 +47,30 @@ module.exports.run = async function ({ api, event }) {
       writer.on("error", reject);
     });
 
-    // Get available GoFile server
-    const serverRes = await axios.get("https://api.gofile.io/getServer");
+    // Get server using NEW API
+    const serverRes = await axios.get("https://api.gofile.io/v1/server");
     const server = serverRes.data.data.server;
 
-    // Upload using FormData
+    // Upload to GoFile using new endpoint
     const form = new FormData();
     form.append("file", fs.createReadStream(filePath));
 
-    const uploadRes = await axios.post(`https://${server}.gofile.io/uploadFile`, form, {
+    const uploadRes = await axios.post(`https://${server}.gofile.io/upload`, form, {
       headers: form.getHeaders(),
     });
 
-    // Get uploaded info
     const { downloadPage, fileName: uploadedName } = uploadRes.data.data;
 
-    // Cleanup local file
+    // Delete local file
     fs.unlinkSync(filePath);
 
-    // Send response
     return api.sendMessage(
       `✅ File Uploaded Successfully!\n📄 Name: ${uploadedName}\n🔗 Link: ${downloadPage}`,
       threadID,
       messageID
     );
   } catch (err) {
-    console.log("❌ Upload Error:", err.response?.data || err.message);
+    console.log("❌ Upload error:", err.response?.data || err.message);
     return api.sendMessage("❌ Failed to upload file. Please try again.", threadID, messageID);
   }
 };
