@@ -5,31 +5,46 @@ const path = require("path");
 
 module.exports.config = {
   name: "pixup",
-  version: "1.1.2",
+  version: "2.0.0",
   hasPermssion: 0,
-  credits: "rX", //. rX Project
-  description: "Upload replied file to Pixeldrain and return link",
+  credits: "rX", // Combined pixup + pixlist by rX Abdullah
+  description: "Upload file to Pixeldrain OR List uploaded file IDs",
   commandCategory: "tool",
-  usages: "[filename (optional) | reply a file]",
+  usages: "[reply to file] or [!pixlist]",
   cooldowns: 5,
 };
 
 module.exports.run = async function ({ api, event, args }) {
-  const { messageReply, threadID, messageID } = event;
+  const { messageReply, threadID, messageID, body } = event;
   const apiKey = "11379c5d-5de2-42b5-b1e2-8a378e3c2812";
 
+  // ==== (1) Handle: !pixlist ====
+  if (body && body.toLowerCase().includes("pixlist")) {
+    try {
+      const res = await axios.get('https://pixeldrain.com/api/user/files', {
+        headers: { Authorization: apiKey }
+      });
+
+      const files = res.data.files;
+      if (!files || files.length === 0)
+        return api.sendMessage("⚠️ No uploaded files found in your Pixeldrain account.", threadID, messageID);
+
+      const fileList = files.map((file, index) => `${index + 1}. ${file.id}`).join('\n');
+      return api.sendMessage(`📄 Total Files: ${files.length}\n\n${fileList}`, threadID, messageID);
+    } catch (error) {
+      return api.sendMessage(`❌ Failed to fetch file list.\nError: ${error.message}`, threadID, messageID);
+    }
+  }
+
+  // ==== (2) Handle: !pixup (file upload) ====
   if (!messageReply || !messageReply.attachments || messageReply.attachments.length === 0) {
     return api.sendMessage("⚠️ Please reply to a video, photo, or file to upload to Pixeldrain.", threadID, messageID);
   }
 
-  // 1. Send [OK] Reloading config...
   const reloadMsg = await api.sendMessage("[OK] Reloading config...", threadID);
-
-  // 2. Wait 3 seconds and unsend that message
   await new Promise(resolve => setTimeout(resolve, 3000));
   await api.unsendMessage(reloadMsg.messageID);
 
-  // 3. Proceed with download & upload
   const attachment = messageReply.attachments[0];
   const url = attachment.url;
   const ext = path.extname(url) || ".mp4";
@@ -37,7 +52,6 @@ module.exports.run = async function ({ api, event, args }) {
   const tempFile = path.join(__dirname, `/tmp_${Date.now()}${ext}`);
 
   try {
-    // Download file
     const file = (await axios.get(url, { responseType: "stream" })).data;
     const writer = fs.createWriteStream(tempFile);
     file.pipe(writer);
@@ -47,7 +61,6 @@ module.exports.run = async function ({ api, event, args }) {
       writer.on("error", reject);
     });
 
-    // Upload file to Pixeldrain
     const form = new FormData();
     form.append("file", fs.createReadStream(tempFile));
     form.append("name", customName + ext);
@@ -72,7 +85,6 @@ module.exports.run = async function ({ api, event, args }) {
     const link = `https://pixeldrain.com/u/${fileId}`;
     const sizeMB = (info.size / (1024 * 1024)).toFixed(2);
 
-    // 4. Send final success message ONLY (no unsend)
     return api.sendMessage(
       `✅ **File Uploaded Successfully!**\n` +
       `📄 Name: rX Project\n` +
