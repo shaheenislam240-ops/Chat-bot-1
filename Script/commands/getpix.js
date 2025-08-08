@@ -3,35 +3,30 @@ const fs = require("fs-extra");
 const path = require("path");
 
 module.exports.config = {
-  name: "getpix",
+  name: "getlink",
   version: "1.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Download and send video from Pixeldrain UID or link",
+  description: "Download and send video from Pixeldrain using file ID",
   commandCategory: "media",
-  usages: "[Pixeldrain UID or Link]",
+  usages: "[fileID]",
   cooldowns: 5,
 };
 
-module.exports.run = async function ({ api, event, args }) {
-  const input = args[0];
-  if (!input) return api.sendMessage("❌ Please provide a Pixeldrain UID or full link.", event.threadID, event.messageID);
+module.exports.run = async function({ api, event, args }) {
+  const fileID = args[0];
+  if (!fileID) return api.sendMessage("❌ Please provide a Pixeldrain file ID!", event.threadID, event.messageID);
 
-  let fileID;
-
-  if (input.includes("pixeldrain.com/u/")) {
-    fileID = input.split("/u/")[1].split(/[?#]/)[0];
-  } else {
-    fileID = input;
-  }
-
-  const downloadURL = `https://pixeldrain.com/api/file/${fileID}/download`;
-  const filePath = path.join(__dirname, "cache", `${fileID}.mp4`);
+  const downloadURL = `https://pixeldrain.com/api/file/${fileID}?download`;
+  const cacheDir = path.join(__dirname, "cache");
+  const filePath = path.join(cacheDir, `${fileID}.mp4`);
 
   try {
+    await fs.ensureDir(cacheDir);
+
     const response = await axios({
-      method: "GET",
       url: downloadURL,
+      method: "GET",
       responseType: "stream"
     });
 
@@ -40,18 +35,18 @@ module.exports.run = async function ({ api, event, args }) {
 
     writer.on("finish", () => {
       api.sendMessage({
-        body: `📥 Pixeldrain video loaded!\n🆔 UID: ${fileID}`,
+        body: `🎬 Here's your video from Pixeldrain! ID: ${fileID}`,
         attachment: fs.createReadStream(filePath)
       }, event.threadID, () => fs.unlinkSync(filePath), event.messageID);
     });
 
-    writer.on("error", (err) => {
-      console.log(err);
-      api.sendMessage("❌ Error saving video file.", event.threadID, event.messageID);
+    writer.on("error", (error) => {
+      console.error(error);
+      api.sendMessage("❌ Error saving the video file.", event.threadID, event.messageID);
     });
 
-  } catch (err) {
-    console.error(err.message);
-    api.sendMessage("❌ Failed to fetch or download the video.", event.threadID, event.messageID);
+  } catch (error) {
+    console.error(error.message);
+    api.sendMessage("❌ Failed to download the video. Please check the file ID.", event.threadID, event.messageID);
   }
 };
