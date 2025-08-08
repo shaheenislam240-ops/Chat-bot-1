@@ -5,7 +5,7 @@ const path = require("path");
 module.exports.config = {
   name: "getpix",
   version: "1.0",
-  hasPermssion: 0,
+  hasPermssion: 2,
   credits: "rX Abdullah",
   description: "Download and send video from Pixeldrain using file ID",
   commandCategory: "media",
