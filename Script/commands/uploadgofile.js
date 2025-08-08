@@ -8,25 +8,31 @@ module.exports.config = {
   version: "1.0",
   hasPermssion: 0,
   credits: "rX",
-  description: "Upload replied file/video to GoFile.io",
+  description: "Upload replied file or video to GoFile.io",
   commandCategory: "tools",
   usages: "[reply to a file]",
   cooldowns: 5,
 };
 
 module.exports.run = async function ({ api, event }) {
-  const { messageReply, threadID, messageID } = event;
+  const { threadID, messageID, messageReply } = event;
 
-  if (!messageReply || !messageReply.attachments || messageReply.attachments.length === 0) {
-    return api.sendMessage("❌ Please reply to a file or video to upload.", threadID, messageID);
-  }
-
-  const fileUrl = messageReply.attachments[0].url;
-  const fileExt = path.extname(messageReply.attachments[0].name || ".mp4");
-  const fileName = `file_${Date.now()}${fileExt}`;
-  const filePath = __dirname + `/cache/${fileName}`;
+  // Make sure user replied to a file or video
+  if (!messageReply || !messageReply.attachments || messageReply.attachments.length === 0)
+    return api.sendMessage("❌ Please reply to a video or file to upload.", threadID, messageID);
 
   try {
+    const attachment = messageReply.attachments[0];
+    const fileUrl = attachment.url;
+    const fileExt = path.extname(attachment.name || ".mp4");
+    const fileName = `file_${Date.now()}${fileExt}`;
+    const filePath = __dirname + `/cache/${fileName}`;
+
+    // Create cache folder if not exists
+    if (!fs.existsSync(__dirname + "/cache")) {
+      fs.mkdirSync(__dirname + "/cache");
+    }
+
     // Download file
     const response = await axios({
       method: "GET",
@@ -42,11 +48,11 @@ module.exports.run = async function ({ api, event }) {
       writer.on("error", reject);
     });
 
-    // Get server
+    // Get available GoFile server
     const serverRes = await axios.get("https://api.gofile.io/getServer");
     const server = serverRes.data.data.server;
 
-    // Upload to GoFile
+    // Upload using FormData
     const form = new FormData();
     form.append("file", fs.createReadStream(filePath));
 
@@ -54,19 +60,20 @@ module.exports.run = async function ({ api, event }) {
       headers: form.getHeaders(),
     });
 
+    // Get uploaded info
     const { downloadPage, fileName: uploadedName } = uploadRes.data.data;
 
-    // Cleanup
+    // Cleanup local file
     fs.unlinkSync(filePath);
 
-    // Send success message
+    // Send response
     return api.sendMessage(
       `✅ File Uploaded Successfully!\n📄 Name: ${uploadedName}\n🔗 Link: ${downloadPage}`,
       threadID,
       messageID
     );
   } catch (err) {
-    console.error(err);
+    console.log("❌ Upload Error:", err.response?.data || err.message);
     return api.sendMessage("❌ Failed to upload file. Please try again.", threadID, messageID);
   }
 };
