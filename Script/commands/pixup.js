@@ -10,7 +10,7 @@ module.exports.config = {
   credits: "rX", // Combined pixup + pixlist by rX Abdullah
   description: "Upload file to Pixeldrain OR List uploaded file IDs",
   commandCategory: "tool",
-  usages: "[reply to file] or [!pixlist]",
+  usages: "[reply to file] or [!pixoflist]",
   cooldowns: 5,
 };
 
@@ -19,7 +19,7 @@ module.exports.run = async function ({ api, event, args }) {
   const apiKey = "11379c5d-5de2-42b5-b1e2-8a378e3c2812";
 
   // ==== (1) Handle: !pixlist ====
-  if (body && body.toLowerCase().includes("pixlist")) {
+  if (body && body.toLowerCase().includes("pixoflist")) {
     try {
       const res = await axios.get('https://pixeldrain.com/api/user/files', {
         headers: { Authorization: apiKey }
