@@ -1,32 +1,26 @@
 const moment = require("moment-timezone");
-const fs = require("fs");
-const path = require("path");
 
 module.exports.config = {
   name: "prefix",
-  version: "1.2.0",
+  version: "1.0.0",
   hasPermssion: 0,
   credits: "Rx Modified",
-  description: "Show bot & group prefix info without using any prefix",
+  description: "Show bot prefix info without using any prefix",
   commandCategory: "system",
   usages: "",
   cooldowns: 5,
-  usePrefix: false
+  usePrefix: false // ⭐⭐ Main part: no prefix needed
 };
 
-module.exports.handleEvent = async function ({ api, event, threadsData }) {
-  const { threadID, messageID, body, timestamp } = event;
+module.exports.handleEvent = async function ({ api, event }) {
+  const { threadID, messageID, body } = event;
   if (!body) return;
 
   if (body.toLowerCase().trim() === "prefix") {
-    const ping = Date.now() - timestamp;
+    const ping = Date.now() - event.timestamp;
     const day = moment.tz("Asia/Dhaka").format("dddd");
-    const BOTPREFIX = global.config.PREFIX || "!";
+    const PREFIX = global.config.PREFIX || "!";
     const BOTNAME = global.config.BOTNAME || "ʀx ᴄʜᴀᴛ ʙᴏᴛ";
-
-    // Get group prefix dynamically
-    const threadData = await threadsData.get(threadID);
-    const GROUPPREFIX = threadData?.prefix || BOTPREFIX;
 
     const msg =
 `◇───✦ 𝗣𝗥𝗘𝗙𝗜𝗫 𝗦𝗧𝗔𝗧𝗨𝗦 ✦───◇
