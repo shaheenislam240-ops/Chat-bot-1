@@ -3,7 +3,7 @@ const fs = require("fs-extra");
 const path = require("path");
 
 module.exports.config = {
-  name: "getlink",
+  name: "getpix",
   version: "1.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
