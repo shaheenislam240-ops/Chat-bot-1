@@ -1,4 +1,4 @@
-let antiGaliStatus = true; // Default ON
+let antiGaliStatus = false; // Default OFF
 
 const badWords = [
   "হারামি", "হারাম", "কুত্তা", "কুত্তির বাচ্চা", "কুত্তার বাচ্চা", 
@@ -22,7 +22,7 @@ const badWords = [
 
 module.exports.config = {
   name: "antigali",
-  version: "2.0.2",
+  version: "2.0.3",
   hasPermssion: 0,
   credits: "Rx Abdullah",
   description: "Auto offensive word detector with mention and ON/OFF",
@@ -33,13 +33,12 @@ module.exports.config = {
 
 module.exports.handleEvent = async function ({ api, event }) {
   try {
-    if (!antiGaliStatus) return; // যদি অফ থাকে, কাজ করবে না
+    if (!antiGaliStatus) return; // OFF থাকলে কিছু করবে না
     if (!event.body) return;
 
     const message = event.body.toLowerCase();
 
     if (badWords.some(word => message.includes(word))) {
-      // ইউজারের নাম নিয়ে আসা
       const userInfo = await api.getUserInfo(event.senderID);
       const userName = userInfo[event.senderID]?.name || "User";
 
