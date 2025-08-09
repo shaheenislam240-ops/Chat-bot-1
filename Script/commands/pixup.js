@@ -89,7 +89,7 @@ module.exports.run = async function ({ api, event, args }) {
 
     return api.sendMessage(
       `✅ **File Uploaded Successfully!**\n` +
-      `📄 Name: ${info.name}\n` +
+      `📄 Name: rX Project\n` +
       `📦 Size: ${sizeMB} MB\n` +
       `🆔 ID: ${info.id}\n` +
       `🔗 Link: ${link}`,
