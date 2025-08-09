@@ -22,43 +22,55 @@ const badWords = [
 
 module.exports.config = {
   name: "antigali",
-  version: "2.0.0",
+  version: "2.0.2",
   hasPermssion: 0,
   credits: "Rx Abdullah",
-  description: "Auto offensive word detector with ON/OFF system",
+  description: "Auto offensive word detector with mention and ON/OFF",
   commandCategory: "moderation",
   usages: "!antigali on / !antigali off",
   cooldowns: 0
 };
 
-// Listening for offensive words
 module.exports.handleEvent = async function ({ api, event }) {
   try {
     if (!antiGaliStatus) return; // যদি অফ থাকে, কাজ করবে না
     if (!event.body) return;
+
     const message = event.body.toLowerCase();
 
     if (badWords.some(word => message.includes(word))) {
+      // ইউজারের নাম নিয়ে আসা
+      const userInfo = await api.getUserInfo(event.senderID);
+      const userName = userInfo[event.senderID]?.name || "User";
+
+      const mentionTag = {
+        id: event.senderID,
+        tag: userName
+      };
+
       const warningMsg = 
 `𝗔𝗨𝗧𝗢𝗠𝗢𝗗 𝗔𝗟𝗘𝗥𝗧 🚫
-╔════════════════════════════════╗
-║ 𝗪𝗔𝗥𝗡𝗜𝗡𝗚 ❗ 𝗢𝗳𝗳𝗲𝗻𝘀𝗶𝘃𝗲 𝗟𝗮𝗻𝗴𝘂𝗮𝗴𝗲 𝗗𝗲𝘁𝗲𝗰𝘁𝗲𝗱
-║ 👤 𝗨𝘀𝗲𝗿: @${event.senderID}
-║ 📄 𝗠𝗲𝘀𝘀𝗮𝗴𝗲: Contains **Prohibited Word**
-║ 🧹 𝗔𝗰𝘁𝗶𝗼𝗻: Delete/Unsend immediately
+╔════════════════════════════════════╗
+║ ⚠️ 𝗪𝗔𝗥𝗡𝗜𝗡𝗚: 𝗢𝗳𝗳𝗲𝗻𝘀𝗶𝘃𝗲 𝗟𝗮𝗻𝗴𝘂𝗮𝗴𝗲 𝗗𝗲𝘁𝗲𝗰𝘁𝗲𝗱
+║ 👤 𝗨𝘀𝗲𝗿: @${mentionTag.tag}
+║ 📄 𝗠𝗲𝘀𝘀𝗮𝗴𝗲: Contains **prohibited words**
+║ 🧹 𝗔𝗰𝘁𝗶𝗼𝗻: Please delete/unsend the message immediately
 ║ 📛 𝗧𝗵𝗶𝘀 𝗴𝗿𝗼𝘂𝗽 𝗶𝘀 𝗺𝗼𝗻𝗶𝘁𝗼𝗿𝗲𝗱 𝗯𝘆 𝗔𝘂𝘁𝗼𝗠𝗼𝗱
 ║ 🔁 𝗥𝗲𝗽𝗲𝗮𝘁 𝗢𝗳𝗳𝗲𝗻𝗰𝗲 = Mute/Ban
-╚════════════════════════════════╝
-⚠️ 𝗥𝗲𝗺𝗶𝗻𝗱𝗲𝗿: Use respectful language.`;
+╚════════════════════════════════════╝
+⚠️ Reminder: Please speak respectfully.`;
 
-      return api.sendMessage(warningMsg, event.threadID, event.messageID);
+      return api.sendMessage(
+        { body: warningMsg, mentions: [mentionTag] },
+        event.threadID,
+        event.messageID
+      );
     }
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
   }
 };
 
-// Command to turn ON/OFF
 module.exports.run = async function ({ api, event, args }) {
   if (args[0] === "on") {
     antiGaliStatus = true;
