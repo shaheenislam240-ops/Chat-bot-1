@@ -1,51 +1,114 @@
-module.exports.config = {
-	name: "quiz",
-	version: "1.0.0",
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
-	hasPermssion: 0,
-	description: "Answer questions (English)",
-	commandCategory: "game",
-	cooldowns: 5,
-	dependencies: {
-		"axios": ""
-	}
+const axios = require("axios");
+
+const baseApiUrl = async () => {
+  const base = await axios.get(
+    `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`
+  );
+  return base.data.api;
 };
 
-module.exports.handleReaction = ({ api, event, handleReaction }) => {
-	if (!event.userID == handleReaction.author) return;
-	let response = "";
-	if (event.reaction == "👍") response = "True"
-	else response = "False";
-	if (response == handleReaction.answer) api.sendMessage("congrats, you got the answer right xD", event.threadID);
-	else api.sendMessage("oops, you got the answer wrong :'<", event.threadID);
-	const indexOfHandle = client.handleReaction.findIndex(e => e.messageID == handleReaction.messageID);
-	global.client.handleReaction.splice(indexOfHandle, 1);
-	handleReaction.answerYet = 1;
-	return global.client.handleReaction.push(handleReaction);
-}
+module.exports = {
+  config: {
+    name: "quiz",
+    version: "1.0",
+    credits: "rX",
+    cooldowns: 0,
+    hasPermssion: 0,
+    commandCategory: "game",
+    usePrefix: true,
+    prefix: true,
+    commandCategory: "game",
+    usages: "{p}quiz2 \n{pn}quiz2 bn \n{p}quiz2 en",
+  },
 
-module.exports.run = async ({  api, event, args }) => {
-	const axios = global.nodemodule["axios"];
-	let difficulties = ["easy", "medium", "hard"];
-	let difficulty = args[0];
-	(difficulties.some(item => difficulty == item)) ? "" : difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
-	let fetch = await axios(`https://opentdb.com/api.php?amount=1&encode=url3986&type=boolean&difficulty=${difficulty}`);
-	if (!fetch.data) return api.sendMessage("Can't find the question because the server is busy", event.threadID, event.messageID);
-	return api.sendMessage(`Here is the question for you:\n        ${decodeURIComponent(fetch.data.results[0].question)}\n\n   👍: True       😢: False`, event.threadID, async (err, info) => {
-		global.client.handleReaction.push({
-			name: "quiz",
-			messageID: info.messageID,
-			author: event.senderID,
-			answer: fetch.data.results[0].correct_answer,
-			answerYet: 0
-		});
-		await new Promise(resolve => setTimeout(resolve, 20 * 1000));
-		const indexOfHandle = global.client.handleReaction.findIndex(e => e.messageID == info.messageID);
-		let data = global.client.handleReaction[indexOfHandle];
-		if (data.answerYet !== 1) {
-			api.sendMessage(`Time out!! The correct answer is ${fetch.data.results[0].correct_answer}`, event.threadID, info.messageID);
-			return global.client.handleReaction.splice(indexOfHandle, 1);
-		}
-		else return;
-	});
-}
+  run: async function ({ api, event, args }) {
+    const input = args.join('').toLowerCase() || "bn";
+    let timeout = 300;
+    let category = "bangla";
+    if (input === "bn" || input === "bangla") {
+      category = "bangla";
+    } else if (input === "en" || input === "english") {
+      category = "english";
+    } 
+    try {
+      const response = await axios.get(
+        `${await baseApiUrl()}/quiz?category=${category}&q=random`,
+      );
+
+      const quizData = response.data.question;
+      const { question, correctAnswer, options } = quizData;
+      const { a, b, c, d } = options;
+      let uid = event.senderID;
+      const namePlayerReact = (await api.getUserInfo(uid))[uid].name;
+      const quizMsg = {
+        body: `\n╭──✦ ${question}\n├‣ 𝗔) ${a}\n├‣ 𝗕) ${b}\n├‣ 𝗖) ${c}\n├‣ 𝗗) ${d}\n╰──────────────────‣\n𝚁𝚎𝚙𝚕𝚢 𝚝𝚘 𝚝𝚑𝚒𝚜 𝚖𝚎𝚜𝚜𝚊𝚐𝚎 𝚠𝚒𝚝𝚑 𝚢𝚘𝚞𝚛 𝚊𝚗𝚜𝚠𝚎𝚛.`,
+      };
+
+      api.sendMessage(
+        quizMsg,
+        event.threadID,
+        (error, info) => {
+          global.client.handleReply.push({
+            type: "reply",
+            name: this.config.name,
+            author: event.senderID,
+            messageID: info.messageID,
+            dataGame: quizData,
+            correctAnswer,
+            nameUser: namePlayerReact,
+            attempts: 0
+          });
+          setTimeout(() => {
+            api.unsendMessage(info.messageID);
+          }, timeout * 1000);
+        },
+        event.messageID,
+      );
+    } catch (error) {
+      console.log("❌ | Error occurred:", error);
+      api.sendMessage(error.message, event.threadID, event.messageID);
+    }
+  },
+
+  handleReply: async ({ event, api, handleReply, Users }) => {
+const { correctAnswer, nameUser, author } = handleReply;
+    if (event.senderID !== author)
+      return api.sendMessage(
+        "Who are you bby🐸🦎",
+        event.threadID,
+        event.messageID
+      );
+    const maxAttempts = 2;
+
+    switch (handleReply.type) {
+      case "reply": {
+        let userReply = event.body.toLowerCase();
+        if (handleReply.attempts >= maxAttempts) {
+          await api.unsendMessage(handleReply.messageID);
+          const incorrectMsg = `🚫 | ${nameUser}, you have reached the maximum number of attempts (2).\nThe correct answer is: ${correctAnswer}`;
+          return api.sendMessage(incorrectMsg, event.threadID, event.messageID);
+        }
+        if (userReply === correctAnswer.toLowerCase()) {
+          api.unsendMessage(handleReply.messageID)
+          .catch(console.error);
+          let rewardCoins = 300;
+          let rewardExp = 100;
+          let userData = await Users.get(author);
+          await Users.set(author, {
+          money: userData.money + rewardCoins,
+            exp: userData.exp + rewardExp,
+            data: userData.data,
+          });
+          let correctMsg = `Congratulations, ${nameUser}! 🌟🎉\n\nYou're a Quiz Champion! 🏆\n\nKeep up the great work! 🚀`;
+          api.sendMessage(correctMsg, event.threadID, event.messageID);
+        } else {
+          handleReply.attempts += 1;
+global.client.handleReply.push(handleReply.messageID, handleReply);
+          api.sendMessage(
+            `❌ | Wrong Answer. You have ${maxAttempts - handleReply.attempts} attempts left.\n✅ | Try Again!`,
+            event.threadID,
+            event.messageID,
+          );
+        }
+        break;
+      }
