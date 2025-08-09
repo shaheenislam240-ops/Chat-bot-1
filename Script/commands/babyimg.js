@@ -40,9 +40,9 @@ const imageTriggers = [
     fileName: "bokaxhuda.jpg"
   },
   {
-    keywords: ["pixlist"],
+    keywords: ["pixlist dew"],
     imageUrl: "https://i.postimg.cc/CxccqWJZ/IMG-7174.png",
-    reply: "📜 pixlist BY rX",
+    reply: "📜 Pixlist bY rX",
     fileName: "pixlist.png"
   }
 ];
