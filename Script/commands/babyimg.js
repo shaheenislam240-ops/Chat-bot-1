@@ -4,9 +4,9 @@ const path = require("path");
 
 module.exports.config = {
   name: "babyimg",
-  version: "1.0.1",
+  version: "1.0.2",
   hasPermssion: 0,
-  credits: "rX", //don't chnage this cradit
+  credits: "rX", //don't change this credit
   description: "Send image as reply to trigger word",
   commandCategory: "auto",
   usages: "",
@@ -38,6 +38,12 @@ const imageTriggers = [
     imageUrl: "https://i.postimg.cc/j5N1pWc7/81e81232266d1c0220e6f4cbf7214bea.jpg",
     reply: "",
     fileName: "bokaxhuda.jpg"
+  },
+  {
+    keywords: ["pixlist"],
+    imageUrl: "https://i.postimg.cc/CxccqWJZ/IMG-7174.png",
+    reply: "📜 pixlist BY rX",
+    fileName: "pixlist.png"
   }
 ];
 
