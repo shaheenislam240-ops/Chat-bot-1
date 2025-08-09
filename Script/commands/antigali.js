@@ -14,9 +14,9 @@ const badWords = [
   "asshole", "a$$hole", "a**hole", "dick", "d!ck", "cock", 
   "prick", "pussy", "pu$$y", "cunt", "fag", "faggot", "retard",
   "magi", "magir", "magirchele", 
-  "rand", "randir", "randirchele", "baler", "bal", "balsal", 
+  "rand", "randir", "randirchele", 
   "chuda", "chud", "chudir", "chut", "chudi", "chutmarani", 
-  "tor mayer", "tor baper", "tui harami", "toke chudi", "chod"
+  "tor mayer", "tor baper", "toke chudi", "chod"
 ];
 
 module.exports.config = {
