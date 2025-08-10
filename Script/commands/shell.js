@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "shell",
 	version: "7.3.1",
 	hasPermssion: 2,
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+	credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭",
 	description: "running shell",
 	commandCategory: "System",
 	usages: "[shell]",
