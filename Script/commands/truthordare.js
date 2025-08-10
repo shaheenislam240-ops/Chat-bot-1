@@ -80,7 +80,7 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
   const answer = body.toLowerCase();
   let quoteEN = "", type = "";
 
-  const positiveWords = ["yes", "i did", "sure", "of course", "হ্যাঁ", "হ্যা", "done", "complete", "ok"];
+  const positiveWords = ["yes", "i did", "sure", "of course", "hoy", "na", "hm", "hmm", "হ্যাঁ", "হ্যা", "done", "complete", "ok"];
   const negativeWords = ["no", "never", "nai", "না", "can't", "cannot", "nope"];
 
   if (positiveWords.some(word => answer.includes(word))) {
@@ -101,7 +101,7 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
     quoteEN = quotes[Math.floor(Math.random() * quotes.length)];
   } else {
     type = "neutral";
-    quoteEN = "Interesting answer!";
+    quoteEN = "your answer!";
   }
 
   const title = type === "good"
