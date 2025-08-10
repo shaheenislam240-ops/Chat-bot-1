@@ -1,22 +1,30 @@
 const axios = require("axios");
-const simsim = "https://rx-simisimi-api-tllc.onrender.com";
+
+let simsim = ""; // Initially empty
+
+(async () => {
+  try {
+    const res = await axios.get("https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json");
+    if (res.data && res.data.baby) {
+      simsim = res.data.baby;
+      
+    }
+  } catch {
+  
+  }
+})();
 
 module.exports.config = {
   name: "baby",
   version: "1.0.5",
   hasPermssion: 0,
-  credits: "rX", //prodct of. rX Abdullah. 
+  credits: "rX",
   description: "AI Chatbot with Teach & List support",
   commandCategory: "chat",
   usages: "[query]",
   cooldowns: 0,
   prefix: false
 };
-/*𝗪𝗼𝘄𝘄! 𝗔𝗺𝗮𝗿 “𝗯𝗮𝗯𝘆 𝗳𝗶𝗹𝗲” 𝘀𝗼𝗯𝗮𝗶 𝘂𝘀𝗲 𝗸𝗼𝗿𝗰𝗵𝗲 😍
-𝗔𝗺𝗮𝗿 𝘁𝗿𝗮𝗽 𝗲 𝗽𝗲𝗿𝗲 𝗴𝗲𝗰𝗵𝗼 𝘁𝗼𝗺𝗿𝗮 🪤😏
-𝗦𝗮𝗿𝗮 𝗱𝗶𝗻 𝗯𝗮𝗯𝘆 𝗯𝗮𝗯𝘆 𝗱𝗮𝗸𝗲 𝗮𝗶 𝗯𝗼𝘁 🍼😂
-𝗧𝗼𝗺𝗿𝗮 𝘀𝗼𝗯𝗮𝗶𝗸𝗲 “𝗯𝗮𝗯𝘆 𝗴𝗮𝗻𝗴” 𝗲 𝘀𝗵𝘂𝗯𝗲𝗰𝗰𝗵𝗮 🫶
-𝗪𝗲𝗹𝗰𝗼𝗺𝗲 𝘁𝗼 𝘁𝗵𝗲 𝗺𝗮𝗱𝗻𝗲𝘀𝘀 𝗳𝗮𝗺𝗶𝗹𝘆 💥.*/
 
 module.exports.run = async function ({ api, event, args, Users }) {
   const uid = event.senderID;
@@ -24,6 +32,8 @@ module.exports.run = async function ({ api, event, args, Users }) {
   const query = args.join(" ").toLowerCase();
 
   try {
+    if (!simsim) return api.sendMessage("❌ API not loaded yet.", event.threadID, event.messageID);
+
     if (args[0] === "autoteach") {
       const mode = args[1];
       if (!["on", "off"].includes(mode)) {
@@ -35,13 +45,14 @@ module.exports.run = async function ({ api, event, args, Users }) {
     }
 
     if (args[0] === "list") {
-  const res = await axios.get(`${simsim}/list`);
-  return api.sendMessage(
-    `╭─╼🌟 𝐁𝐚𝐛𝐲 𝐀𝐈 𝐒𝐭𝐚𝐭𝐬\n├ 📝 𝐓𝐞𝐚𝐜𝐡𝐞𝐝 𝐐𝐮𝐞𝐬𝐭𝐢𝐨𝐧𝐬: ${res.data.totalQuestions}\n├ 📦 𝐒𝐭𝐨𝐫𝐞𝐝 𝐑𝐞𝐩𝐥𝐢𝐞𝐬: ${res.data.totalReplies}\n╰─╼👤 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫: rX Abdullah`,
-    event.threadID,
-    event.messageID
-  );
-}
+      const res = await axios.get(`${simsim}/list`);
+      return api.sendMessage(
+        `╭─╼🌟 𝐁𝐚𝐛𝐲 𝐀𝐈 𝐒𝐭𝐚𝐭𝐬\n├ 📝 𝐓𝐞𝐚𝐜𝐡𝐞𝐝 𝐐𝐮𝐞𝐬𝐭𝐢𝐨𝐧𝐬: ${res.data.totalQuestions}\n├ 📦 𝐒𝐭𝐨𝐫𝐞𝐝 𝐑𝐞𝐩𝐥𝐢𝐞𝐬: ${res.data.totalReplies}\n╰─╼👤 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫: rX Abdullah`,
+        event.threadID,
+        event.messageID
+      );
+    }
+
     if (args[0] === "msg") {
       const trigger = args.slice(1).join(" ").trim();
       if (!trigger) return api.sendMessage("❌ | Use: !baby msg [trigger]", event.threadID, event.messageID);
@@ -111,7 +122,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
 module.exports.handleReply = async function ({ api, event, Users }) {
   const senderName = await Users.getNameUser(event.senderID);
   const text = event.body?.toLowerCase();
-  if (!text) return;
+  if (!text || !simsim) return;
 
   try {
     const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
@@ -132,7 +143,7 @@ module.exports.handleReply = async function ({ api, event, Users }) {
 
 module.exports.handleEvent = async function ({ api, event, Users }) {
   const text = event.body?.toLowerCase().trim();
-  if (!text) return;
+  if (!text || !simsim) return;
 
   const senderName = await Users.getNameUser(event.senderID);
 
@@ -141,7 +152,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     const replies = [
       "𝘼𝙨𝙨𝙖𝙡𝙖𝙢𝙪𝙖𝙡𝙖𝙞𝙠𝙪𝙢♥",
       "বলেন sir__😌",
-      "𝗔𝗶 𝗻𝗼𝘄 𝗹𝗲𝗺𝗼𝗻 𝗷𝘂𝘀𝘀 🍋🍹 𝗗𝗮𝗸𝘁𝗲 𝗱𝗮𝗸𝘁𝗲, 𝗧𝗼 𝗵𝗮𝗽𝗮𝘆 𝗴𝗮𝘀𝗼",
+      "𝗔𝗶 𝗻𝗼𝘄 𝗹𝗲𝗺𝗼𝗻 𝗷𝘂𝘀𝘀 🍋🍹",
       "𝐆𝐚𝐣𝐚 𝐤𝐡𝐚 𝐦𝐚𝐧𝐮𝐬𝐡 𝐡𝐨 🍁🤡",
       "𝙇𝙚𝙢𝙤𝙣 𝙩𝙪𝙨 🍋",
       "মুড়ি খাও 🫥",
@@ -203,7 +214,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
         } catch (err) {
           console.error("❌ Auto-teach internal error:", err.message);
         }
-      }, 300); // Delay to avoid overload
+      }, 300);
     } catch (e) {
       console.log("❌ Auto-teach setting error:", e.message);
     }
