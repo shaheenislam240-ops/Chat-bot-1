@@ -21,6 +21,66 @@ Welcome to the **RX ChatBot** intro project. This is a sleek, hacker-style webpa
 
 ---
 
+##
+
+- Facebook Messenger chatbot functionality
+- Facebook login through `appstate.json` (cookies)
+- 250+ built-in commands
+- Easily customizable structure for developers
+
+
+## 🧰 Requirements
+
+- **Node.js version 18 or above (18+)**
+- Facebook `appstate.json` file (login cookie JSON)
+
+
+## ⚙️ Installation
+
+### 1. Repository Clone Karein
+
+```bash
+soon
+```
+
+### 2. Dependencies Installed
+
+```bash
+npm install
+```
+
+### 3. Facebook Appstate Add Do it
+
+- Paste your Facebook account's `appstate.json` file in the root folder.
+
+- Ensure that the file is valid and updated.
+
+### 4. Run the Bot
+
+```bash
+node Rxabdullah.js
+```
+
+---
+
+## 🚀 Usage
+
+- The bot will login to your Facebook account as soon as it is launched.
+
+- It listens to Messenger chats in the background.
+
+- You can use available commands like:
+
+```
+!help
+!up
+!song [name]
+!info
+```
+- The bot automatically tracks group and user data (if the database is configured).
+
+---
+
 ## 🛠️ Tech Used
 
 - HTML5  
