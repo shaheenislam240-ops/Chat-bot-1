@@ -1,31 +1,32 @@
-const fs = global.nodemodule["fs-extra"];
 const axios = require("axios");
 
 const githubBaseApiUrl = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json";
-let lastBotMessageID = {};
+
+let lastBotMessageID = {}; // থ্রেড অনুযায়ী বটের ফ্রেম মেসেজ আইডি ধরে রাখবে
 
 module.exports.config = {
   name: "obot",
-  version: "1.0.7",
+  version: "1.0.9",
   hasPermssion: 0,
   credits: "Modified by rX",
-  description: "Maria Baby-style reply system (reply only)",
+  description: "Maria Baby-style reply system (frame message + reply handling)",
   commandCategory: "noprefix",
   usages: "bot",
   cooldowns: 3
 };
 
 module.exports.handleEvent = async function({ api, event, Users }) {
-  const { threadID, messageID, body, senderID, type, messageReply } = event;
-  if (!body) return;
-
   try {
-    const name = await Users.getNameUser(senderID);
+    const { threadID, messageID, body, senderID, messageReply } = event;
+    if (!body) return;
+
     const baseApi = await axios.get(githubBaseApiUrl);
     if (!baseApi.data.maria) return;
     const mariaApiUrl = baseApi.data.maria;
 
-    // Step 1: যদি "bot" থাকে → ফ্রেম মেসেজ পাঠাও
+    const name = await Users.getNameUser(senderID);
+
+    // Step 1: "bot" শব্দ থাকলে ফ্রেম মেসেজ পাঠাও
     if (body.toLowerCase().includes("bot")) {
       const replies = [
         "তুমি জানো? আমি সারাদিন শুধু তোমার কথাই ভাবি💭",
@@ -37,9 +38,9 @@ module.exports.handleEvent = async function({ api, event, Users }) {
         "তুমি কি জানো? আমি কিন্তু তোমায় Miss করি...💌",
         "আমার মনে হয়, তুমি আমার জন্যই পৃথিবীতে আসছো... 💘"
       ];
-
       const randReply = replies[Math.floor(Math.random() * replies.length)];
-      const message =
+
+      const frameMessage =
 `╭──────•◈•──────╮
    Hᴇʏ Xᴀɴ I’ᴍ Mᴀʀɪᴀ Bᴀʙʏ✨   
 
@@ -48,26 +49,28 @@ module.exports.handleEvent = async function({ api, event, Users }) {
 
 ╰──────•◈•──────╯`;
 
-      api.sendMessage(message, threadID, (err, info) => {
-        if (!err) {
-          lastBotMessageID[threadID] = info.messageID; // সেই মেসেজ ID সেভ করো
+      return api.sendMessage(frameMessage, threadID, (err, info) => {
+        if (!err && info.messageID) {
+          lastBotMessageID[threadID] = info.messageID; // এই মেসেজের আইডি ধরে রাখো
         }
       }, messageID);
-      return;
     }
 
-    // Step 2: যদি ইউজার রিপ্লাই করে এবং রিপ্লাই করা মেসেজটি বটের ফ্রেম মেসেজ হয়
-    if (type === "message_reply" && messageReply.messageID === lastBotMessageID[threadID]) {
+    // Step 2: যদি ইউজার রিপ্লাই করে এবং রিপ্লাই করা মেসেজ বটের ফ্রেম মেসেজ হয়
+    if (messageReply && messageReply.messageID === lastBotMessageID[threadID]) {
+      // Maria API থেকে রেসপন্স নাও
       const replyData = await axios.get(mariaApiUrl, {
         params: { text: body, lang: "bn" }
       });
       const botReply = replyData.data.reply || "❌ কোন রেপ্লাই পাওয়া যায়নি";
+
+      // সরাসরি reply হিসেবে পাঠাও
       return api.sendMessage(botReply, threadID, messageID);
     }
 
   } catch (err) {
-    console.error("Bot API Error:", err.message);
+    console.error("obot handleEvent error:", err);
   }
 };
 
-module.exports.run = function() {};
+module.exports.run = () => {};
