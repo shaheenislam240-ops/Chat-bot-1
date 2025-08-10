@@ -2,7 +2,7 @@ module.exports.config = {
   name: "callad",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭",
+  credits: "rX",
   description: "Report bug of your bot to admin or comment",
   commandCategory: "Admin",
   usages: "[msg]",
