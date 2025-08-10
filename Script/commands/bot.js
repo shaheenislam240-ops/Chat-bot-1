@@ -1,11 +1,11 @@
 const fs = global.nodemodule["fs-extra"];
 
 module.exports.config = {
-  name: "bot",
-  version: "1.0.2",
+  name: "obot",
+  version: "1.0.3",
   hasPermssion: 0,
   credits: "Modified by rX",
-  description: "Maria Baby-style reply system",
+  description: "Maria Baby-style reply system (only exact 'bot' trigger)",
   commandCategory: "noprefix",
   usages: "bot",
   cooldowns: 3
@@ -13,7 +13,10 @@ module.exports.config = {
 
 module.exports.handleEvent = async function({ api, event, Users }) {
   const { threadID, messageID, body, senderID } = event;
-  if (!body || !body.toLowerCase().includes("bot")) return; // যেকোনো জায়গায় bot থাকলে চলবে
+  
+  // no text or not exactly "bot" => ignore
+  if (!body) return;
+  if (body.trim().toLowerCase() !== "bot") return;
 
   const name = await Users.getNameUser(senderID);
 
@@ -34,7 +37,7 @@ module.exports.handleEvent = async function({ api, event, Users }) {
 `╭──────•◈•──────╮
    Hᴇʏ Xᴀɴ I’ᴍ Mᴀʀɪᴀ Bᴀʙʏ✨   
 
- ❄Dᴇᴀʀ, ${name}
+ ❄ Dᴇᴀʀ, ${name}
  💌 ${randReply}
 
 ╰──────•◈•──────╯`;
