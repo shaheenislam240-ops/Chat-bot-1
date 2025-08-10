@@ -41,7 +41,7 @@ const imageTriggers = [
   },
   {
     keywords: ["pixlist dew"],
-    imageUrl: "https://i.postimg.cc/CxccqWJZ/IMG-7174.png",
+    imageUrl: "https://i.postimg.cc/6q7ZkN04/IMG-7186.png",
     reply: "📜 Pixlist bY rX",
     fileName: "pixlist.png"
   }
