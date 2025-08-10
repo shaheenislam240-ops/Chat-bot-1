@@ -27,7 +27,7 @@ module.exports.run = function ({ api, event, args }) {
   const { threadID, messageID } = event;
   const totalCmds = commands.size;
 
-  const message = `✨ [ Guide For Beginners - ] ✨
+  const message = `✨ [ Guide For Beginners ] ✨
 
 ╭──── [ 𝗖𝗛𝗔𝗧 𝗔𝗜 ]
 │ ✧ baby✧ bby✧ jan✧
@@ -72,8 +72,8 @@ module.exports.run = function ({ api, event, args }) {
 ╰‣ A Facebook Bot
 ╰‣ CEO : Maria 🧃🐣
 ╰‣ ADMIN: rX Abdullah
-╰‣ If you don't know how to use commands,
-   Then Type: !help [commandName]
+╰‣ RIPORT FOR ISSUE,
+   type !callad (yourtext)
 `;
 
   return api.sendMessage(message, threadID, messageID);
