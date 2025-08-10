@@ -1,17 +1,14 @@
 const axios = require("axios");
 
-let simsim = ""; // Initially empty
+let simsim = "";
 
 (async () => {
   try {
     const res = await axios.get("https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json");
     if (res.data && res.data.baby) {
       simsim = res.data.baby;
-      
     }
-  } catch {
-  
-  }
+  } catch {}
 })();
 
 module.exports.config = {
