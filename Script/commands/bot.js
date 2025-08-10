@@ -5,7 +5,7 @@ const githubBaseApiUrl = "https://raw.githubusercontent.com/rummmmna21/rx-api/re
 let lastBotMessageID = {}; // থ্রেড অনুযায়ী বটের ফ্রেম মেসেজ আইডি ধরে রাখবে
 
 module.exports.config = {
-  name: "obot",
+  name: "bot",
   version: "1.0.9",
   hasPermssion: 0,
   credits: "Modified by rX",
