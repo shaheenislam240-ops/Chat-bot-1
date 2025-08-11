@@ -1,0 +1,26 @@
+module.exports.config = {
+  name: "moneylist",
+  version: "1.0.0",
+  hasPermssion: 0,
+  credits: "rX abdullah",
+  description: "Show money list in group",
+  commandCategory: "info",
+  usages: "moneylist",
+  cooldowns: 5,
+};
+
+module.exports.run = async function({ api, event, Currencies, Users }) {
+  const { threadID, messageID } = event;
+  const threadInfo = await api.getThreadInfo(threadID);
+  const allUserIDs = threadInfo.participantIDs;
+
+  let moneyList = [];
+  for (const id of allUserIDs) {
+    const data = await Currencies.getData(id);
+    const name = await Users.getName(id);
+    moneyList.push(`${name}: $${data.money || 0}`);
+  }
+
+  const msg = "💰 Money list in this group:\n" + moneyList.join("\n");
+  return api.sendMessage(msg, threadID, messageID);
+};
