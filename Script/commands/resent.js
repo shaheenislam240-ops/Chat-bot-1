@@ -2,7 +2,7 @@ module.exports.config = {
     name: "resend",
     version: "2.0.0",
     hasPermssion: 1,
-    credits: "Priyansh Rajput",
+    credits: "rX",
     description: "Là resend thôi Fix Ver > 1.2.13",
     commandCategory: "general",
     usages: "",
@@ -73,8 +73,8 @@ module.exports.languages = {
         successText: "resend thành công"
     },
     en: {
-        on: "on",
-        off: "off",
+        on: "『ON』",
+        off: "『OFF』",
         successText: "resend success!"
     }
 };
