@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "info",
 	version: "1.0.1", 
 	hasPermssion: 0,
-	credits: "Md Abdullah",
+	credits: "rX Abdullah",
 	description: "Admin and Bot info.",
 	commandCategory: "...",
 	cooldowns: 1
@@ -24,7 +24,7 @@ module.exports.run = async function({ api, event }) {
 ╰─────────────────────╯
 
 📛 Bot Name: ${global.config.BOTNAME}
-👑 Owner: Md Abdullah
+👑 Owner: rX Abdullah
 
 📌 Facebook:
 ╭──────────────╮
