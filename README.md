@@ -40,7 +40,7 @@ Welcome to the **RX ChatBot** intro project. This is a sleek, hacker-style webpa
 ### 1. Repository Clone Karein
 
 ```bash
-soon
+https://github.com/rxmaria761/rX-Chat-bot-fb-.git
 ```
 
 ### 2. Dependencies Installed
