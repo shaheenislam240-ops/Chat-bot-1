@@ -1,10 +1,11 @@
 const fs = require("fs");
+const path = require("path");
 
 module.exports.config = {
   name: "help",
   version: "1.0.3",
   hasPermssion: 0,
-  credits: "rX", // don't change this credit
+  credits: "rX",
   description: "Show all command list with help video",
   commandCategory: "system",
   usages: "[name module]",
@@ -36,7 +37,12 @@ module.exports.languages = {
 
 module.exports.run = async function ({ api, event }) {
   const { threadID, messageID } = event;
-  const totalCmds = global.client.commands.size;
+  // Correct path to catch/helpvideo.mp4 assuming help.js is in /commands
+  const videoPath = path.join(__dirname, "..", "catch", "helpvideo.mp4");
+
+  if (!fs.existsSync(videoPath)) {
+    return api.sendMessage("Sorry, help video not found on the server.", threadID, messageID);
+  }
 
   const message = `✨ [ Guide For Beginners ] ✨
 
@@ -79,7 +85,7 @@ module.exports.run = async function ({ api, event }) {
 │ ✧ maria pik dew✧ khabo✧ bara
 ╰───────────────◊
 ╭─『 RX  CHAT BOT 』
-╰‣ Total commands: ${totalCmds}
+╰‣ Total commands: ${global.client.commands.size}
 ╰‣ A Facebook Bot
 ╰‣ CEO : Maria 🧃🐣
 ╰‣ ADMIN: rX Abdullah
@@ -87,15 +93,13 @@ module.exports.run = async function ({ api, event }) {
    type !callad (yourtext)
 `;
 
-  const videoPath = __dirname + "/catch/helpvideo.mp4";
-
   try {
     await api.sendMessage({
       body: message,
       attachment: fs.createReadStream(videoPath)
     }, threadID, messageID);
   } catch (error) {
-    console.error("Error sending help message:", error);
-    await api.sendMessage("Sorry, failed to send help video.", threadID, messageID);
+    console.error("Error sending help video:", error);
+    await api.sendMessage("Failed to send help video due to error.", threadID, messageID);
   }
 };
