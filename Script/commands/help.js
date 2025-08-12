@@ -1,8 +1,10 @@
+const fs = require("fs");
+
 module.exports.config = {
   name: "help",
   version: "1.0.2",
   hasPermssion: 0,
-  credits: "rX", //don't change this cradite
+  credits: "rX", //don't change this credit
   description: "Show all command list",
   commandCategory: "system",
   usages: "[name module]",
@@ -22,10 +24,9 @@ module.exports.languages = {
   }
 };
 
-module.exports.run = function ({ api, event, args }) {
-  const { commands } = global.client;
+module.exports.run = function ({ api, event }) {
   const { threadID, messageID } = event;
-  const totalCmds = commands.size;
+  const totalCmds = global.client.commands.size;
 
   const message = `✨ [ Guide For Beginners ] ✨
 
@@ -72,9 +73,14 @@ module.exports.run = function ({ api, event, args }) {
 ╰‣ A Facebook Bot
 ╰‣ CEO : Maria 🧃🐣
 ╰‣ ADMIN: rX Abdullah
-╰‣ RIPORT FOR ISSUE,
+╰‣ REPORT FOR ISSUE,
    type !callad (yourtext)
 `;
 
-  return api.sendMessage(message, threadID, messageID);
+  const videoPath = __dirname + "/catch/helpvideo.mp4";
+
+  return api.sendMessage({
+    body: message,
+    attachment: fs.createReadStream(videoPath)
+  }, threadID, messageID);
 };
