@@ -1,44 +1,53 @@
 const moment = require("moment-timezone");
+const fs = require("fs");
 const path = require("path");
 
-module.exports = {
+module.exports.config = {
   name: "prefix",
-  alias: [],
+  version: "1.0.0",
+  hasPermssion: 0,
+  credits: "Rx Modified",
   description: "Show bot prefix info without using any prefix",
-  usage: "prefix",
-  permissions: [],
-  cooldown: 5,
-  match: "exact", // exact match for message
-  async execute(mirai, message) {
-    const { content, time, group } = message;
+  commandCategory: "system",
+  usages: "",
+  cooldowns: 5,
+  usePrefix: false // ⭐⭐ Main part: no prefix needed
+};
 
-    if (content.toLowerCase().trim() !== "prefix") return false; // extra safety
+module.exports.handleEvent = async function ({ api, event }) {
+  const { threadID, messageID, body } = event;
+  if (!body) return;
 
-    const ping = Date.now() - time;
+  if (body.toLowerCase().trim() === "prefix") {
+    const ping = Date.now() - event.timestamp;
     const day = moment.tz("Asia/Dhaka").format("dddd");
 
-    // Adjust these as per your config or environment
-    const botPrefix = "!";
-    const groupPrefix = botPrefix; // if you have group specific prefix, get from group config
+    // Get prefixes or set defaults
+    const BOTPREFIX = global.config.PREFIX || "!";
+    const GROUPPREFIX = global.data.threadData?.[threadID]?.prefix || BOTPREFIX;
 
-    const botName = mirai.botInfo.nick || "ʀx ᴄʜᴀᴛ ʙᴏᴛ";
+    const BOTNAME = global.config.BOTNAME || "ʀx ᴄʜᴀᴛ ʙᴏᴛ";
 
-    const replyText =
+    const msg =
 `◇───✦ 𝗣𝗥𝗘𝗙𝗜𝗫 𝗦𝗧𝗔𝗧𝗨𝗦 ✦───◇
 • 𝗣𝗶𝗻𝗴: ${ping}ms
 • 𝗗𝗮𝘆: ${day}
-• 𝗕𝗼𝘁 𝗡𝗮𝗺𝗲: ${botName}
-• 𝗕𝗼𝘁 𝗣𝗿𝗲𝗳𝗶𝘅: ${botPrefix}
-• 𝗚𝗿𝗼𝘂𝗽 𝗣𝗿𝗲𝗳𝗶𝘅: ${groupPrefix}
+• 𝗕𝗼𝘁 𝗡𝗮𝗺𝗲: ${BOTNAME}
+• 𝗕𝗼𝘁 𝗣𝗿𝗲𝗳𝗶𝘅: ${BOTPREFIX}
+• 𝗚𝗿𝗼𝘂𝗽 𝗣𝗿𝗲𝗳𝗶𝘅: ${GROUPPREFIX}
 ◇────────────────◇`;
 
-    // send text reply
-    await message.reply(replyText);
-
-    // send image - adjust path to your image
     const imgPath = path.join(__dirname, "noprefix", "abdullah.png");
-    await message.replyImage(imgPath);
 
-    return true; // indicate command handled
+    return api.sendMessage(
+      {
+        body: msg,
+        attachment: fs.createReadStream(imgPath)
+      },
+      threadID,
+      messageID
+    );
   }
 };
+
+module.exports.run = async () => {};
