@@ -43,17 +43,16 @@ module.exports.handleEvent = async function ({ api, event }) {
 
     const pngPath = path.join(__dirname, "noprefix", "abdullah.png");
 
-    if (!fs.existsSync(pngPath)) {
-      return api.sendMessage("❌ abdullah.gif not found in noprefix folder.", threadID, messageID);
-    }
-
-    return api.sendMessage(
-      {
-        body: msg,
-        attachment: fs.createReadStream(pngPath)
-      },
-      threadID,
-      messageID
-    );
-  }
-};
+if (fs.existsSync(pngPath)) {
+  return api.sendMessage(
+    {
+      body: msg,
+      attachment: fs.createReadStream(pngPath)
+    },
+    threadID,
+    messageID
+  );
+} else {
+  // File missing hole sudhu text send korbe
+  return api.sendMessage(msg, threadID, messageID);
+}
