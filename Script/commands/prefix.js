@@ -37,12 +37,12 @@ module.exports.handleEvent = async function ({ api, event }) {
 • 𝗚𝗿𝗼𝘂𝗽 𝗣𝗿𝗲𝗳𝗶𝘅: ${GROUPPREFIX}
 ◇────────────────◇`;
 
-    const imgPath = path.join(__dirname, "noprefix", "abdullah.png");
+    const gifPath = path.join(__dirname, "noprefix", "abdullah.gif");
 
     return api.sendMessage(
       {
         body: msg,
-        attachment: fs.createReadStream(imgPath)
+        attachment: fs.createReadStream(gifPath)
       },
       threadID,
       messageID
