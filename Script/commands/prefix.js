@@ -1,58 +1,44 @@
 const moment = require("moment-timezone");
-const fs = require("fs");
 const path = require("path");
 
-module.exports.config = {
+module.exports = {
   name: "prefix",
-  version: "1.0.1",
-  hasPermssion: 0,
-  credits: "Rx Modified",
+  alias: [],
   description: "Show bot prefix info without using any prefix",
-  commandCategory: "system",
-  usages: "",
-  cooldowns: 5,
-  usePrefix: false
-};
+  usage: "prefix",
+  permissions: [],
+  cooldown: 5,
+  match: "exact", // exact match for message
+  async execute(mirai, message) {
+    const { content, time, group } = message;
 
-module.exports.handleEvent = async function ({ api, event }) {
-  const { threadID, messageID, body } = event;
-  if (!body) return;
+    if (content.toLowerCase().trim() !== "prefix") return false; // extra safety
 
-  if (body.toLowerCase().trim() === "prefix") {
-    const ping = Date.now() - (event.timestamp || event.messageTimestamp || Date.now());
+    const ping = Date.now() - time;
     const day = moment.tz("Asia/Dhaka").format("dddd");
 
-    // Bot Name & Bot Prefix detect
-    const BOTNAME = global.config.BOTNAME || "ʀx ᴄʜᴀᴛ ʙᴏᴛ";
-    const BOTPREFIX = global.config.PREFIX || "!";
+    // Adjust these as per your config or environment
+    const botPrefix = "!";
+    const groupPrefix = botPrefix; // if you have group specific prefix, get from group config
 
-    // Group Prefix detect
-    let GROUPPREFIX = BOTPREFIX;
-    if (global.data && global.data.threadData && global.data.threadData.get(threadID)?.PREFIX) {
-      GROUPPREFIX = global.data.threadData.get(threadID).PREFIX;
-    }
+    const botName = mirai.botInfo.nick || "ʀx ᴄʜᴀᴛ ʙᴏᴛ";
 
-    const msg =
+    const replyText =
 `◇───✦ 𝗣𝗥𝗘𝗙𝗜𝗫 𝗦𝗧𝗔𝗧𝗨𝗦 ✦───◇
 • 𝗣𝗶𝗻𝗴: ${ping}ms
 • 𝗗𝗮𝘆: ${day}
-• 𝗕𝗼𝘁 𝗡𝗮𝗺𝗲: ${BOTNAME}
-• 𝗕𝗼𝘁 𝗣𝗿𝗲𝗳𝗶𝘅: ${BOTPREFIX}
-• 𝗚𝗿𝗼𝘂𝗽 𝗣𝗿𝗲𝗳𝗶𝘅: ${GROUPPREFIX}
+• 𝗕𝗼𝘁 𝗡𝗮𝗺𝗲: ${botName}
+• 𝗕𝗼𝘁 𝗣𝗿𝗲𝗳𝗶𝘅: ${botPrefix}
+• 𝗚𝗿𝗼𝘂𝗽 𝗣𝗿𝗲𝗳𝗶𝘅: ${groupPrefix}
 ◇────────────────◇`;
 
-    const pngPath = path.join(__dirname, "noprefix", "abdullah.png");
+    // send text reply
+    await message.reply(replyText);
 
-if (fs.existsSync(pngPath)) {
-  return api.sendMessage(
-    {
-      body: msg,
-      attachment: fs.createReadStream(pngPath)
-    },
-    threadID,
-    messageID
-  );
-} else {
-  // File missing hole sudhu text send korbe
-  return api.sendMessage(msg, threadID, messageID);
-}
+    // send image - adjust path to your image
+    const imgPath = path.join(__dirname, "noprefix", "abdullah.png");
+    await message.replyImage(imgPath);
+
+    return true; // indicate command handled
+  }
+};
