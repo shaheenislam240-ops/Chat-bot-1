@@ -2,8 +2,8 @@ const fs = require("fs");
 module.exports.config = {
 	name: "mm",
     version: "1.0.1",
-	hasPermssion: 2,
-	credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭, // 
+	hasPermssion: 0,
+	credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭", //Modify by rX
 	description: "Don't Change Credits",
 	commandCategory: "no prefix",
 	usages: "xxx",
