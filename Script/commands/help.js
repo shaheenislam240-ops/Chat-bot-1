@@ -1,9 +1,12 @@
+const fs = require("fs");
+const path = require("path");
+
 module.exports.config = {
   name: "help",
-  version: "1.0.2",
+  version: "1.0.3",
   hasPermssion: 0,
-  credits: "rX", //don't change this cradite
-  description: "Show all command list",
+  credits: "rX", //don't change this credit
+  description: "Show all command list with GIF from cache",
   commandCategory: "system",
   usages: "[name module]",
   cooldowns: 5,
@@ -22,7 +25,7 @@ module.exports.languages = {
   }
 };
 
-module.exports.run = function ({ api, event, args }) {
+module.exports.run = function ({ api, event }) {
   const { commands } = global.client;
   const { threadID, messageID } = event;
   const totalCmds = commands.size;
@@ -76,5 +79,19 @@ module.exports.run = function ({ api, event, args }) {
    type !callad (yourtext)
 `;
 
-  return api.sendMessage(message, threadID, messageID);
+  // Path to your cached GIF file
+  const gifPath = path.join(__dirname, "cache", "help.gif");
+
+  if (!fs.existsSync(gifPath)) {
+    return api.sendMessage("❌ help.gif not found in cache folder.", threadID, messageID);
+  }
+
+  return api.sendMessage(
+    {
+      body: message,
+      attachment: fs.createReadStream(gifPath)
+    },
+    threadID,
+    messageID
+  );
 };
