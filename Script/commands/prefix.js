@@ -45,7 +45,7 @@ module.exports.handleEvent = async function ({ api, event }) {
 
     return api.sendMessage({
       body: msg,
-      attachment: fs.createReadStream(imgPath)
+      attachment: fs.createReadStream(gifPath)
     }, threadID, messageID);
   }
 };
