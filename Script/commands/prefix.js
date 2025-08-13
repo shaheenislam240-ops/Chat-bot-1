@@ -43,11 +43,16 @@ module.exports.handleEvent = async function ({ api, event }) {
 
     const gifPath = path.join(__dirname, "noprefix", "abdullah.gif");
 
-    return api.sendMessage({
-      body: msg,
-      attachment: fs.createReadStream(gifPath)
-    }, threadID, messageID);
+  if (!fs.existsSync(gifPath)) {
+    return api.sendMessage("❌ help.gif not found in cache folder.", threadID, messageID);
   }
-};
 
-module.exports.run = async () => {};
+  return api.sendMessage(
+    {
+      body: message,
+      attachment: fs.createReadStream(gifPath)
+    },
+    threadID,
+    messageID
+  );
+};
