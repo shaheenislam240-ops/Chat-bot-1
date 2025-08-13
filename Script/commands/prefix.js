@@ -41,16 +41,16 @@ module.exports.handleEvent = async function ({ api, event }) {
 • 𝗚𝗿𝗼𝘂𝗽 𝗣𝗿𝗲𝗳𝗶𝘅: ${GROUPPREFIX}
 ◇────────────────◇`;
 
-    const gifPath = path.join(__dirname, "noprefix", "abdullah.gif");
+    const pngPath = path.join(__dirname, "noprefix", "abdullah.png");
 
-    if (!fs.existsSync(gifPath)) {
+    if (!fs.existsSync(pngPath)) {
       return api.sendMessage("❌ abdullah.gif not found in noprefix folder.", threadID, messageID);
     }
 
     return api.sendMessage(
       {
         body: msg,
-        attachment: fs.createReadStream(gifPath)
+        attachment: fs.createReadStream(pngPath)
       },
       threadID,
       messageID
