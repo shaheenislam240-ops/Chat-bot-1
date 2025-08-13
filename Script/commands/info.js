@@ -1,20 +1,19 @@
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const moment = require("moment-timezone");
 
 module.exports.config = {
 	name: "info",
-	version: "1.0.1", 
+	version: "1.0.2", 
 	hasPermssion: 0,
 	credits: "rX Abdullah",
-	description: "Admin and Bot info with video.",
+	description: "Admin and Bot info with video (cached).",
 	commandCategory: "...",
 	cooldowns: 1
 };
 
 module.exports.run = async function({ api, event }) {
-	const moment = require("moment-timezone");
-
 	const time = process.uptime(),
 		hours = Math.floor(time / (60 * 60)),
 		minutes = Math.floor((time % (60 * 60)) / 60),
@@ -37,43 +36,45 @@ module.exports.run = async function({ api, event }) {
 ▶ 𝗨𝗽𝘁𝗶𝗺𝗲: ${hours}h ${minutes}m ${seconds}s
 ━━━━━━━━━━━━━━━━━━━━━━━`;
 
-	// Video URL
+	// Video settings
 	const videoUrl = "https://i.imgur.com/JPlo57B.mp4";
-
-	// Temp file path
-	const filePath = path.resolve(__dirname, "temp_video.mp4");
+	const cacheDir = path.join(__dirname, "cache");
+	const cacheFile = path.join(cacheDir, "info_video.mp4");
 
 	try {
-		// Download video
-		const response = await axios({
-			url: videoUrl,
-			method: "GET",
-			responseType: "stream"
-		});
+		// Make sure cache folder exists
+		if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
-		// Save video to temp file
-		const writer = fs.createWriteStream(filePath);
-		response.data.pipe(writer);
+		// Download video only if not cached
+		if (!fs.existsSync(cacheFile)) {
+			api.sendMessage("⏳ Downloading video from Imgur, please wait...", event.threadID);
 
-		await new Promise((resolve, reject) => {
-			writer.on("finish", resolve);
-			writer.on("error", reject);
-		});
+			const response = await axios({
+				url: videoUrl,
+				method: "GET",
+				responseType: "stream"
+			});
 
-		// Send message with video attachment
+			const writer = fs.createWriteStream(cacheFile);
+			response.data.pipe(writer);
+
+			await new Promise((resolve, reject) => {
+				writer.on("finish", resolve);
+				writer.on("error", reject);
+			});
+		}
+
+		// Send cached video
 		await api.sendMessage(
 			{
 				body: message,
-				attachment: fs.createReadStream(filePath)
+				attachment: fs.createReadStream(cacheFile)
 			},
 			event.threadID
 		);
 
-		// Delete temp video file after sending
-		fs.unlinkSync(filePath);
-
 	} catch (error) {
 		console.error(error);
-		api.sendMessage("❌ Failed to download or send the video.", event.threadID);
+		api.sendMessage("❌ Failed to load the video.", event.threadID);
 	}
 };
