@@ -2,7 +2,7 @@
   "name": "RX CHAT BOT",
   "version": "10.1.1",
   "description": "made by rX Abdullah",
-  "main": "Priyansh.js",
+  "main": "Cyber.js",
   "engines": {
       "node": "20.x",
       "npm": "10.0.0"
