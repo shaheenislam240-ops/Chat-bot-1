@@ -18,16 +18,16 @@ async function fetchMentionAPI() {
 
 module.exports.config = {
   name: "babyteach",
-  version: "6.0.0",
+  version: "7.0.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Teach, reply & delete system via mentionapi API only (mention user in reply)",
+  description: "Teach, reply & delete system via mentionapi API only (mention user + multiple replies + list commands)",
   commandCategory: "noprefix",
-  usages: "!teach <trigger> - <reply>, !delteach <trigger>",
+  usages: "!teach <trigger> - <reply>, !delteach <trigger>, !teach list, !teach msg <trigger>",
   cooldowns: 0
 };
 
-// ===== Reply system (normal triggers with mention) =====
+// ===== Reply system (normal triggers with mention + multiple replies support) =====
 module.exports.handleEvent = async function ({ api, event, Users }) {
   if (!event.body) return;
   const text = event.body.trim();
@@ -37,10 +37,12 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
   try {
     const res = await axios.get(`${mentionApiUrl}/reply/${encodeURIComponent(text)}`);
-    if (res.data?.reply) {
+    const replies = Array.isArray(res.data?.reply) ? res.data.reply : (res.data?.reply ? [res.data.reply] : []);
+    if (replies.length > 0) {
       const name = await Users.getNameUser(event.senderID);
+      const randomReply = replies[Math.floor(Math.random() * replies.length)];
 
-      const message = `@${name} ${res.data.reply}`;
+      const message = `@${name} ${randomReply}`;
       const mentions = [{
         tag: `@${name}`,
         id: event.senderID,
@@ -50,12 +52,10 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
       return api.sendMessage({ body: message, mentions }, event.threadID, event.messageID);
     }
-  } catch (_) {
-    // silently fail
-  }
+  } catch (_) { }
 };
 
-// ===== Teach / Delete commands via mentionapi API =====
+// ===== Teach / Delete / List commands via mentionapi API =====
 module.exports.run = async function ({ api, event, args }) {
   const { threadID, messageID } = event;
   const content = args.join(" ").trim();
@@ -65,6 +65,42 @@ module.exports.run = async function ({ api, event, args }) {
 
   // ===== Teach =====
   if (event.body.startsWith("!teach ")) {
+    const subCmd = args[0].toLowerCase();
+
+    // ===== List all triggers =====
+    if (subCmd === "list") {
+      try {
+        const res = await axios.get(`${mentionApiUrl}/list`);
+        if (res.data?.triggers?.length) {
+          const listMsg = res.data.triggers
+            .map((t, i) => `${i + 1}. ${t.trigger} (${t.replies.length} replies)`)
+            .join("\n");
+          return api.sendMessage(listMsg, threadID, messageID);
+        } else {
+          return api.sendMessage("⚠ No triggers found.", threadID, messageID);
+        }
+      } catch (err) {
+        return api.sendMessage(`❌ API error: ${err.message}`, threadID, messageID);
+      }
+    }
+
+    // ===== Show all replies for a trigger =====
+    if (subCmd === "msg" && args[1]) {
+      const trigger = args.slice(1).join(" ").trim();
+      try {
+        const res = await axios.get(`${mentionApiUrl}/replies/${encodeURIComponent(trigger)}`);
+        if (res.data?.replies?.length) {
+          const msgList = res.data.replies.map((r, i) => `${i + 1}. ${r}`).join("\n");
+          return api.sendMessage(`📝 Replies for "${trigger}":\n${msgList}`, threadID, messageID);
+        } else {
+          return api.sendMessage(`⚠ No replies found for "${trigger}"`, threadID, messageID);
+        }
+      } catch (err) {
+        return api.sendMessage(`❌ API error: ${err.message}`, threadID, messageID);
+      }
+    }
+
+    // ===== Normal teach: trigger - reply =====
     const parts = content.split(" - ");
     if (parts.length < 2) return api.sendMessage("❌ Format: !teach <trigger> - <reply>", threadID, messageID);
 
