@@ -9,7 +9,7 @@ module. exports. config = {
 }
 module. exports. handleEvent = async function({ api, event, args, Users,Threads }) {
   const moment = require("moment-timezone");
-  var timeNow = moment.tz("Asia/Manila").format("HH:mm:ss");
+  var timeNow = moment.tz("Asia/Dhaka").format("HH:mm:ss");
   var idad = global.config.ADMINBOT;    
   console.log(timeNow)
   var seconds = moment.tz("Asia/Manila").format("ss");
@@ -35,6 +35,6 @@ module. exports. handleEvent = async function({ api, event, args, Users,Threads 
 }
 module. exports. run = async  ({ api, event, args }) => {
       const moment = require("moment-timezone");
-      var timeNow = moment.tz("Asia/Manila").format("HH:mm:ss");
+      var timeNow = moment.tz("Asia/Dhaka").format("HH:mm:ss");
         api.sendMessage(`${timeNow}`, event.threadID)
 }
