@@ -18,7 +18,7 @@ async function fetchMentionAPI() {
 
 module.exports.config = {
   name: "babyteach",
-  version: "2.0.0",
+  version: "2.1.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
   description: "Teach, reply & delete system via mentionapi API",
@@ -56,19 +56,15 @@ module.exports.run = async function ({ api, event, args }) {
   // ===== Teach =====
   if (event.body.startsWith("!teach ")) {
     const parts = content.split(" - ");
-    if (parts.length < 2) {
-      return api.sendMessage("❌ Format: !teach <trigger> - <reply>", threadID, messageID);
-    }
+    if (parts.length < 2) return api.sendMessage("❌ Format: !teach <trigger> - <reply>", threadID, messageID);
+
     const trigger = parts[0].trim();
     const reply = parts[1].trim();
 
     try {
       const res = await axios.post(`${mentionApiUrl}/teach`, { trigger, reply });
-      if (res.data?.success) {
-        return api.sendMessage(`✅ Taught: "${trigger}" → "${reply}"`, threadID, messageID);
-      } else {
-        return api.sendMessage(`⚠ Failed to teach: ${res.data?.message || "Unknown error"}`, threadID, messageID);
-      }
+      const msg = res.data?.message || `✅ Trigger saved: "${trigger}"`;
+      return api.sendMessage(msg, threadID, messageID);
     } catch (err) {
       return api.sendMessage(`❌ API error: ${err.message}`, threadID, messageID);
     }
@@ -79,11 +75,8 @@ module.exports.run = async function ({ api, event, args }) {
     const trigger = content.trim();
     try {
       const res = await axios.delete(`${mentionApiUrl}/delete/${encodeURIComponent(trigger)}`);
-      if (res.data?.success) {
-        return api.sendMessage(`🗑 Deleted trigger: "${trigger}"`, threadID, messageID);
-      } else {
-        return api.sendMessage(`⚠ Failed to delete: ${res.data?.message || "Not found"}`, threadID, messageID);
-      }
+      const msg = res.data?.message || `🗑 Trigger deleted: "${trigger}"`;
+      return api.sendMessage(msg, threadID, messageID);
     } catch (err) {
       return api.sendMessage(`❌ API error: ${err.message}`, threadID, messageID);
     }
