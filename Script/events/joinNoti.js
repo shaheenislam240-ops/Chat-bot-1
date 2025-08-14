@@ -29,7 +29,7 @@ module.exports.run = async function ({ api, event }) {
   const memberCount = threadInfo.participantIDs.length;
 
   // ✅ Background image directly from link
-  const bgURL = "https://i.postimg.cc/yd5djMkh/IMG-7004.jpg";
+  const bgURL = "https://i.postimg.cc/rmkVVbsM/r07qxo-R-Download.jpg";
   const avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
 
   const cacheDir = path.join(__dirname, "cache");
