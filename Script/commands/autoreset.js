@@ -1,62 +1,41 @@
-const moment = require("moment-timezone");
-
 module.exports.config = {
     name: "autoreset",
-    version: "2.0.0",
-    hasPermssion: 2,
-    credits: "rX | Modified by Priyansh",
-    description: "AUTO RESTART with ON/OFF system",
+    version: "1.0.2",
+    hasPermssion: 0,
+    credits: "rX (Modified by Priyansh)",
+    description: "Auto restart every 3 hours and notify all groups",
     commandCategory: "System",
     cooldowns: 5
 };
 
-// Default setting (ON)
-let isAutoResetOn = true;
+module.exports.handleEvent = async function({ api }) {
+    const moment = require("moment-timezone");
+    const timeNow = moment.tz("Asia/Dhaka").format("HH:mm:ss");
+    const seconds = parseInt(moment.tz("Asia/Dhaka").format("ss"));
+    const hour = parseInt(moment.tz("Asia/Dhaka").format("HH"));
 
-module.exports.handleEvent = async function({ api, event, Threads }) {
-    if (!isAutoResetOn) return; // Skip if OFF
+    // প্রতি 3 ঘণ্টা পরপর চেক (0,3,6,9,12,15,18,21)
+    if (hour % 3 === 0 && seconds < 6) {
+        try {
+            const allThreads = global.data.allThreadID || [];
+            for (let tid of allThreads) {
+                // শুধু গ্রুপে মেসেজ যাবে
+                if (!tid.toString().startsWith("0")) {
+                    api.sendMessage(`⚡️ Now it's: ${timeNow}\nBaby will restart in a moment!`, tid);
+                }
+            }
 
-    var timeNow = moment.tz("Asia/Dhaka").format("HH:mm:ss");
-    var seconds = moment.tz("Asia/Dhaka").format("ss");
+            // 10 সেকেন্ড পরে রিস্টার্ট
+            setTimeout(() => process.exit(1), 10000);
 
-    // Create restart times for every hour
-    let restartTimes = [];
-    for (let h = 1; h <= 12; h++) {
-        let hour = h.toString().padStart(2, "0");
-        restartTimes.push(`${hour}:00:${seconds}`);
-    }
-
-    if (restartTimes.includes(timeNow) && seconds < 6) {
-        let allThreads = await Threads.getAll(["threadID"]); // All groups
-        for (let thread of allThreads) {
-            setTimeout(() => {
-                api.sendMessage(
-                    `⚡️ Now it's: ${timeNow}\nBaby will restart!!!`,
-                    thread.threadID,
-                    () => process.exit(1)
-                );
-            }, 1000);
+        } catch (err) {
+            console.error(err);
         }
     }
 };
 
-module.exports.run = async function({ api, event, args }) {
-    if (args[0] === "on") {
-        isAutoResetOn = true;
-        return api.sendMessage("✅ AutoReset is now ON", event.threadID);
-    }
-    if (args[0] === "off") {
-        isAutoResetOn = false;
-        return api.sendMessage("❌ AutoReset is now OFF", event.threadID);
-    }
-    if (args[0] === "status") {
-        return api.sendMessage(
-            `📌 AutoReset is currently: ${isAutoResetOn ? "ON ✅" : "OFF ❌"}`,
-            event.threadID
-        );
-    }
-
-    // Default: Show time
-    var timeNow = moment.tz("Asia/Dhaka").format("HH:mm:ss");
-    api.sendMessage(`🕒 Current Time: ${timeNow}`, event.threadID);
+module.exports.run = async ({ api, event }) => {
+    const moment = require("moment-timezone");
+    const timeNow = moment.tz("Asia/Dhaka").format("HH:mm:ss");
+    api.sendMessage(`Current time: ${timeNow}`, event.threadID);
 };
