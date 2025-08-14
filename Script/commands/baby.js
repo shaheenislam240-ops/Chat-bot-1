@@ -13,10 +13,10 @@ let simsim = "";
 
 module.exports.config = {
   name: "baby",
-  version: "1.0.5",
+  version: "1.1.0",
   hasPermssion: 0,
-  credits: "rX",
-  description: "AI Chatbot with Teach & List support",
+  credits: "rX | Maria (Mention Mode Added)",
+  description: "AI Chatbot with Teach, List & Mention support",
   commandCategory: "chat",
   usages: "[query]",
   cooldowns: 0,
@@ -31,6 +31,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
   try {
     if (!simsim) return api.sendMessage("❌ API not loaded yet.", event.threadID, event.messageID);
 
+    // ---------- AutoTeach ----------
     if (args[0] === "autoteach") {
       const mode = args[1];
       if (!["on", "off"].includes(mode)) {
@@ -41,6 +42,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(`✅ Auto teach is now ${status ? "ON 🟢" : "OFF 🔴"}`, event.threadID, event.messageID);
     }
 
+    // ---------- List ----------
     if (args[0] === "list") {
       const res = await axios.get(`${simsim}/list`);
       return api.sendMessage(
@@ -50,6 +52,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       );
     }
 
+    // ---------- Normal msg ----------
     if (args[0] === "msg") {
       const trigger = args.slice(1).join(" ").trim();
       if (!trigger) return api.sendMessage("❌ | Use: !baby msg [trigger]", event.threadID, event.messageID);
@@ -64,6 +67,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(msg, event.threadID, event.messageID);
     }
 
+    // ---------- Normal teach ----------
     if (args[0] === "teach") {
       const parts = query.replace("teach ", "").split(" - ");
       if (parts.length < 2)
@@ -74,6 +78,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(`✅ ${res.data.message}`, event.threadID, event.messageID);
     }
 
+    // ---------- Edit ----------
     if (args[0] === "edit") {
       const parts = query.replace("edit ", "").split(" - ");
       if (parts.length < 3)
@@ -84,6 +89,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(res.data.message, event.threadID, event.messageID);
     }
 
+    // ---------- Remove ----------
     if (["remove", "rm"].includes(args[0])) {
       const parts = query.replace(/^(remove|rm)\s*/, "").split(" - ");
       if (parts.length < 2)
@@ -94,6 +100,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       return api.sendMessage(res.data.message, event.threadID, event.messageID);
     }
 
+    // ---------- Fallback ----------
     if (!query) {
       const texts = ["Hey baby 💖", "Yes, I'm here 😘"];
       const reply = texts[Math.floor(Math.random() * texts.length)];
@@ -111,11 +118,13 @@ module.exports.run = async function ({ api, event, args, Users }) {
         });
       }
     }, event.messageID);
+
   } catch (e) {
     return api.sendMessage(`❌ Error: ${e.message}`, event.threadID, event.messageID);
   }
 };
 
+// ---------- Handle Reply ----------
 module.exports.handleReply = async function ({ api, event, Users }) {
   const senderName = await Users.getNameUser(event.senderID);
   const text = event.body?.toLowerCase();
@@ -138,12 +147,14 @@ module.exports.handleReply = async function ({ api, event, Users }) {
   }
 };
 
+// ---------- Handle Event ----------
 module.exports.handleEvent = async function ({ api, event, Users }) {
   const text = event.body?.toLowerCase().trim();
   if (!text || !simsim) return;
 
   const senderName = await Users.getNameUser(event.senderID);
 
+  // ---------- Triggered Replies ----------
   const triggers = ["baby", "bby", "xan", "bbz", "maria", "hippi"];
   if (triggers.includes(text)) {
     const replies = [
@@ -176,28 +187,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     });
   }
 
-  const matchPrefix = /^(baby|bot|jan|bbz|maria|hippi)\s+/i;
-  if (matchPrefix.test(text)) {
-    const query = text.replace(matchPrefix, "").trim();
-    if (!query) return;
-
-    try {
-      const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
-      return api.sendMessage(res.data.response, event.threadID, (err, info) => {
-        if (!err) {
-          global.client.handleReply.push({
-            name: module.exports.config.name,
-            messageID: info.messageID,
-            author: event.senderID,
-            type: "simsimi"
-          });
-        }
-      }, event.messageID);
-    } catch (e) {
-      return api.sendMessage(`❌ Error: ${e.message}`, event.threadID, event.messageID);
-    }
-  }
-
+  // ---------- AutoTeach Reply ----------
   if (event.type === "message_reply") {
     try {
       const setting = await axios.get(`${simsim}/setting`);
@@ -218,5 +208,48 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     } catch (e) {
       console.log("❌ Auto-teach setting error:", e.message);
     }
+  }
+};
+
+// ---------- Future Mention System ----------
+module.exports.futureMention = async function({ api, event, Users }) {
+  if (!simsim) return;
+  const text = event.body?.trim();
+  if (!text) return;
+
+  const uid = event.senderID;
+  const senderName = await Users.getNameUser(uid);
+
+  if (text.startsWith("!baby mention msg ")) {
+    const content = text.replace("!baby mention msg ", "").trim();
+    const parts = content.split(" - ");
+    if (parts.length < 2) return api.sendMessage("❌ Use: !baby mention msg <trigger> - @(reply)", event.threadID);
+
+    const trigger = parts[0].toLowerCase().trim();
+    let reply = parts[1].trim();
+    reply = reply.replace(/@/g, "{mention}");
+
+    try {
+      await axios.get(`${simsim}/teach?ask=${encodeURIComponent(trigger)}&ans=${encodeURIComponent(reply)}&senderID=${uid}&senderName=${encodeURIComponent(senderName)}`);
+      return api.sendMessage(`✅ Trigger "${trigger}" saved with mention mode!`, event.threadID);
+    } catch (e) {
+      return api.sendMessage(`❌ Error saving mention trigger: ${e.message}`, event.threadID);
+    }
+  }
+
+  // Auto-reply with mention support
+  try {
+    const res = await axios.get(`${simsim}/simsimi-list?ask=${encodeURIComponent(text.toLowerCase())}`);
+    if (res.data.replies && res.data.replies.length > 0) {
+      const reply = res.data.replies[Math.floor(Math.random() * res.data.replies.length)];
+      const finalReply = reply.replace(/\{mention\}/g, senderName);
+
+      return api.sendMessage({
+        body: finalReply,
+        mentions: [{ id: uid, tag: senderName }]
+      }, event.threadID, event.messageID);
+    }
+  } catch (e) {
+    console.log("❌ Future Mention System error:", e.message);
   }
 };
