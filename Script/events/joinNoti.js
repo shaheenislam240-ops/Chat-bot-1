@@ -5,7 +5,7 @@ const Canvas = require("canvas");
 
 module.exports.config = {
   name: "joinnoti",
-  version: "1.0.2",
+  version: "1.0.1",
   credits: "Maria (rX Modded) + Updated by rX Abdullah",
   description: "Welcome new member with profile pic and group info",
   eventType: ["log:subscribe"],
@@ -27,9 +27,11 @@ module.exports.run = async function({ api, event, Users }) {
   const threadInfo = await api.getThreadInfo(threadID);
   const groupName = threadInfo.threadName;
 
+  // Who added them
   const adderID = event.author;
   const adderName = (await Users.getNameUser(adderID)) || "Unknown";
 
+  // Join time
   const timeString = new Date().toLocaleString("en-US", { 
     weekday: "long", 
     hour: "2-digit", 
@@ -38,7 +40,7 @@ module.exports.run = async function({ api, event, Users }) {
   });
 
   const bgURL = "https://i.postimg.cc/rmkVVbsM/r07qxo-R-Download.jpg";
-  const avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512`;
+  const avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
 
   const cacheDir = path.join(__dirname, "cache");
   if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
@@ -48,14 +50,15 @@ module.exports.run = async function({ api, event, Users }) {
   const outPath = path.join(cacheDir, `welcome_${userID}.png`);
 
   try {
-    // Download background & avatar
+    // Download background
     const bgImg = (await axios.get(bgURL, { responseType: "arraybuffer" })).data;
     fs.writeFileSync(bgPath, Buffer.from(bgImg));
 
+    // Download avatar
     const avatarImg = (await axios.get(avatarURL, { responseType: "arraybuffer" })).data;
     fs.writeFileSync(avatarPath, Buffer.from(avatarImg));
 
-    // Canvas creation
+    // Create canvas
     const canvas = Canvas.createCanvas(800, 500);
     const ctx = canvas.getContext("2d");
 
@@ -91,43 +94,33 @@ module.exports.run = async function({ api, event, Users }) {
     ctx.font = "bold 30px Arial";
     ctx.fillText(groupName, canvas.width / 2, avatarY + avatarSize + 90);
 
-    // Save final image
     const finalBuffer = canvas.toBuffer();
     fs.writeFileSync(outPath, finalBuffer);
 
-    // Send message with image
-    await api.sendMessage({
+    // Custom welcome text
+    const message = {
       body: `[ 𝗪𝗘𝗟𝗖𝗢𝗠𝗘 🎉 ]\n` +
             `・𝗡𝗮𝗺𝗲     : @${userName}\n` +
             `・𝗚𝗿𝗼𝘂𝗽     : ${groupName}\n` +
             `・𝗧𝗶𝗺𝗲     : ${timeString}\n` +
-            `・𝗔𝗱𝗱𝗲𝗱 𝗕𝘆 : @${adderName}`,
+            `・𝗔𝗱𝗱𝗲𝗱 𝗕𝘆 : @${adderName}\n` +
+            `___________________________\n` +
+            `___________________________`,
       mentions: [
         { tag: `@${userName}`, id: userID },
         { tag: `@${adderName}`, id: adderID }
       ],
       attachment: fs.createReadStream(outPath)
-    }, threadID, () => {
-      // Cleanup
+    };
+
+    api.sendMessage(message, threadID, () => {
       fs.unlinkSync(bgPath);
       fs.unlinkSync(avatarPath);
       fs.unlinkSync(outPath);
     });
 
-  } catch (err) {
-    console.error("Image processing failed, sending text only:", err);
-
-    // Send only text if image fails
-    await api.sendMessage({
-      body: `[ 𝗪𝗘𝗟𝗖𝗢𝗠𝗘 🎉 ]\n` +
-            `・𝗡𝗮𝗺𝗲     : @${userName}\n` +
-            `・𝗚𝗿𝗼𝘂𝗽     : ${groupName}\n` +
-            `・𝗧𝗶𝗺𝗲     : ${timeString}\n` +
-            `・𝗔𝗱𝗱𝗲𝗱 𝗕𝘆 : @${adderName}`,
-      mentions: [
-        { tag: `@${userName}`, id: userID },
-        { tag: `@${adderName}`, id: adderID }
-      ]
-    }, threadID);
+  } catch (error) {
+    console.error("Joinnoti error:", error);
+    api.sendMessage("⚠️ Error while creating welcome image.", threadID);
   }
 };
