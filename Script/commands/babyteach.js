@@ -18,16 +18,16 @@ async function fetchMentionAPI() {
 
 module.exports.config = {
   name: "babyteach",
-  version: "2.1.0",
+  version: "5.0.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Teach, reply & delete system via mentionapi API",
+  description: "Teach, reply & delete system via mentionapi API only",
   commandCategory: "noprefix",
   usages: "!teach <trigger> - <reply>, !delteach <trigger>",
   cooldowns: 0
 };
 
-// ===== Reply system =====
+// ===== Reply system (normal triggers) =====
 module.exports.handleEvent = async function ({ api, event }) {
   if (!event.body) return;
   const text = event.body.trim();
@@ -48,7 +48,7 @@ module.exports.handleEvent = async function ({ api, event }) {
 // ===== Teach / Delete commands via mentionapi API =====
 module.exports.run = async function ({ api, event, args }) {
   const { threadID, messageID } = event;
-  const content = args.join(" ");
+  const content = args.join(" ").trim();
 
   await fetchMentionAPI();
   if (!mentionApiUrl) return api.sendMessage("❌ mentionapi not available", threadID, messageID);
@@ -66,7 +66,7 @@ module.exports.run = async function ({ api, event, args }) {
       const msg = res.data?.message || `✅ Trigger saved: "${trigger}"`;
       return api.sendMessage(msg, threadID, messageID);
     } catch (err) {
-      return api.sendMessage(`❌ API error: ${err.message}`, threadID, messageID);
+      return api.sendMessage(`❌ API error: ${err.response?.data?.message || err.message}`, threadID, messageID);
     }
   }
 
@@ -78,7 +78,7 @@ module.exports.run = async function ({ api, event, args }) {
       const msg = res.data?.message || `🗑 Trigger deleted: "${trigger}"`;
       return api.sendMessage(msg, threadID, messageID);
     } catch (err) {
-      return api.sendMessage(`❌ API error: ${err.message}`, threadID, messageID);
+      return api.sendMessage(`❌ API error: ${err.response?.data?.message || err.message}`, threadID, messageID);
     }
   }
 };
