@@ -18,17 +18,17 @@ async function fetchMentionAPI() {
 
 module.exports.config = {
   name: "babyteach",
-  version: "5.0.0",
+  version: "6.0.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Teach, reply & delete system via mentionapi API only",
+  description: "Teach, reply & delete system via mentionapi API only (mention user in reply)",
   commandCategory: "noprefix",
   usages: "!teach <trigger> - <reply>, !delteach <trigger>",
   cooldowns: 0
 };
 
-// ===== Reply system (normal triggers) =====
-module.exports.handleEvent = async function ({ api, event }) {
+// ===== Reply system (normal triggers with mention) =====
+module.exports.handleEvent = async function ({ api, event, Users }) {
   if (!event.body) return;
   const text = event.body.trim();
 
@@ -38,7 +38,17 @@ module.exports.handleEvent = async function ({ api, event }) {
   try {
     const res = await axios.get(`${mentionApiUrl}/reply/${encodeURIComponent(text)}`);
     if (res.data?.reply) {
-      return api.sendMessage(res.data.reply, event.threadID, event.messageID);
+      const name = await Users.getNameUser(event.senderID);
+
+      const message = `@${name} ${res.data.reply}`;
+      const mentions = [{
+        tag: `@${name}`,
+        id: event.senderID,
+        fromIndex: 0,
+        length: name.length + 1
+      }];
+
+      return api.sendMessage({ body: message, mentions }, event.threadID, event.messageID);
     }
   } catch (_) {
     // silently fail
