@@ -13,15 +13,36 @@ let simsim = "";
 
 module.exports.config = {
   name: "baby",
-  version: "1.0.5",
+  version: "1.0.6",
   hasPermssion: 0,
-  credits: "rX",
-  description: "AI Chatbot with Teach & List support",
+  credits: "rX + Update by Amon",
+  description: "AI Chatbot with Teach & List support (Smart Trigger Match)",
   commandCategory: "chat",
   usages: "[query]",
   cooldowns: 0,
   prefix: false
 };
+
+// --- Utility functions for matching ---
+function isPureEmoji(text) {
+  return /^[\p{Emoji}\u200d\s]+$/u.test(text.trim());
+}
+
+function cleanTrigger(text) {
+  return text
+    .replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-./:;<=>?@[\]^_`{|}~]/g, "")
+    .replace(/\p{Emoji}/gu, "")
+    .trim()
+    .toLowerCase();
+}
+
+function isTriggerMatch(savedTrigger, incomingText) {
+  if (isPureEmoji(savedTrigger)) {
+    return savedTrigger.trim() === incomingText.trim(); // Pure emoji → exact match
+  } else {
+    return cleanTrigger(savedTrigger) === cleanTrigger(incomingText); // Text → ignore dots & emojis
+  }
+}
 
 module.exports.run = async function ({ api, event, args, Users }) {
   const uid = event.senderID;
@@ -144,36 +165,38 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
   const senderName = await Users.getNameUser(event.senderID);
 
-  const triggers = ["baby", "bby", "xan", "bbz", "maria", "hippi"];
-  if (triggers.includes(text)) {
-    const replies = [
-      "𝘼𝙨𝙨𝙖𝙡𝙖𝙢𝙪𝙖𝙡𝙖𝙞𝙠𝙪𝙢♥",
-      "বলেন sir__😌",
-      "𝗹𝗲𝗺𝗼𝗻 𝗷𝘂𝘀𝘀🍹",
-      "𝗔𝗶 𝗻𝗲 𝗹𝗲𝗺𝗼𝗻 𝗷𝘂𝘀𝘀 🍋🍹 𝗱𝗮𝗸𝘁𝗲 𝗱𝗮𝘁𝗲 𝘁𝗼 𝗵𝗮𝗽𝗮𝘆 𝗴𝗮𝘀𝗼𝘀",
-      "𝐆𝐚𝐣𝐚 𝐤𝐡𝐚 𝐦𝐚𝐧𝐮𝐬𝐡 𝐡𝐨 🍁🤡",
-      "𝙇𝙚𝙢𝙤𝙣 𝙩𝙪𝙨 🍋",
-      "মুড়ি খাও 🫥",
-      ".__𝗮𝗺𝗶 𝗮𝗺𝗺𝘂𝗿 𝗸𝗮𝗰𝗵𝗲 𝗷𝗮𝗯𝗼 𝗮𝗺𝗸 𝗰𝗵𝗲𝗿𝗲 𝗱𝗮𝘄.!!🥺.....😗",
-      "লুঙ্গি টা ধর মুতে আসি🙊🙉",
-      "──‎ HuM..? 👉👈",
-      "আম গাছে আম নাই ঢিল কেন মারো, তোমার সাথে প্রেম নাই বেবি কেন ডাকো 😒🐸",
-      "কি হলো, মিস টিস করচ্ছো নাকি 🤣",
-      "𝘽𝙤𝙡𝙤 𝙗𝙖𝙗𝙮 🥹",
-      "৮১ , ৮২ , ৮৩ আমি তোমাকে ভালবাসি",
-      "আমাকে ডাকলে ,আমি কিন্তু 𝐊𝐢𝐬𝐬 করে দিব 😘"
-    ];
-    const reply = replies[Math.floor(Math.random() * replies.length)];
-    return api.sendMessage(reply, event.threadID, (err, info) => {
-      if (!err) {
-        global.client.handleReply.push({
-          name: module.exports.config.name,
-          messageID: info.messageID,
-          author: event.senderID,
-          type: "simsimi"
-        });
-      }
-    });
+  const triggers = ["baby", "bby", "xan", "bbz", "maria", "hippi", "😂", "😍"];
+  for (const trigger of triggers) {
+    if (isTriggerMatch(trigger, text)) {
+      const replies = [
+        "𝘼𝙨𝙨𝙖𝙡𝙖𝙢𝙪𝙖𝙡𝙖𝙞𝙠𝙪𝙢♥",
+        "বলেন sir__😌",
+        "𝗹𝗲𝗺𝗼𝗻 𝗷𝘂𝘀𝘀🍹",
+        "𝗔𝗶 𝗻𝗲 𝗹𝗲𝗺𝗼𝗻 𝗷𝘂𝘀𝘀 🍋🍹 𝗱𝗮𝗸𝘁𝗲 𝗱𝗮𝘁𝗲 𝘁𝗼 𝗵𝗮𝗽𝗮𝘆 𝗴𝗮𝘀𝗼𝘀",
+        "𝐆𝐚𝐣𝐚 𝐤𝐡𝐚 𝐦𝐚𝐧𝐮𝐬𝐡 𝐡𝐨 🍁🤡",
+        "𝙇𝙚𝙢𝙤𝙣 𝙩𝙪𝙨 🍋",
+        "মুড়ি খাও 🫥",
+        ".__𝗮𝗺𝗶 𝗮𝗺𝗺𝘂𝗿 𝗸𝗮𝗰𝗵𝗲 𝗷𝗮𝗯𝗼 𝗮𝗺𝗸 𝗰𝗵𝗲𝗿𝗲 𝗱𝗮𝘄.!!🥺.....😗",
+        "লুঙ্গি টা ধর মুতে আসি🙊🙉",
+        "──‎ HuM..? 👉👈",
+        "আম গাছে আম নাই ঢিল কেন মারো, তোমার সাথে প্রেম নাই বেবি কেন ডাকো 😒🐸",
+        "কি হলো, মিস টিস করচ্ছো নাকি 🤣",
+        "𝘽𝙤𝙡𝙤 𝙗𝙖𝙗𝙮 🥹",
+        "৮১ , ৮২ , ৮৩ আমি তোমাকে ভালবাসি",
+        "আমাকে ডাকলে ,আমি কিন্তু 𝐊𝐢𝐬𝐬 করে দিব 😘"
+      ];
+      const reply = replies[Math.floor(Math.random() * replies.length)];
+      return api.sendMessage(reply, event.threadID, (err, info) => {
+        if (!err) {
+          global.client.handleReply.push({
+            name: module.exports.config.name,
+            messageID: info.messageID,
+            author: event.senderID,
+            type: "simsimi"
+          });
+        }
+      });
+    }
   }
 
   const matchPrefix = /^(baby|bot|jan|bbz|maria|hippi)\s+/i;
