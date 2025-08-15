@@ -1,11 +1,11 @@
 module.exports.config = {
     name: "autosetname",
-    version: "1.0.1",
+    version: "1.0.2",
     hasPermssion: 1,
-    credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+    credits: "rX",
     description: "Automatic setname for new members",
     commandCategory: "Box Chat",
-    usages: "[add <name> /remove] ",
+    usages: "[add <name> /remove]",
     cooldowns: 5
 }
 
@@ -13,40 +13,65 @@ module.exports.onLoad = () => {
     const { existsSync, writeFileSync } = global.nodemodule["fs-extra"];
     const { join } = global.nodemodule["path"];
     const pathData = join(__dirname, "cache", "autosetname.json");
-    if (!existsSync(pathData)) return writeFileSync(pathData, "[]", "utf-8"); 
+    if (!existsSync(pathData)) writeFileSync(pathData, "[]", "utf-8"); 
 }
 
-module.exports.run = async function  ({ event, api, args, permssionm, Users })  {
-    const { threadID, messageID } = event;
+module.exports.run = async function({ event, api, args, Users }) {
+    const { threadID, messageID, senderID } = event;
     const { readFileSync, writeFileSync } = global.nodemodule["fs-extra"];
     const { join } = global.nodemodule["path"];
-
     const pathData = join(__dirname, "cache", "autosetname.json");
-    const content = (args.slice(1, args.length)).join(" ");
-    var dataJson = JSON.parse(readFileSync(pathData, "utf-8"));
-    var thisThread = dataJson.find(item => item.threadID == threadID) || { threadID, nameUser: [] };
-    switch (args[0]) {
+
+    let dataJson = JSON.parse(readFileSync(pathData, "utf-8"));
+    let thisThread = dataJson.find(item => item.threadID == threadID) || { threadID, nameUser: [] };
+    const content = args.slice(1).join(" ");
+
+    switch(args[0]) {
         case "add": {
-            if (content.length == 0) return api.sendMessage("The configuration of the new member's name must not be vacated!", threadID, messageID);
-            if (thisThread.nameUser.length > 0) return api.sendMessage("Please remove the old name configuration before naming a new name!!!", threadID, messageID); 
+            if (!content) return api.sendMessage("The configuration of the new member's name must not be empty!", threadID, messageID);
+            if (thisThread.nameUser.length > 0) return api.sendMessage("Please remove the old name configuration before setting a new one!", threadID, messageID);
             thisThread.nameUser.push(content);
-            const name = (await Users.getData(event.senderID)).name
+            const name = (await Users.getData(senderID)).name;
+            if (!dataJson.some(item => item.threadID == threadID)) dataJson.push(thisThread);
             writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
-            api.sendMessage(`Configure a successful new member name\nPreview: ${content} ${name}`, threadID, messageID);
+            api.sendMessage(`Configured a new member name successfully!\nPreview: ${content} ${name}`, threadID, messageID);
             break;
         }
         case "rm":
         case "remove":
         case "delete": {
-                if (thisThread.nameUser.length == 0) return api.sendMessage("Your group hasn't configured a new member's name!!", threadID, messageID);
-                thisThread.nameUser = [];
-                api.sendMessage(`Successfully deleted the configuration of a new member's name`, threadID, messageID);
-                break;
+            if (thisThread.nameUser.length == 0) return api.sendMessage("Your group hasn't configured a new member's name!", threadID, messageID);
+            thisThread.nameUser = [];
+            writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
+            api.sendMessage("Successfully deleted the configuration of a new member's name.", threadID, messageID);
+            break;
         }
         default: {
-                api.sendMessage(`Use: autosetname add to configure a nickname for a new member\n: autosetname remove to remove the nickname configuration for the new member`, threadID, messageID);
+            api.sendMessage("Use:\nautosetname add <name> → to configure a nickname for new members\nautosetname remove → to remove the nickname configuration", threadID, messageID);
         }
     }
-    if (!dataJson.some(item => item.threadID == threadID)) dataJson.push(thisThread);
-    return writeFileSync(pathData, JSON.stringify(dataJson, null, 4), "utf-8");
+}
+
+// ===== Handle new member event =====
+module.exports.handleEvent = async function({ event, api, Users }) {
+    const { threadID, logMessageType, logMessageData } = event;
+    if (logMessageType != "log:subscribe") return;
+
+    const { readFileSync, writeFileSync } = global.nodemodule["fs-extra"];
+    const { join } = global.nodemodule["path"];
+    const pathData = join(__dirname, "cache", "autosetname.json");
+    let dataJson = JSON.parse(readFileSync(pathData, "utf-8"));
+    let thisThread = dataJson.find(item => item.threadID == threadID);
+    if (!thisThread || thisThread.nameUser.length == 0) return;
+
+    const addedParticipants = logMessageData.addedParticipants;
+    for (const user of addedParticipants) {
+        const userName = (await Users.getData(user.userID)).name;
+        const newName = `${thisThread.nameUser[0]} ${userName}`;
+        try {
+            await api.changeNickname(newName, threadID, user.userID);
+        } catch (e) {
+            console.log(`Failed to change nickname: ${e}`);
+        }
+    }
 }
