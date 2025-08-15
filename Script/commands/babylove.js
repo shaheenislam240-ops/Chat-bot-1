@@ -64,7 +64,7 @@ const triggers = [
     fileName: "ukhe.mp3"
   },
   {
-    keywords: ["gf","bow"],
+    keywords: ["girlfriend"],
     audioUrl: "https://files.catbox.moe/v395oa.mp3",
     reply: "Oow 🫡🎀",
     fileName: "gfkoliza.mp3"
