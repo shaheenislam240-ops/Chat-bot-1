@@ -13,10 +13,11 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event, args }) {
-    const ADMIN_UID = "100068565380737"; // শুধু এই UID ব্যবহার করতে পারবে
-    if (event.senderID !== ADMIN_UID) {
-        return api.sendMessage("❌ শুধুমাত্র rX Abdullah এই কমান্ড চালাতে পারবেন!", event.threadID, event.messageID);
-    }
+    const threadInfo = await api.getThreadInfo(event.threadID);
+if (!threadInfo.adminIDs.some(admin => admin.id == event.senderID)) {
+    return api.sendMessage("❌ শুধুমাত্র গ্রুপের অ্যাডমিনরা এই কমান্ড চালাতে পারবেন!", event.threadID, event.messageID);
+  
+   }
 
     // ON/OFF system
     if (args[0] === "off") {
