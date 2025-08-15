@@ -13,9 +13,9 @@ let simsim = "";
 
 module.exports.config = {
   name: "baby",
-  version: "1.0.6",
+  version: "1.0.7",
   hasPermssion: 0,
-  credits: "rX + Update by Amon",
+  credits: "rX + Update by Amon (Universal Trigger Match)",
   description: "AI Chatbot with Teach & List support (Smart Trigger Match)",
   commandCategory: "chat",
   usages: "[query]",
