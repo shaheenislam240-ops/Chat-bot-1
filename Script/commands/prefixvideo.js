@@ -3,31 +3,29 @@ const path = require("path");
 
 module.exports.config = {
   name: "prefixvideo",
+  eventType: ["message"],
   version: "1.0.0",
-  hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Send gif/video when only prefix is sent",
-  commandCategory: "fun",
-  usages: "",
-  cooldowns: 0
+  description: "Send gif/video when only prefix is sent"
 };
 
-module.exports.run = async function ({ api, event }) {
+module.exports.run = async function({ api, event }) {
   try {
     const prefix = global.config.PREFIX || "!"; // Mirai config থেকে prefix নিবে
+    const body = (event.body || "").trim();
 
-    // যদি শুধু prefix টাই লেখা হয়
-    if ((event.body || "").trim() !== String(prefix)) return;
+    // শুধু prefix লিখলে কাজ করবে
+    if (body !== prefix) return;
 
-    // cache ফোল্ডারে আপনার ফাইল রাখবেন (prefix.gif বা prefix.mp4)
-    let filePath = path.join(__dirname, "cache", "prefix.gif");
+    // cache ফোল্ডারে ফাইল খুঁজবে
+    let filePath = path.join(__dirname, "../commands/cache/prefix.gif");
     if (!fs.existsSync(filePath)) {
-      filePath = path.join(__dirname, "cache", "prefix.mp4");
+      filePath = path.join(__dirname, "../commands/cache/prefix.mp4");
     }
 
     if (!fs.existsSync(filePath)) {
       return api.sendMessage(
-        `⚠️ Cache ফোল্ডারে prefix.gif বা prefix.mp4 পাওয়া যায়নি!`,
+        `⚠️ cache ফোল্ডারে prefix.gif বা prefix.mp4 পাওয়া যায়নি!`,
         event.threadID,
         event.messageID
       );
@@ -42,6 +40,6 @@ module.exports.run = async function ({ api, event }) {
       event.messageID
     );
   } catch (e) {
-    console.error(e);
+    console.log("Prefixvideo error:", e);
   }
 };
