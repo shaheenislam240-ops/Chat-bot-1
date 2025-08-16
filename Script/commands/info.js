@@ -1,14 +1,13 @@
-const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const moment = require("moment-timezone");
 
 module.exports.config = {
 	name: "info",
-	version: "1.0.2", 
+	version: "1.0.3",
 	hasPermssion: 0,
 	credits: "rX Abdullah",
-	description: "Admin and Bot info with video (cached).",
+	description: "Admin and Bot info with gif (local cache).",
 	commandCategory: "...",
 	cooldowns: 1
 };
@@ -36,35 +35,20 @@ module.exports.run = async function({ api, event }) {
 ▶ 𝗨𝗽𝘁𝗶𝗺𝗲: ${hours}h ${minutes}m ${seconds}s
 ━━━━━━━━━━━━━━━━━━━━━━━`;
 
-	// Video settings
-	const videoUrl = "https://i.imgur.com/JPlo57B.mp4";
+	// লোকাল cache gif
 	const cacheDir = path.join(__dirname, "cache");
-	const cacheFile = path.join(cacheDir, "info_video.mp4");
+	const cacheFile = path.join(cacheDir, "info.gif");
 
 	try {
-		// Make sure cache folder exists
+		// cache ফোল্ডার চেক
 		if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
-		// Download video only if not cached
+		// gif ফাইল নাই হলে error দিবে
 		if (!fs.existsSync(cacheFile)) {
-			api.sendMessage("⏳ Downloading video from Imgur, please wait...", event.threadID);
-
-			const response = await axios({
-				url: videoUrl,
-				method: "GET",
-				responseType: "stream"
-			});
-
-			const writer = fs.createWriteStream(cacheFile);
-			response.data.pipe(writer);
-
-			await new Promise((resolve, reject) => {
-				writer.on("finish", resolve);
-				writer.on("error", reject);
-			});
+			return api.sendMessage("❌ info.gif ফাইল cache ফোল্ডারে পাওয়া যায়নি!", event.threadID);
 		}
 
-		// Send cached video
+		// send gif
 		await api.sendMessage(
 			{
 				body: message,
@@ -75,6 +59,6 @@ module.exports.run = async function({ api, event }) {
 
 	} catch (error) {
 		console.error(error);
-		api.sendMessage("❌ Failed to load the video.", event.threadID);
+		api.sendMessage("❌ GIF পাঠানো ব্যর্থ হয়েছে।", event.threadID);
 	}
 };
