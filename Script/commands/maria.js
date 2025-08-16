@@ -12,7 +12,7 @@ let simsim = "";
 })();
 
 module.exports.config = {
-  name: "baby",
+  name: "maria",
   version: "1.0.5",
   hasPermssion: 0,
   credits: "rX",
