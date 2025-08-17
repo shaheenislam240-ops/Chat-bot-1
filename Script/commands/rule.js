@@ -11,7 +11,7 @@ module.exports.config = {
   cooldowns: 5,
 };
 
-const API_URL = "http://localhost:3000/rules"; // তোমার API URL
+const API_URL = "https://rx-rules-api.onrender.com"; // তোমার API URL
 
 async function getRules(threadID) {
   try {
