@@ -132,6 +132,10 @@ module.exports.run = async function({ api, event, Users }) {
 
   } catch (error) {
     console.error("Joinnoti error:", error);
-    api.sendMessage("⚠️ Error while creating welcome image.", threadID);
+    api.sendMessage("┌────────────────────┐
+│    𝐖𝐄𝐋𝐂𝐎𝐌𝐄!       │
+│ 𝐓𝐲𝐩𝐞 !𝐡𝐞𝐥𝐩 𝐟𝐨𝐫 𝐚𝐥𝐥 │
+│    𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬 ⚙️     │
+└────────────────────┘", threadID);
   }
 };
