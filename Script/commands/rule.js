@@ -11,12 +11,29 @@ module.exports.config = {
   cooldowns: 5,
 };
 
-const API_URL = "https://rx-rules-api.onrender.com/rules"; // আপনার API URL
+// Dynamically get the API URL from GitHub JSON
+let API_URL = ""; // will hold the rules API
+
+async function getApiUrl() {
+  if (API_URL) return API_URL; // already loaded
+  try {
+    const res = await axios.get("https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json");
+    API_URL = res.data.rules; // only pick the "rules" key
+    console.log("Rules API URL loaded:", API_URL);
+    return API_URL;
+  } catch (e) {
+    console.error("Failed to fetch rules API from GitHub:", e.message);
+    return null;
+  }
+}
 
 // Fetch rules from API
 async function getRules(threadID) {
+  const apiUrl = await getApiUrl();
+  if (!apiUrl) return { threadID, listRule: [] };
+
   try {
-    const res = await axios.get(`${API_URL}?threadID=${threadID}`);
+    const res = await axios.get(`${apiUrl}?threadID=${threadID}`);
     console.log("ThreadID:", threadID, "Rules fetched:", res.data);
     return res.data || { threadID, listRule: [] };
   } catch (e) {
@@ -27,8 +44,11 @@ async function getRules(threadID) {
 
 // Save rules to API
 async function saveRules(threadID, rulesList) {
+  const apiUrl = await getApiUrl();
+  if (!apiUrl) return;
+
   try {
-    const res = await axios.post(API_URL, { threadID, listRule: rulesList });
+    const res = await axios.post(apiUrl, { threadID, listRule: rulesList });
     console.log("Rules saved:", res.data);
   } catch (e) {
     console.error("Failed to save rules:", e.message);
