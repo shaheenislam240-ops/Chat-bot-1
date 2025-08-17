@@ -2,29 +2,34 @@ const axios = require("axios");
 
 module.exports.config = {
   name: "rules",
-  version: "2.3.0",
+  version: "2.3.1",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Show/add/remove rules per group",
+  description: "Show/add/remove rules per group (API version)",
   commandCategory: "noprefix",
   usages: "rules / !rules add/remove/all",
   cooldowns: 5,
 };
 
-const API_URL = "https://rx-rules-api.onrender.com"; // তোমার API URL
+const API_URL = "https://rx-rules-api.onrender.com/rules"; // আপনার API URL
 
+// Fetch rules from API
 async function getRules(threadID) {
   try {
     const res = await axios.get(`${API_URL}?threadID=${threadID}`);
+    console.log("ThreadID:", threadID, "Rules fetched:", res.data);
     return res.data || { threadID, listRule: [] };
   } catch (e) {
+    console.error("Error fetching rules:", e.message);
     return { threadID, listRule: [] };
   }
 }
 
+// Save rules to API
 async function saveRules(threadID, rulesList) {
   try {
-    await axios.post(API_URL, { threadID, listRule: rulesList });
+    const res = await axios.post(API_URL, { threadID, listRule: rulesList });
+    console.log("Rules saved:", res.data);
   } catch (e) {
     console.error("Failed to save rules:", e.message);
   }
@@ -47,14 +52,14 @@ module.exports.run = async ({ event, api, args, permssion }) => {
   let thisThread = await getRules(threadID);
 
   const action = args[0]?.toLowerCase();
-  const input = body.substring(body.indexOf(action) + action.length + 1);
+  const input = body.substring(body.indexOf(action) + action.length + 1).trim();
 
   switch (action) {
     case "add": {
       if (permssion == 0) return api.sendMessage("❌ You don't have permission.", threadID, messageID);
       if (!input || input.length < 3) return api.sendMessage("⚠️ Provide the rule content.", threadID, messageID);
 
-      thisThread.listRule.push(input.trim());
+      thisThread.listRule.push(input);
       await saveRules(threadID, thisThread.listRule);
       return api.sendMessage("✅ Rule added successfully!", threadID, messageID);
     }
