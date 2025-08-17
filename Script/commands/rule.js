@@ -2,7 +2,7 @@ const axios = require("axios");
 
 module.exports.config = {
   name: "rules",
-  version: "2.3.1",
+  version: "2.3.2",
   hasPermssion: 0,
   credits: "rX Abdullah",
   description: "Show/add/remove rules per group (API version)",
@@ -11,30 +11,25 @@ module.exports.config = {
   cooldowns: 5,
 };
 
-// Dynamically get the API URL from GitHub JSON
-let API_URL = ""; // will hold the rules API
+// Global variable to store API URL
+let API_URL = "";
 
-async function getApiUrl() {
-  if (API_URL) return API_URL; // already loaded
+// Fetch API URL from GitHub ONCE when bot starts
+(async () => {
   try {
     const res = await axios.get("https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json");
-    API_URL = res.data.rules; // only pick the "rules" key
-    console.log("Rules API URL loaded:", API_URL);
-    return API_URL;
-  } catch (e) {
-    console.error("Failed to fetch rules API from GitHub:", e.message);
-    return null;
+    API_URL = res.data.rules; // only the "rules" key
+    console.log("✅ Rules API URL loaded:", API_URL);
+  } catch (err) {
+    console.error("❌ Failed to load Rules API URL from GitHub:", err.message);
   }
-}
+})();
 
 // Fetch rules from API
 async function getRules(threadID) {
-  const apiUrl = await getApiUrl();
-  if (!apiUrl) return { threadID, listRule: [] };
-
+  if (!API_URL) return { threadID, listRule: [] };
   try {
-    const res = await axios.get(`${apiUrl}?threadID=${threadID}`);
-    console.log("ThreadID:", threadID, "Rules fetched:", res.data);
+    const res = await axios.get(`${API_URL}?threadID=${threadID}`);
     return res.data || { threadID, listRule: [] };
   } catch (e) {
     console.error("Error fetching rules:", e.message);
@@ -44,12 +39,9 @@ async function getRules(threadID) {
 
 // Save rules to API
 async function saveRules(threadID, rulesList) {
-  const apiUrl = await getApiUrl();
-  if (!apiUrl) return;
-
+  if (!API_URL) return;
   try {
-    const res = await axios.post(apiUrl, { threadID, listRule: rulesList });
-    console.log("Rules saved:", res.data);
+    await axios.post(API_URL, { threadID, listRule: rulesList });
   } catch (e) {
     console.error("Failed to save rules:", e.message);
   }
