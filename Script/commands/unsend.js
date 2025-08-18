@@ -1,27 +1,32 @@
 module.exports.config = {
-	name: "unsend",
-	version: "1.0.1",
-	hasPermssion: 0,
-	credits: "rX",
-	description: "Gỡ tin nhắn của bot",
-	commandCategory: "system",
-	usages: "unsend",
-	cooldowns: 0
+  name: "unsreact",
+  eventType: ["message_reaction"],
+  version: "1.0.0",
+  credits: "rX",
+  description: "User 🐣 reaction → unsend bot message + confirmation",
 };
 
-module.exports.languages = {
-	"vi": {
-		"returnCant": "Không thể gỡ tin nhắn của người khác.",
-		"missingReply": "Hãy reply tin nhắn cần gỡ."
-	},
-	"en": {
-		"returnCant": "আরে বলদ অন্য কারো মেসেজ আমি আনসেন্ড করবো কিভাবে পাগল ছাগল",
-		"missingReply": "আপনি আমার কোন মেসেজটি আনসেন্ড করবেন , তা রিপ্লাই করুন 🌺"
-	}
-}
+module.exports.run = async ({ api, event, handleReaction, getText }) => {
+  try {
+    // শুধু 🐣 reaction
+    if (event.reaction != "🐣") return;
 
-module.exports.run = function({ api, event, getText }) {
-	if (event.messageReply.senderID != api.getCurrentUserID()) return api.sendMessage(getText("returnCant"), event.threadID, event.messageID);
-	if (event.type != "message_reply") return api.sendMessage(getText("missingReply"), event.threadID, event.messageID);
-	return api.unsendMessage(event.messageReply.messageID);
-	}
+    // শুধুমাত্র original author reaction
+    if (event.userID != handleReaction.author) return;
+
+    const botID = api.getCurrentUserID();
+
+    // Check: message sender bot কি
+    if (handleReaction.senderID !== botID) return;
+
+    // Message unsend
+    api.unsendMessage(handleReaction.messageID, (err) => {
+      if (err) console.log("Unsend failed:", err);
+    });
+
+    // Confirmation message
+    api.sendMessage("✅ Message unsent successfully!", event.threadID, event.messageID);
+  } catch (e) {
+    console.log("unsreact_confirm error:", e);
+  }
+};
