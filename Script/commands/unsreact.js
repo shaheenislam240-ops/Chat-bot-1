@@ -1,33 +1,39 @@
 module.exports.config = {
   name: "unsreact",
   eventType: ["message_reaction"],
-  version: "1.1.0",
+  version: "1.0.0",
   credits: "rX",
-  description: "User 🐣 reaction → guaranteed unsend bot message",
+  description: "User 🐣 reaction → unsend bot message instantly",
 };
 
-if (!global.client.savedBotMessages) global.client.savedBotMessages = [];
+// Global array to save bot messages
+if (!global.client.handleReaction) global.client.handleReaction = [];
 
-// যখন bot মেসেজ পাঠায়, এই function দিয়ে save করতে হবে
+// When bot sends a message, save it here
 module.exports.saveBotMessage = function(messageID) {
-  global.client.savedBotMessages.push(messageID);
+  global.client.handleReaction.push({
+    messageID: messageID,
+    senderID: global.client.getCurrentUserID ? global.client.getCurrentUserID() : "" // bot ID
+  });
 };
 
-module.exports.handleReaction = async function({ api, event }) {
+// Reaction handler
+module.exports.handleReaction = async function({ api, event, handleReaction }) {
   try {
     // শুধু 🐣 reaction handle
     if (event.reaction !== "🐣") return;
 
-    // check: messageID saved কি না
-    if (!global.client.savedBotMessages.includes(event.messageID)) return;
+    // Check if this message was sent by bot
+    const botMsg = global.client.handleReaction.find(msg => msg.messageID == event.messageID);
+    if (!botMsg) return;
 
-    // unsend message
+    // Unsending message
     api.unsendMessage(event.messageID, (e) => {
       if (e) console.log("Unsend failed:", e);
     });
 
-    // remove from saved array
-    global.client.savedBotMessages = global.client.savedBotMessages.filter(id => id !== event.messageID);
+    // Remove from saved array
+    global.client.handleReaction = global.client.handleReaction.filter(msg => msg.messageID !== event.messageID);
 
   } catch (err) {
     console.log("unsreact error:", err);
