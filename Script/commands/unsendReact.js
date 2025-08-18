@@ -1,27 +1,30 @@
 module.exports.config = {
-  name: "unsendReact",
-  version: "1.0.0",
+  name: "reactunsend",
+  version: "1.0.1",
   hasPermssion: 0,
-  credits: "Modified by Abdullah",
-  description: "Unsend bot's message if user reacts to it",
+  credits: "Abdullah",
+  description: "Send a message and unsend it if 🥺 reaction is given",
   commandCategory: "system",
   usages: "",
   cooldowns: 0
 };
 
+// Step 1: Command run korle bot ekta message pathabe
+module.exports.run = async ({ api, event }) => {
+  api.sendMessage("🥰 Hello! React with 🥺 to delete me!", event.threadID, (err, info) => {
+    if (err) return console.log(err);
+
+    // save messageID to track later
+    global.lastBotMessage = info.messageID;
+  });
+};
+
+// Step 2: Jodi oi message e react deya hoy
 module.exports.handleReaction = async ({ api, event }) => {
-  const { messageID, userID, reaction } = event;
+  const { reaction, messageID, userID } = event;
 
-  // Only work if bot itself sent the message
-  if (event.senderID == api.getCurrentUserID()) return;
-
-  // Jodi kono reaction hoy (emoji filter kora jete pare if needed)
-  if (reaction) {
-    try {
-      // Unsend the message that got reacted
-      await api.unsendMessage(messageID);
-    } catch (e) {
-      console.log("Unsend failed:", e);
-    }
+  // only react if user reacted with 🥺 and it's the bot's last message
+  if (reaction === "🥺" && messageID === global.lastBotMessage) {
+    api.unsendMessage(messageID);
   }
 };
