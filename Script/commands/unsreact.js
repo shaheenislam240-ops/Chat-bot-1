@@ -1,30 +1,34 @@
 module.exports.config = {
   name: "unsreact",
   eventType: ["message_reaction"],
-  version: "1.0.0",
+  version: "1.1.0",
   credits: "rX",
-  description: "React 🐣 on bot message to unsend it",
+  description: "User 🐣 reaction → guaranteed unsend bot message",
 };
 
-module.exports.run = async function({ api, event }) {
-  try {
-    const botID = api.getCurrentUserID();
+if (!global.client.savedBotMessages) global.client.savedBotMessages = [];
 
+// যখন bot মেসেজ পাঠায়, এই function দিয়ে save করতে হবে
+module.exports.saveBotMessage = function(messageID) {
+  global.client.savedBotMessages.push(messageID);
+};
+
+module.exports.handleReaction = async function({ api, event }) {
+  try {
     // শুধু 🐣 reaction handle
     if (event.reaction !== "🐣") return;
 
-    // যেই message এ react হলো সেটার senderID check
-    api.getMessageInfo(event.messageID, (err, info) => {
-      if (err) return console.log(err);
+    // check: messageID saved কি না
+    if (!global.client.savedBotMessages.includes(event.messageID)) return;
 
-      // যদি senderID বট হয়, তাহলে unsend করো
-      if (info.senderID !== botID) return;
-
-      // Unsend
-      api.unsendMessage(event.messageID, (e) => {
-        if (e) console.log("Unsend failed:", e);
-      });
+    // unsend message
+    api.unsendMessage(event.messageID, (e) => {
+      if (e) console.log("Unsend failed:", e);
     });
+
+    // remove from saved array
+    global.client.savedBotMessages = global.client.savedBotMessages.filter(id => id !== event.messageID);
+
   } catch (err) {
     console.log("unsreact error:", err);
   }
