@@ -1,32 +1,27 @@
 module.exports.config = {
-  name: "reactunsend",
-  version: "2.0.0",
-  hasPermssion: 0,
-  credits: "Abdullah",
-  description: "Unsend any bot message if reacted with 🥺",
-  commandCategory: "system",
-  usages: "",
-  cooldowns: 0
+  name: "reactUnsend",
+  eventType: ["message_reaction"],
+  version: "1.0.0",
+  credits: "Priyansh",
+  description: "React 🥺 on bot's message → bot unsends it (Always ON)"
 };
 
-// Example command just to send a message
-module.exports.run = async ({ api, event }) => {
-  api.sendMessage("🥰 Hello! React with 🥺 to delete me!", event.threadID);
-};
+module.exports.handleEvent = async ({ api, event }) => {
+  try {
+    if (event.type !== "message_reaction") return;
 
-// Reaction handler
-module.exports.handleReaction = async ({ api, event }) => {
-  const { reaction, messageID, userID } = event;
+    // only 🥺 works
+    if (event.reaction !== "🥺") return;
 
-  // only react if emoji is 🥺
-  if (reaction === "🥺") {
-    // check if reacted message was sent by the bot itself
-    api.getMessageInfo(event.threadID, messageID, (err, info) => {
-      if (err) return console.error(err);
+    // get info about the reacted message
+    const info = await api.getMessageInfo(event.threadID, event.messageID);
+    if (!info) return;
 
-      if (info && info.messageSender && info.messageSender === api.getCurrentUserID()) {
-        api.unsendMessage(messageID);
-      }
-    });
+    // check if that message was sent by the bot
+    if (info.message && info.message.senderID === api.getCurrentUserID()) {
+      api.unsendMessage(event.messageID);
+    }
+  } catch (e) {
+    console.error("reactUnsend error:", e);
   }
 };
