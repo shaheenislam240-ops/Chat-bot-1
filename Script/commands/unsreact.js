@@ -1,26 +1,34 @@
 module.exports.config = {
   name: "unsreact",
   eventType: ["message_reaction"],
-  version: "1.0.0",
+  version: "1.0.1",
   credits: "rX Abdullah",
-  description: "React 🐣 on a bot message to unsend it",
-  dependencies: {}
+  description: "React 🐣 on bot message in group to unsend it",
 };
 
 module.exports.run = async function({ api, event }) {
   try {
     const botID = api.getCurrentUserID();
 
-    // চেক করব 🐣 react দেওয়া হয়েছে কিনা
-    if (event.reaction === "🐣") {
-      // বটের পাঠানো মেসেজ হলে unsend হবে
-      if (String(event.senderID) !== String(botID) && String(event.messageID)) {
-        api.unsendMessage(event.messageID, (err) => {
-          if (err) console.log("❌ Unsend error:", err);
+    // শুধুমাত্র 🐣 reaction handle
+    if (event.reaction !== "🐣") return;
+
+    // শুধু গ্রুপ চ্যাটে কাজ করবে
+    // Personal threadID ছোট, group/room ID বড় (16+ digits)
+    if (String(event.threadID).length < 16) return;
+
+    // messageID থেকে মেসেজ info নাও
+    api.getMessageInfo(event.messageID, (err, info) => {
+      if (err) return console.log("GetMessageInfo error:", err);
+
+      // যদি মেসেজ বটের হয়
+      if (info.senderID === botID) {
+        api.unsendMessage(event.messageID, (e) => {
+          if (e) console.log("Unsend failed:", e);
         });
       }
-    }
-  } catch (e) {
-    console.log("unsreact error:", e);
+    });
+  } catch (err) {
+    console.log("unsreact_group error:", err);
   }
 };
