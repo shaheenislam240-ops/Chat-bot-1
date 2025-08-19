@@ -28,6 +28,12 @@ const imageTriggers = [
     fileName: "gumkorefela.jpg"
   },
   {
+    keywords: ["handel mara"],
+    imageUrl: "https://i.postimg.cc/QxBZYxj7/IMG-7310.jpg",
+    reply: "Ai ne",
+    fileName: "handel.jpg"
+  },
+  {
     keywords: ["maria pik", "maria pik daw"],
     imageUrl: "https://i.postimg.cc/qMwr5nh6/IMG-6381.jpg",
     reply: "🎀🧃",
