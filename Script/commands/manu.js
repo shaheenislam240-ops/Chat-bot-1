@@ -11,7 +11,7 @@ function ensureFiles() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
   if (!fs.existsSync(CONF_PATH)) fs.writeFileSync(CONF_PATH, JSON.stringify({
     setupDone: false,
-    prefix: "",            //optional storage; won’t override bot core
+    prefix: "",
     ownerNote: "Welcome to MANU Control Center"
   }, null, 2));
   if (!fs.existsSync(DISABLED_CMDS_PATH)) fs.writeFileSync(DISABLED_CMDS_PATH, JSON.stringify([], null, 2));
@@ -28,17 +28,28 @@ function writeJSON(p, data) {
 }
 
 function listCommands() {
-  // List *.js in commands folder (excluding this file)
   const files = fs.readdirSync(COMMANDS_DIR)
     .filter(f => f.endsWith(".js") && f !== path.basename(__filename))
     .map(f => f.replace(/\.js$/, ""));
   return files;
 }
 
+// Exported helper: check if setup is done
+function isSetupDone() {
+  ensureFiles();
+  try {
+    const conf = readJSON(CONF_PATH);
+    return !!conf.setupDone;
+  } catch {
+    return false;
+  }
+}
+module.exports.isSetupDone = isSetupDone;
+
 module.exports.config = {
   name: "manu",
   version: "1.0.0",
-  hasPermssion: 2, // admin only (change to 0 if you want)
+  hasPermssion: 2,
   credits: "rX Abdullah + ChatGPT",
   description: "Bot Control Center (Menu + Setup)",
   commandCategory: "system",
@@ -46,10 +57,10 @@ module.exports.config = {
   cooldowns: 2
 };
 
-// ভাষা (সংক্ষিপ্ত)
+// English texts
 const T = {
   title: "🔧 MANU • Control Center",
-  ask: "যে অপশনটি চান তার নম্বর রিপ্লাই করুন:",
+  ask: "Reply with the number of the option you want:",
   opts: [
     "Setup / Finish setup",
     "Show current status",
@@ -59,17 +70,16 @@ const T = {
     "Turn BOT ON in this chat",
     "Restart bot (process.exit)"
   ],
-  done: "✅ সম্পন্ন!",
-  cancel: "❌ বাতিল করা হলো।",
-  needAdmin: "এই অপশন চালাতে অ্যাডমিন পারমিশন লাগে।",
-  confirmDel: (name)=>`আপনি কি নিশ্চিত যে “${name}.js” ডিলিট করতে চান? (yes/no)`,
-  notFound: "কমান্ড পাওয়া যায়নি।",
-  already: "ইতোমধ্যেই সেট ছিল।",
-  turnedOff: "এই থ্রেডে বট OFF করা হলো।",
-  turnedOn: "এই থ্রেডে বট ON করা হলো।"
+  done: "✅ Done!",
+  cancel: "❌ Cancelled.",
+  confirmDel: (name)=>`Are you sure you want to delete “${name}.js”? (yes/no)`,
+  notFound: "Command not found.",
+  already: "Already set.",
+  turnedOff: "BOT is now OFF in this chat.",
+  turnedOn: "BOT is now ON in this chat."
 };
 
-// গ্লোবাল গার্ড: setupDone না হলে—setup এর দিকে রিডাইরেক্ট
+// Global guard: if setup not done → redirect
 module.exports.handleEvent = async function({ api, event }) {
   try {
     if (!event || !event.body) return;
@@ -78,16 +88,15 @@ module.exports.handleEvent = async function({ api, event }) {
     const blockedThreads = readJSON(BLOCKED_THREADS_PATH);
     const isBlocked = Array.isArray(blockedThreads) && blockedThreads.includes(event.threadID);
 
-    // ব্লক থাকলে শুধু অ্যাডমিন/ম্যানু ছাড়া কিছুই চলবে না
+    // If this thread is blocked → do nothing
     if (isBlocked) return;
 
     if (!conf.setupDone) {
-      // শুধুমাত্র যখন কোনো অন্য কমান্ড ব্যবহার করার চেষ্টা (সহজভাবে: স্ল্যাশ/প্রিফিক্স টেক্সট) তখন গাইড দেই
       const body = (event.body || "").trim();
       const looksLikeCmd = /^[!/.#]/.test(body) && !/^manu(\s|$)/i.test(body);
       if (looksLikeCmd) {
         api.sendMessage(
-          "🛠️ প্রথমে বট কুইক সেটআপ সম্পন্ন করুন।\n👉 `manu` লিখে মেনু খুলুন, তারপর 1 নম্বর দিন (Setup).",
+          "🛠️ Please complete the Quick Setup first.\n👉 Type `manu` to open the menu, then choose option 1 (Setup).",
           event.threadID
         );
       }
@@ -95,14 +104,13 @@ module.exports.handleEvent = async function({ api, event }) {
   } catch {}
 };
 
-// মূল কমান্ড রান
-module.exports.run = async function({ api, event, args }) {
+// Main command
+module.exports.run = async function({ api, event }) {
   ensureFiles();
   const disabled = readJSON(DISABLED_CMDS_PATH);
   const conf = readJSON(CONF_PATH);
   const blockedThreads = readJSON(BLOCKED_THREADS_PATH);
 
-  // মেনু বানানো
   const statusLines = [
     `• Setup: ${conf.setupDone ? "✅ Done" : "❌ Not done"}`,
     `• Owner note: ${conf.ownerNote || "-"}`,
@@ -134,7 +142,7 @@ ${T.ask}`;
   });
 };
 
-// রিপ্লাই হ্যান্ডলার
+// Handle reply logic
 module.exports.handleReply = async function (o) {
   const { api, event, handleReply } = o;
   if (event.senderID != handleReply.author) return;
@@ -146,13 +154,11 @@ module.exports.handleReply = async function (o) {
 
   const reply = (msg, cb) => api.sendMessage(msg, event.threadID, cb);
 
-  // মেনু লেভেল
   if (handleReply.type === "menu") {
     const choice = (event.body || "").trim();
 
     switch (choice) {
       case "1": {
-        // Setup flow
         const q =
 `⚙️ Quick Setup
 1) Set owner note
@@ -172,18 +178,16 @@ ${T.ask}`;
         });
       }
       case "2": {
-        // Show status
         const cmds = listCommands();
         const disabledSet = new Set(disabled);
         const lines = cmds.slice(0, 40).map(n => `• ${n} ${disabledSet.has(n) ? "— OFF" : "— ON"}`);
-        return reply(`📊 Current Status:\n- Setup: ${conf.setupDone ? "✅ Done" : "❌ Not done"}\n- Owner note: ${conf.ownerNote || "-"}\n- Thread: ${blockedThreads.includes(event.threadID) ? "🚫 BOT OFF" : "🟢 BOT ON"}\n\n🧩 Commands (${lines.length} shown):\n${lines.join("\n")}`);
+        return reply(`📊 Status:\n- Setup: ${conf.setupDone ? "✅ Done" : "❌ Not done"}\n- Owner note: ${conf.ownerNote || "-"}\n- Thread: ${blockedThreads.includes(event.threadID) ? "🚫 BOT OFF" : "🟢 BOT ON"}\n\n🧩 Commands (${lines.length} shown):\n${lines.join("\n")}`);
       }
       case "3": {
-        // Toggle command ON/OFF
         const list = listCommands();
-        if (list.length === 0) return reply("কোনো কমান্ড পাওয়া যায়নি।");
+        if (list.length === 0) return reply("No commands found.");
         const menu = list.map((n,i)=>`${i+1}) ${n}`).join("\n");
-        return reply(`🔁 কোন কমান্ড ON/OFF করবেন?\n${menu}\n\n${T.ask}`, (err, info) => {
+        return reply(`🔁 Choose a command to toggle ON/OFF:\n${menu}\n\n${T.ask}`, (err, info) => {
           if (err) return;
           global.client.handleReply.push({
             name: module.exports.config.name,
@@ -195,11 +199,10 @@ ${T.ask}`;
         });
       }
       case "4": {
-        // Delete command (safe)
         const list = listCommands();
-        if (list.length === 0) return reply("কোনো কমান্ড পাওয়া যায়নি।");
+        if (list.length === 0) return reply("No commands found.");
         const menu = list.map((n,i)=>`${i+1}) ${n}`).join("\n");
-        return reply(`🗑️ কোন কমান্ড ফাইল ডিলিট করবেন?\n${menu}\n\n${T.ask}`, (err, info) => {
+        return reply(`🗑️ Choose a command file to delete:\n${menu}\n\n${T.ask}`, (err, info) => {
           if (err) return;
           global.client.handleReply.push({
             name: module.exports.config.name,
@@ -211,7 +214,6 @@ ${T.ask}`;
         });
       }
       case "5": {
-        // Turn bot OFF in this chat
         if (!blockedThreads.includes(event.threadID)) {
           blockedThreads.push(event.threadID);
           writeJSON(BLOCKED_THREADS_PATH, blockedThreads);
@@ -219,7 +221,6 @@ ${T.ask}`;
         return reply(T.turnedOff);
       }
       case "6": {
-        // Turn bot ON in this chat
         const idx = blockedThreads.indexOf(event.threadID);
         if (idx !== -1) {
           blockedThreads.splice(idx,1);
@@ -229,10 +230,7 @@ ${T.ask}`;
         return reply(T.already);
       }
       case "7": {
-        reply("♻️ রিস্টার্ট হচ্ছে...", () => {
-          // ছােট্ট ডিলে দিয়ে রিস্টার্ট
-          setTimeout(()=>process.exit(1), 500);
-        });
+        reply("♻️ Restarting...", () => setTimeout(()=>process.exit(1), 500));
         return;
       }
       default:
@@ -240,12 +238,11 @@ ${T.ask}`;
     }
   }
 
-  // Setup submenu
   if (handleReply.type === "setupMenu") {
     const choice = (event.body || "").trim();
     switch (choice) {
       case "1": {
-        return reply("✍️ Owner note লিখে পাঠান:", (err, info) => {
+        return reply("✍️ Send the new owner note:", (err, info) => {
           if (err) return;
           global.client.handleReply.push({
             name: module.exports.config.name,
@@ -258,12 +255,12 @@ ${T.ask}`;
       case "2": {
         conf.setupDone = true;
         writeJSON(CONF_PATH, conf);
-        return reply("✅ Setup DONE হিসেবে মার্ক হলো।");
+        return reply("✅ Setup marked as DONE.");
       }
       case "3": {
         conf.setupDone = false;
         writeJSON(CONF_PATH, conf);
-        return reply("🔄 Setup NOT DONE হিসেবে মার্ক হলো।");
+        return reply("🔄 Setup marked as NOT DONE.");
       }
       case "0":
       default:
@@ -277,11 +274,10 @@ ${T.ask}`;
     return api.sendMessage(T.done, event.threadID);
   }
 
-  // Toggle pick
   if (handleReply.type === "togglePick") {
     const idx = parseInt((event.body||"").trim(), 10) - 1;
     const list = handleReply.cmds || [];
-    if (!(idx >=0 && idx < list.length)) return api.sendMessage("ভুল নম্বর!", event.threadID);
+    if (!(idx >=0 && idx < list.length)) return api.sendMessage("Invalid number!", event.threadID);
     const name = list[idx];
     let disabled = readJSON(DISABLED_CMDS_PATH);
     if (!Array.isArray(disabled)) disabled = [];
@@ -289,19 +285,18 @@ ${T.ask}`;
     if (disabled.includes(name)) {
       disabled = disabled.filter(n => n !== name);
       writeJSON(DISABLED_CMDS_PATH, disabled);
-      return api.sendMessage(`✅ ${name} এখন ON`, event.threadID);
+      return api.sendMessage(`✅ ${name} is now ON`, event.threadID);
     } else {
       disabled.push(name);
       writeJSON(DISABLED_CMDS_PATH, disabled);
-      return api.sendMessage(`🚫 ${name} এখন OFF`, event.threadID);
+      return api.sendMessage(`🚫 ${name} is now OFF`, event.threadID);
     }
   }
 
-  // Delete pick -> confirm
   if (handleReply.type === "deletePick") {
     const idx = parseInt((event.body||"").trim(), 10) - 1;
     const list = handleReply.cmds || [];
-    if (!(idx >=0 && idx < list.length)) return api.sendMessage("ভুল নম্বর!", event.threadID);
+    if (!(idx >=0 && idx < list.length)) return api.sendMessage("Invalid number!", event.threadID);
     const name = list[idx];
 
     return api.sendMessage(T.confirmDel(name), event.threadID, (err, info) => {
@@ -324,37 +319,20 @@ ${T.ask}`;
     }
     if (ans.startsWith("n")) return api.sendMessage(T.cancel, event.threadID);
 
-    // নিরাপদ ডিলিট
     const safeName = name.replace(/[^a-z0-9_\-]/gi, "");
     const target = path.join(COMMANDS_DIR, `${safeName}.js`);
     if (!fs.existsSync(target)) return api.sendMessage(T.notFound, event.threadID);
 
     try {
       fs.unlinkSync(target);
-      // যদি OFF লিস্টে থাকে—তাও সরাই
       let disabled = readJSON(DISABLED_CMDS_PATH);
       if (Array.isArray(disabled)) {
         disabled = disabled.filter(n => n !== safeName);
         writeJSON(DISABLED_CMDS_PATH, disabled);
       }
-      return api.sendMessage(`🗑️ ডিলিট সম্পন্ন: ${safeName}.js`, event.threadID);
+      return api.sendMessage(`🗑️ Deleted: ${safeName}.js`, event.threadID);
     } catch (e) {
-      return api.sendMessage(`❌ ডিলিট ব্যর্থ: ${e.message}`, event.threadID);
+      return api.sendMessage(`❌ Delete failed: ${e.message}`, event.threadID);
     }
   }
 };
-
-// ===== Optional helper (middleware idea) =====
-// আপনি চাইলে আপনার বটের command handler-এ DISABLED_CMDS_PATH পড়ে
-// যেসব কমান্ড disabled তালিকায় আছে সেগুলো স্কিপ করতে পারেন।
-// নিচে শুধু রেফারেন্স লজিক (ফ্রেমওয়ার্ক-লেভেল ইন্টিগ্রেশন দরকার):
-
-/*
-globalBypassCheck = function(commandName, threadID) {
-  const disabled = readJSON(DISABLED_CMDS_PATH);
-  const blocked = readJSON(BLOCKED_THREADS_PATH);
-  if (Array.isArray(blocked) && blocked.includes(threadID)) return false; // block all
-  if (Array.isArray(disabled) && disabled.includes(commandName)) return false; // this cmd off
-  return true; // allow
-};
-*/
