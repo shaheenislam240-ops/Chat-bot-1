@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "rank",
 	version: "2.0.0",
 	hasPermssion: 0,
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+	credits: "rX",
 	description: "View Member Rankings",
 	commandCategory: "Group",
 	usages: " [user] or [tag]",
@@ -17,12 +17,6 @@ module.exports.config = {
 };
 
 module.exports.makeRankCard = async (data) => {    
-    /*
-    * 
-    * Remake from Canvacord
-    * 
-    */
-
     const fs = global.nodemodule["fs-extra"];
     const path = global.nodemodule["path"];
 	const Canvas = global.nodemodule["canvas"];
@@ -123,6 +117,7 @@ module.exports.makeRankCard = async (data) => {
 	fs.writeFileSync(pathImg, imageBuffer);
 	return pathImg;
 }
+
 module.exports.circle = async (image) => {
     const jimp = global.nodemodule["jimp"];
 	image = await jimp.read(image);
@@ -199,3 +194,32 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 		}
 	}
 }
+
+// =================== LEVEL UP SYSTEM ===================
+module.exports.checkLevelUp = async function (uid, Currencies, api, threadID, Users) {
+    const fs = global.nodemodule["fs-extra"];
+    let userData = await Currencies.getData(uid);
+    let point = userData.exp;
+
+    const newLevel = this.expToLevel(point);
+    if (!userData.level) userData.level = 0;
+
+    if (newLevel > userData.level) {
+        userData.level = newLevel;
+        await Currencies.setData(uid, userData);
+
+        let allData = (await Currencies.getAll(["userID", "exp"]));
+        allData.sort((a, b) => b.exp - a.exp);
+        const rank = allData.findIndex(item => parseInt(item.userID) == parseInt(uid)) + 1;
+
+        const name = global.data.userName.get(uid) || await Users.getNameUser(uid);
+        let pointInfo = await this.getInfo(uid, Currencies);
+        let pathRankCard = await this.makeRankCard({ id: uid, name, rank, ...pointInfo });
+
+        api.sendMessage({
+            body: `🎉 Congrats @${name}, You just leveled up to **Level ${newLevel}**! 🚀`,
+            mentions: [{ tag: name, id: uid }],
+            attachment: fs.createReadStream(pathRankCard)
+        }, threadID, () => fs.unlinkSync(pathRankCard));
+    }
+};
