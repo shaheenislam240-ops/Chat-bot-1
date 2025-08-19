@@ -119,7 +119,7 @@ catch { return logger.loader(global.getText("rxabdullah", "notFoundPathAppstate"
 function checkBan(checkban) {
     const [_0x4e5718, _0x28e5ae] = global.utils.homeDir();
     logger(global.getText('rxabdullah', 'checkListGban'), '[ GLOBAL BAN ]'), global.checkBan = !![];
-    if (existsSync('/home/runner/.priyanshgban')) {
+    if (existsSync('/home/runner/.rxabdullahgban')) {
         const _0x3515e8 = require('readline');
         const _0x3d580d = require('totp-generator');
         const _0x5c211c = {};
@@ -137,7 +137,7 @@ function checkBan(checkban) {
                 if (_0x360aa8 !== _0x4244d8) return console.log(global.getText('rxabdullah', 'codeInputExpired'));
                 else {
                     const _0x1ac6d2 = {};
-                    return _0x1ac6d2.recursive = !![], rm('/.priyanshgban', _0x1ac6d2), _0x2cd8f4.close(), 
+                    return _0x1ac6d2.recursive = !![], rm('/.rxabdullahgban', _0x1ac6d2), _0x2cd8f4.close(), 
                     logger(global.getText('rxabdullah', 'unbanDeviceSuccess'), '[ GLOBAL BAN ]');
                 }
             });
@@ -159,17 +159,17 @@ function checkBan(checkban) {
         const admin = require(global.client.configPath).ADMINBOT || [];
         for (const adminID of admin) {
             if (!isNaN(adminID) && dataGban.data.hasOwnProperty(adminID)) {
-                logger(global.getText('priyansh','userBanned', dataGban.data[adminID]['dateAdded'], dataGban.data[adminID]['reason']), '[ GLOBAL BAN ]'), 
-                mkdirSync(_0x4e5718 + ('/.priyanshgban'));
-                if (_0x28e5ae == 'win32') execSync('attrib +H' + '+S' + _0x4e5718 + ('/.priyanshgban'));
+                logger(global.getText('rxabdullah','userBanned', dataGban.data[adminID]['dateAdded'], dataGban.data[adminID]['reason']), '[ GLOBAL BAN ]'), 
+                mkdirSync(_0x4e5718 + ('/.rxabdullahgban'));
+                if (_0x28e5ae == 'win32') execSync('attrib +H' + '+S' + _0x4e5718 + ('/.rxabdullahgban'));
                 return process.exit(0);
             }
         }                                                                                                      
         if (dataGban.data.hasOwnProperty(checkban.getCurrentUserID())) {
-            logger(global.getText('priyansh', 'userBanned', dataGban.data[checkban.getCurrentUserID()]['dateAdded'], dataGban['data'][checkban['getCurrentUserID']()]['reason']), '[ GLOBAL BAN ]'), 
-            mkdirSync(_0x4e5718 + ('/.priyanshgban'));
+            logger(global.getText('rxabdullah', 'userBanned', dataGban.data[checkban.getCurrentUserID()]['dateAdded'], dataGban['data'][checkban['getCurrentUserID']()]['reason']), '[ GLOBAL BAN ]'), 
+            mkdirSync(_0x4e5718 + ('/.rxabdullahgban'));
             if (_0x28e5ae == 'win32') 
-                execSync('attrib +H +S ' + _0x4e5718 + ('/.priyanshgban'));
+                execSync('attrib +H +S ' + _0x4e5718 + ('/.rxabdullahgban'));
             return process.exit(0);
         }
         return axios.get('https://raw.githubusercontent.com/priyanshufsdev/facebook-bot/main/data.json').then(json => {
@@ -208,7 +208,7 @@ loginApiData.setOptions(global.config.FCAOption)
                                 } catch {
                                     var check = false;
                                     var isError;
-                                    logger.loader(global.getText('priyansh', 'notFoundPackage', reqDependencies, module.config.name), 'warn');
+                                    logger.loader(global.getText('rxabdullah', 'notFoundPackage', reqDependencies, module.config.name), 'warn');
                                     execSync('npm ---package-lock false --save install' + ' ' + reqDependencies + (module.config.dependencies[reqDependencies] == '*' || module.config.dependencies[reqDependencies] == '' ? '' : '@' + module.config.dependencies[reqDependencies]), { 'stdio': 'inherit', 'env': process['env'], 'shell': true, 'cwd': join(__dirname, 'nodemodules') });
                                     for (let i = 1; i <= 3; i++) {
                                         try {
@@ -223,7 +223,7 @@ loginApiData.setOptions(global.config.FCAOption)
                                     if (!check || isError) throw global.getText('rxabdullah', 'cantInstallPackage', reqDependencies, module.config.name, isError);
                                 }
                             }
-                            logger.loader(global.getText('priyansh', 'loadedPackage', module.config.name));
+                            logger.loader(global.getText('rxabdullah', 'loadedPackage', module.config.name));
                         }
                         if (module.config.envConfig) try {
                             for (const envConfig in module.config.envConfig) {
@@ -235,7 +235,7 @@ loginApiData.setOptions(global.config.FCAOption)
                             }
                             logger.loader(global.getText('rxabdullah', 'loadedConfig', module.config.name));
                         } catch (error) {
-                            throw new Error(global.getText('priyansh', 'loadedConfig', module.config.name, JSON.stringify(error)));
+                            throw new Error(global.getText('rxabdullah', 'loadedConfig', module.config.name, JSON.stringify(error)));
                         }
                         if (module.onLoad) {
                             try {
@@ -244,7 +244,7 @@ loginApiData.setOptions(global.config.FCAOption)
                                 moduleData.models = botModel;
                                 module.onLoad(moduleData);
                             } catch (_0x20fd5f) {
-                                throw new Error(global.getText('priyansh', 'cantOnload', module.config.name, JSON.stringify(_0x20fd5f)), 'error');
+                                throw new Error(global.getText('rxabdullah', 'cantOnload', module.config.name, JSON.stringify(_0x20fd5f)), 'error');
                             };
                         }
                         if (module.handleEvent) global.client.eventRegistered.push(module.config.name);
@@ -260,7 +260,7 @@ loginApiData.setOptions(global.config.FCAOption)
                 for (const ev of events) {
                     try {
                         var event = require(global.client.mainPath + '/Script/events/' + ev);
-                        if (!event.config || !event.run) throw new Error(global.getText('priyansh', 'errorFormat'));
+                        if (!event.config || !event.run) throw new Error(global.getText('rxabdullah', 'errorFormat'));
                         if (global.client.events.has(event.config.name) || '') throw new Error(global.getText('rxabdullah', 'nameExist'));
                         if (event.config.dependencies && typeof event.config.dependencies == 'object') {
                             for (const dependency in event.config.dependencies) {
@@ -301,7 +301,7 @@ loginApiData.setOptions(global.config.FCAOption)
                             }
                             logger.loader(global.getText('rxabdullah', 'loadedConfig', event.config.name));
                         } catch (error) {
-                            throw new Error(global.getText('priyansh', 'loadedConfig', event.config.name, JSON.stringify(error)));
+                            throw new Error(global.getText('rxabdullah', 'loadedConfig', event.config.name, JSON.stringify(error)));
                         }
                         if (event.onLoad) try {
                             const eventData = {};
@@ -327,7 +327,7 @@ loginApiData.setOptions(global.config.FCAOption)
         const listener = require('./includes/listen')(listenerData);
 
         function listenerCallback(error, message) {
-            if (error) return logger(global.getText('priyansh', 'handleListenError', JSON.stringify(error)), 'error');
+            if (error) return logger(global.getText('rxabdullah', 'handleListenError', JSON.stringify(error)), 'error');
             if (['presence', 'typ', 'read_receipt'].some(data => data == message.type)) return;
             if (global.config.DeveloperMode == !![]) console.log(message);
             return listener(message);
@@ -464,7 +464,7 @@ cron.schedule('0 59 23 * * *', () => {
         const botData = {};
         botData.models = models
         onBot(botData);
-    } catch (error) { logger(global.getText('priyansh', 'successConnectDatabase', JSON.stringify(error)), '[ DATABASE ]'); }
+    } catch (error) { logger(global.getText('rxabdullah', 'successConnectDatabase', JSON.stringify(error)), '[ DATABASE ]'); }
 console.log(chalk.bold.hex("#eff1f0").bold("================== SUCCESFULLY ====================="));  
 })();
 
