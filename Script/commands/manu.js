@@ -36,7 +36,7 @@ function listCommands() {
 }
 
 module.exports.config = {
-  name: "menu",
+  name: "manu",
   version: "1.0.0",
   hasPermssion: 2, // admin only (change to 0 if you want)
   credits: "rX Abdullah + ChatGPT",
