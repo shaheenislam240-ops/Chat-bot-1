@@ -25,7 +25,7 @@ Welcome to the **RX ChatBot** intro project. This is a sleek, hacker-style webpa
 
 - Facebook Messenger chatbot functionality
 - Facebook login through `appstate.json` (cookies)
-- 250+ built-in commands
+- 300+ built-in commands
 - Easily customizable structure for developers
 
 
@@ -114,7 +114,7 @@ You can preview the page by opening the HTML file in any browser.
 
 ---
 
-## ✨ Screenshot
+## ✨ OWNAR PHOTO
 
 ![Preview](https://i.postimg.cc/nhxxB67n/IMG-0793.jpg)
 
