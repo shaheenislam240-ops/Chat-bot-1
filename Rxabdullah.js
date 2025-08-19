@@ -1,14 +1,14 @@
 const { spawn } = require("child_process");
 const axios = require("axios");
 const logger = require("./utils/log");
+const fs = require("fs");
+const path = require("path");
 
 ///////////////////////////////////////////////////////////
 //========= Create website for dashboard/uptime =========//
 ///////////////////////////////////////////////////////////
 
 const express = require('express');
-const path = require('path');
-
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -29,10 +29,27 @@ app.listen(port, () => {
 });
 
 /////////////////////////////////////////////////////////
+//========= Manu Setup Checker (Global) ===============//
+/////////////////////////////////////////////////////////
+
+const DATA_DIR = path.join(__dirname, "cache");
+const CONF_PATH = path.join(DATA_DIR, "manu.config.json");
+
+function isSetupDone() {
+    if (!fs.existsSync(CONF_PATH)) return false;
+    try {
+        const conf = JSON.parse(fs.readFileSync(CONF_PATH, "utf8"));
+        return !!conf.setupDone;
+    } catch {
+        return false;
+    }
+}
+global.isSetupDone = isSetupDone;
+
+/////////////////////////////////////////////////////////
 //========= Create start bot and make it loop =========//
 /////////////////////////////////////////////////////////
 
-// Initialize global restart counter
 global.countRestart = global.countRestart || 0;
 
 function startBot(message) {
