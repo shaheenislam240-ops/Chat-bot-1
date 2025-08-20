@@ -1,44 +1,31 @@
 module.exports.config = {
 	name: "unsend",
-	version: "1.0.2",
+	version: "1.0.4",
 	hasPermssion: 0,
-	credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭 + Modified by CYBER",
-	description: "Unsend bot messages by reply or angry reaction",
+	credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭 + Modified by rX",
+	description: "Auto unsend bot messages by reply or angry react (no prefix needed)",
 	commandCategory: "system",
-	usages: "unsend (reply bot msg) OR react 😡/🤬",
+	usages: "Reply bot msg + 😡/🤬 OR just reply then unsend",
 	cooldowns: 0
 };
 
-module.exports.languages = {
-	"vi": {
-		"returnCant": "Không thể gỡ tin nhắn của người khác.",
-		"missingReply": "Hãy reply tin nhắn cần gỡ."
-	},
-	"en": {
-		"returnCant": "Kisi Aur Ka Msg M Kese Unsend Karu.",
-		"missingReply": "Mere Jis Msg ko Unsend Karna Hai Usme Reply Karke Likkho."
-	}
-};
-
-module.exports.run = function({ api, event, getText }) {
-	if (event.type != "message_reply") 
-		return api.sendMessage(getText("missingReply"), event.threadID, event.messageID);
-	if (event.messageReply.senderID != api.getCurrentUserID()) 
-		return api.sendMessage(getText("returnCant"), event.threadID, event.messageID);
-	
-	return api.unsendMessage(event.messageReply.messageID);
-};
-
-// --- New feature: unsend if react 😡 or 🤬 ---
 module.exports.handleEvent = function({ api, event }) {
+	// Case 1: যদি শুধু reply করে unsend করতে চায়
+	if (event.type === "message_reply") {
+		if (event.messageReply && event.messageReply.senderID === api.getCurrentUserID()) {
+			// শুধু reply দিলেই unsend হবে
+			api.unsendMessage(event.messageReply.messageID);
+		}
+	}
+
+	// Case 2: যদি reply এর সাথে 😡 বা 🤬 react দেয়
 	if (event.type === "message_reaction") {
-		// only unsend if react 😡 or 🤬 and message belongs to bot
-		if ((event.reaction === "😡" || event.reaction === "🤬") && event.senderID !== api.getCurrentUserID()) {
-			api.getMessageInfo(event.threadID, event.messageID, (err, info) => {
-				if (!err && info.message && info.message.senderID === api.getCurrentUserID()) {
-					api.unsendMessage(event.messageID);
-				}
-			});
+		if (event.reaction === "😡" || event.reaction === "🤬") {
+			if (event.messageReply && event.messageReply.senderID === api.getCurrentUserID()) {
+				api.unsendMessage(event.messageReply.messageID);
+			}
 		}
 	}
 };
+
+module.exports.run = function() {};
