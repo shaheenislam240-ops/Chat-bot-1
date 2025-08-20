@@ -1,31 +1,27 @@
 module.exports.config = {
 	name: "unsend",
-	version: "1.0.4",
+	version: "1.0.1",
 	hasPermssion: 0,
-	credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭 + Modified by rX",
-	description: "Auto unsend bot messages by reply or angry react (no prefix needed)",
+	credits: "rX",
+	description: "Gỡ tin nhắn của bot",
 	commandCategory: "system",
-	usages: "Reply bot msg + 😡/🤬 OR just reply then unsend",
+	usages: "unsend",
 	cooldowns: 0
 };
 
-module.exports.handleEvent = function({ api, event }) {
-	// Case 1: যদি শুধু reply করে unsend করতে চায়
-	if (event.type === "message_reply") {
-		if (event.messageReply && event.messageReply.senderID === api.getCurrentUserID()) {
-			// শুধু reply দিলেই unsend হবে
-			api.unsendMessage(event.messageReply.messageID);
-		}
+module.exports.languages = {
+	"vi": {
+		"returnCant": "Không thể gỡ tin nhắn của người khác.",
+		"missingReply": "Hãy reply tin nhắn cần gỡ."
+	},
+	"en": {
+		"returnCant": "Kisi Aur Ka Msg M Kese Unsend Karu.",
+		"missingReply": "Mere Jis Msg ko Unsend Karna Hai Usme Reply Karke Likkho."
 	}
+}
 
-	// Case 2: যদি reply এর সাথে 😡 বা 🤬 react দেয়
-	if (event.type === "message_reaction") {
-		if (event.reaction === "😡" || event.reaction === "🤬") {
-			if (event.messageReply && event.messageReply.senderID === api.getCurrentUserID()) {
-				api.unsendMessage(event.messageReply.messageID);
-			}
-		}
+module.exports.run = function({ api, event, getText }) {
+	if (event.messageReply.senderID != api.getCurrentUserID()) return api.sendMessage(getText("returnCant"), event.threadID, event.messageID);
+	if (event.type != "message_reply") return api.sendMessage(getText("missingReply"), event.threadID, event.messageID);
+	return api.unsendMessage(event.messageReply.messageID);
 	}
-};
-
-module.exports.run = function() {};
