@@ -3,7 +3,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "cs",
-  version: "1.0.0",
+  version: "1.0.1",
   hasPermssion: 0,
   credits: "Rx Abdullah",
   usePrefix: true,
@@ -15,16 +15,18 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, event, args }) {
   try {
-    const commandDir = path.join(__dirname, ".."); // commands folder
+    // 👉 এখন শুধু এই ফোল্ডারের ভেতর (commands) থেকে ফাইল নেবে
+    const commandDir = __dirname;  
     const files = fs.readdirSync(commandDir).filter(file => file.endsWith(".js"));
 
-    // সব command details collect করা
     let commands = [];
     for (let i = 0; i < files.length; i++) {
       try {
         let cmd = require(path.join(commandDir, files[i]));
+        if (!cmd.config) continue; // config না থাকলে skip করবে
+
         commands.push({
-          name: cmd.config.name || files[i],
+          name: cmd.config.name || files[i].replace(".js", ""),
           author: cmd.config.credits || "Unknown",
           update: cmd.config.update || cmd.config.version || "N/A",
           usage: (global.config.PREFIX || "!") + (cmd.config.name || files[i].replace(".js", ""))
@@ -34,8 +36,12 @@ module.exports.run = async function ({ api, event, args }) {
 
     // Pagination
     let page = parseInt(args[0]) || 1;
-    let limit = 10; // প্রতি পেজে 10 টা command
+    let limit = 10; 
     let totalPages = Math.ceil(commands.length / limit);
+
+    if (totalPages === 0) {
+      return api.sendMessage("❌ No commands found.", event.threadID, event.messageID);
+    }
 
     if (page < 1) page = 1;
     if (page > totalPages) page = totalPages;
