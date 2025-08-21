@@ -4,40 +4,59 @@ const path = require("path");
 
 module.exports.config = {
   name: "message",
-  version: "3.1.0",
+  version: "3.4.0",
   hasPermssion: 2,
   credits: "rX Abdullah",
-  description: "Send announcement with optional image (from reply) to all groups",
+  description: "Send announcement with optional image/text (reply photo saved to cache) to all groups",
   commandCategory: "system",
   usages: "[your message] (reply to photo optional)",
   cooldowns: 5,
 };
 
 module.exports.run = async ({ api, event, args }) => {
-  const input = args.join(" ");
-  if (!input) {
-    return api.sendMessage("📢 Use like this:\n!message [your message]\n(Reply to photo optional)", event.threadID, event.messageID);
+  let input = args.join(" ");
+  let attachment = [];
+
+  // Cache directory
+  const cacheDir = path.join(__dirname, "cache");
+  fs.ensureDirSync(cacheDir);
+
+  // If replied message exists
+  if (event.messageReply) {
+    const reply = event.messageReply;
+
+    // If reply has text and no args, then use that text
+    if (!input && reply.body) {
+      input = reply.body;
+    }
+
+    // If reply has image(s)
+    if (reply.attachments && reply.attachments.length > 0) {
+      for (const atc of reply.attachments) {
+        if (atc.type === "photo") {
+          const imgPath = path.join(cacheDir, `${Date.now()}_${Math.floor(Math.random() * 9999)}.jpg`);
+          const res = await axios.get(atc.url, { responseType: "arraybuffer" });
+          fs.writeFileSync(imgPath, Buffer.from(res.data, "binary"));
+          attachment.push(imgPath); // শুধু path রাখলাম
+        }
+      }
+    }
+  }
+
+  if (!input && attachment.length === 0) {
+    return api.sendMessage("📢 Use like this:\n!message [your message]\n(or reply to photo/text)", event.threadID, event.messageID);
   }
 
   const title = "📣 ANNOUNCEMENT";
-  const msg =
+  let msg = "";
+
+  if (input) {
+    msg =
 `╭──── [ ${title} ] ────╮
 
 ${input}
 
 ╰────────────────────────────╯`;
-
-  // Check for replied image
-  let attachment = [];
-  if (event.messageReply && event.messageReply.attachments.length > 0) {
-    const image = event.messageReply.attachments[0];
-    if (image.type === "photo") {
-      const imgPath = path.join(__dirname, "cache", `${Date.now()}.jpg`);
-      const res = await axios.get(image.url, { responseType: "arraybuffer" });
-      fs.ensureDirSync(path.dirname(imgPath));
-      fs.writeFileSync(imgPath, Buffer.from(res.data, "binary"));
-      attachment.push(fs.createReadStream(imgPath));
-    }
   }
 
   try {
@@ -47,12 +66,18 @@ ${input}
 
     for (const thread of groupThreads) {
       try {
-        await api.sendMessage({ body: msg, attachment }, thread.threadID);
+        let files = attachment.map(p => fs.createReadStream(p));
+        await api.sendMessage({ body: msg || undefined, attachment: files }, thread.threadID);
         count++;
         await new Promise(r => setTimeout(r, 300));
       } catch (e) {
         console.log(`❌ Failed to send in: ${thread.threadID}`);
       }
+    }
+
+    // Delete cached files after sending
+    for (const file of attachment) {
+      fs.unlinkSync(file);
     }
 
     return api.sendMessage(`✅ Message sent to ${count} groups.`, event.threadID, event.messageID);
