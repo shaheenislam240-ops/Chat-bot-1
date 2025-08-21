@@ -34,7 +34,7 @@ module.exports.run = function ({ api, event }) {
 
 ╭──── [ 𝗖𝗛𝗔𝗧 𝗔𝗜 ]
 │ ✧ baby✧ bby✧ jan✧
-│ ✧ maria✧ hippi✧ 
+│ ✧ maria✧ hippi✧ mona✧
 │ ✧ maria rani✧ bbz
 ╰───────────────◊
 ╭──── [ UTILITY ]
@@ -64,6 +64,11 @@ module.exports.run = function ({ api, event }) {
 │ ✧ pair✧ pair1✧ love
 │ ✧ kiss✧ gf✧ bf
 │ ✧ bestu✧ bestie✧ match✧
+╰───────────────◊
+╭──── [ FUN & NUDS ]
+│ ✧ copy✧ tag✧ teach (yourtext)
+│ ✧ NODES 👇🏻
+│ ✧ pixlist✧ getpix (uid)✧ pixup✧
 ╰───────────────◊
 ╭──── [ VOICE & PHOTOS ]
 │ ✧ ekta gan bolo✧ ghumabo
