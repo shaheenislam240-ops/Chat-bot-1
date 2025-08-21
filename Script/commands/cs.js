@@ -3,7 +3,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "cs",
-  version: "1.0.1",
+  version: "1.0.2",
   hasPermssion: 0,
   credits: "Rx Abdullah",
   usePrefix: true,
@@ -15,7 +15,6 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, event, args }) {
   try {
-    // 👉 এখন শুধু এই ফোল্ডারের ভেতর (commands) থেকে ফাইল নেবে
     const commandDir = __dirname;  
     const files = fs.readdirSync(commandDir).filter(file => file.endsWith(".js"));
 
@@ -23,18 +22,17 @@ module.exports.run = async function ({ api, event, args }) {
     for (let i = 0; i < files.length; i++) {
       try {
         let cmd = require(path.join(commandDir, files[i]));
-        if (!cmd.config) continue; // config না থাকলে skip করবে
+        if (!cmd.config) continue;
 
         commands.push({
           name: cmd.config.name || files[i].replace(".js", ""),
           author: cmd.config.credits || "Unknown",
           update: cmd.config.update || cmd.config.version || "N/A",
-          usage: (global.config.PREFIX || "!") + (cmd.config.name || files[i].replace(".js", ""))
+          usage: cmd.config.name || files[i].replace(".js", "")
         });
       } catch (e) {}
     }
 
-    // Pagination
     let page = parseInt(args[0]) || 1;
     let limit = 10; 
     let totalPages = Math.ceil(commands.length / limit);
