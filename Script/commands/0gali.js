@@ -12,7 +12,7 @@ module.exports.config = {
 
 module.exports.handleEvent = function({ api, event, client, __GLOBAL }) {
 	var { threadID, messageID } = event;
-	if (event.body.indexOf("mgi")==0 || event.body.indexOf("khanki")==0 || event.body.indexOf("mg")==0 || event.body.indexOf("magi")==0) {
+	if (event.body.indexOf("Mgi")==0 || event.body.indexOf("Khanki")==0 || event.body.indexOf("Mg")==0 || event.body.indexOf("Magi")==0) {
 		var msg = {
 				body: "aisob kintu vlo lge na",
 				attachment: fs.createReadStream(__dirname + `/noprefix/nupure.mp3`)
