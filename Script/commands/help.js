@@ -67,7 +67,7 @@ module.exports.run = function ({ api, event }) {
 ╰───────────────◊
 ╭──── [ FUN & NUDS ]
 │ ✧ copy✧ tag✧ teach (yourtext)
-│ ✧ NODES 👇🏻
+│ ✧ NUDES 👇🏻
 │ ✧ pixlist✧ getpix (uid)✧ pixup✧
 ╰───────────────◊
 ╭──── [ VOICE & PHOTOS ]
