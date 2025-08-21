@@ -3,7 +3,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "cs",
-  version: "1.0.2",
+  version: "1.0.3",
   hasPermssion: 0,
   credits: "Rx Abdullah",
   usePrefix: true,
@@ -15,7 +15,7 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, event, args }) {
   try {
-    const commandDir = __dirname;  
+    const commandDir = __dirname;
     const files = fs.readdirSync(commandDir).filter(file => file.endsWith(".js"));
 
     let commands = [];
@@ -27,14 +27,13 @@ module.exports.run = async function ({ api, event, args }) {
         commands.push({
           name: cmd.config.name || files[i].replace(".js", ""),
           author: cmd.config.credits || "Unknown",
-          update: cmd.config.update || cmd.config.version || "N/A",
-          usage: cmd.config.name || files[i].replace(".js", "")
+          version: cmd.config.version || "N/A",
         });
       } catch (e) {}
     }
 
     let page = parseInt(args[0]) || 1;
-    let limit = 10; 
+    let limit = 10;
     let totalPages = Math.ceil(commands.length / limit);
 
     if (totalPages === 0) {
@@ -48,20 +47,21 @@ module.exports.run = async function ({ api, event, args }) {
     let end = start + limit;
     let list = commands.slice(start, end);
 
-    let msg = "╭───✦ Cmd Store ✦───╮\n";
-    msg += `│ Page ${page} of ${totalPages} page(s)\n`;
-    msg += `│ Total ${commands.length} commands\n`;
+    let msg = `╭─‣ 𝐂𝐦𝐝 𝐒𝐭𝐨𝐫𝐞 🎀\n`;
+    msg += `├‣ 𝐀𝐝𝐦𝐢𝐧: ${global.config.BOTNAME || "Unknown"}\n`;
+    msg += `├‣ 𝐓𝐨𝐭𝐚𝐥 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬: ${commands.length}\n`;
+    msg += `╰────────────◊\n`;
 
     list.forEach((cmd, i) => {
-      msg += `│ ───✦ ${start + i + 1}. ${cmd.name}\n`;
-      msg += `│ AUTHOR: ${cmd.author}\n`;
-      msg += `│ USING: ${cmd.usage}\n`;
-      msg += `│ UPDATE: ${cmd.update}\n`;
+      msg += `╭─‣ ${start + i + 1}: ${cmd.name}\n`;
+      msg += `├‣ Author: ${cmd.author}\n`;
+      msg += `├‣ Version: ${cmd.version}\n`;
+      msg += `╰────────────◊\n`;
     });
 
-    msg += "╰─────────────⧕\n";
+    msg += `\n📄 | 𝐏𝐚𝐠𝐞 [${page}-${totalPages}]\n`;
     if (page < totalPages) {
-      msg += `Type "${global.config.PREFIX}cs ${page + 1}" for more commands.`;
+      msg += `ℹ | 𝐓𝐲𝐩𝐞 ${global.config.PREFIX}cs ${page + 1} - 𝐭𝐨 𝐬𝐞𝐞 𝐧𝐞𝐱𝐭 𝐩𝐚𝐠𝐞.`;
     }
 
     api.sendMessage(msg, event.threadID, event.messageID);
