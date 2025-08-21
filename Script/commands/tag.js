@@ -1,11 +1,11 @@
 module.exports.config = {
   name: "tag",
-  version: "1.0.1",
+  version: "1.0.2",
   hasPermssion: 0,
   credits: "RxHelper",
-  description: "Tag someone N times (separate messages with delay)",
+  description: "Tag someone N times (each in separate messages, optional text)",
   commandCategory: "utility",
-  usages: "!tag <Nx> @mention | or reply a message then use: !tag <Nx>",
+  usages: "!tag <Nx> @mention [optional text] | or reply a message then use: !tag <Nx> [optional text]",
   cooldowns: 2
 };
 
@@ -16,7 +16,7 @@ module.exports.run = async function ({ api, event, args }) {
 
     if (!args[0]) {
       return api.sendMessage(
-        "Usage:\n• !tag 20x @someone\n• (Reply a user) !tag 10x\n\nNote: max 100x",
+        "Usage:\n• !tag 20x @someone\n• !tag 10x @someone good morning\n• (Reply a user) !tag 5x hello\n\nNote: max 100x",
         event.threadID, event.messageID
       );
     }
@@ -52,17 +52,23 @@ module.exports.run = async function ({ api, event, args }) {
       return api.sendMessage("You must @mention someone or reply a user's message.", event.threadID, event.messageID);
     }
 
-    // Send each mention one by one with 1 second delay
+    // Extra text after Nx and mention
+    let extraText = args.slice(1).join(" ").trim();
+    if (Object.keys(event.mentions).length > 0) {
+      // Remove the mention text itself from extraText
+      extraText = extraText.replace(/@\S+/, "").trim();
+    }
+
+    // Send each mention one by one with 1s delay
     for (let i = 0; i < times; i++) {
       await new Promise(res => {
         api.sendMessage({
-          body: `(${i + 1}) @${targetName}`,
+          body: `@${targetName}${extraText ? " " + extraText : ""}`,
           mentions: [{ tag: "@" + targetName, id: targetID }]
         }, event.threadID, res);
       });
 
-      // 1 second delay
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise(r => setTimeout(r, 1000)); // 1s delay
     }
 
   } catch (e) {
