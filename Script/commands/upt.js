@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports.config = {
-  name: "uptstatus",
+  name: "upt",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "Rx Abdullah",
@@ -17,7 +17,7 @@ module.exports.config = {
 module.exports.run = async function ({ api, event }) {
   try {
     // Background photo (catch file)
-    const bgPath = path.join(__dirname, "cache", "status_bg.jpg"); 
+    const bgPath = path.join(__dirname, "cache", "status_bg.png"); 
     const bgImage = await loadImage(bgPath);
 
     // Canvas create
