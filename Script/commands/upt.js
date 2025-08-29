@@ -17,7 +17,7 @@ module.exports.config = {
 module.exports.run = async function ({ api, event }) {
   try {
     // Background photo (catch file)
-    const bgPath = path.join(__dirname, "cache", "status_bg.jpg"); 
+    const bgPath = path.join(__dirname, "cache", "status_bg.png"); 
     const bgImage = await loadImage(bgPath);
 
     // Canvas create
