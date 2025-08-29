@@ -1,12 +1,12 @@
 const fs = require("fs-extra");
 const axios = require("axios");
 const path = require("path");
-const { alldown } = require("rx-videos-downloader");
+const { alldown } = require("rx-videos-downloader"); // 👈 api from rX
 
 module.exports = {
   config: {
     name: "autodl",
-    version: "0.0.3",
+    version: "0.0.4",
     hasPermssion: 0,
     credits: "Fixed by rX",
     description: "Auto video downloader (TikTok, Facebook, Instagram, YouTube)",
