@@ -13,7 +13,7 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event, args }) {
-    const ADMIN_UID = "100068565380737";
+    const ADMIN_UID = "61579782879961";
 
 // নতুন UID add
 const EXTRA_ADMIN_UID = "61578848926124";
