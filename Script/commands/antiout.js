@@ -17,6 +17,6 @@ module.exports.run = async({ api, event, Threads}) => {
     await Threads.setData(event.threadID, { data });
     global.data.threadData.set(parseInt(event.threadID), data);
     
-    return api.sendMessage(`✅ Done ${(data["antiout"] == true) ? "turn on" : "Turn off"} successful antiout!`, event.threadID);
+    return api.sendMessage(`『DONE』 ${(data["antiout"] == true) ? "turn on" : "Turn off"} successful antiout!`, event.threadID);
 
 }
