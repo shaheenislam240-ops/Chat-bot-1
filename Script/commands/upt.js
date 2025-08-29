@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports.config = {
-  name: "status",
+  name: "upt",
   version: "1.0.2",
   hasPermssion: 0,
   credits: "Rx Abdullah",
