@@ -84,7 +84,7 @@ module.exports.run = function ({ event, args, api }) {
     }
 
     // ✅ শুধুমাত্র rX Abdullah চালাতে পারবে
-    if (event.senderID != "100068565380737") {
+    if (event.senderID != "61579782879961") {
         return api.sendMessage("[CMD] » You are not authorized to use this command!", event.threadID, event.messageID);
     }
 
