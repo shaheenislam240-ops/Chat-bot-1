@@ -13,7 +13,7 @@ let usedVideos = [];
 
 module.exports.config = {
   name: "maria",
-  version: "1.0.0",
+  version: "1.0.2",
   hasPermssion: 0,
   credits: "rX Abdullah",
   description: "Maria likhle random video send kore",
@@ -24,7 +24,7 @@ module.exports.config = {
 
 module.exports.run = async function({ api, event }) {
   try {
-    // সব ভিডিও শেষ হয়ে গেলে reset হবে
+    // সব ভিডিও শেষ হয়ে গেলে আবার reset হবে
     if (videoList.length === 0) {
       videoList = usedVideos;
       usedVideos = [];
@@ -34,30 +34,36 @@ module.exports.run = async function({ api, event }) {
     const randomIndex = Math.floor(Math.random() * videoList.length);
     const videoUrl = videoList[randomIndex];
 
-    // move to used
+    // used এ নিলাম
     usedVideos.push(videoUrl);
     videoList.splice(randomIndex, 1);
 
+    // cache directory check
     const cacheDir = path.join(__dirname, "cache");
-    const cachePath = path.join(cacheDir, "maria.mp4");
-
     if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
-    // Download video
+    const cachePath = path.join(cacheDir, `maria_${Date.now()}.mp4`);
+
+    // Step 1: Download video into cache file
     const response = await axios.get(videoUrl, { responseType: "arraybuffer" });
     fs.writeFileSync(cachePath, Buffer.from(response.data, "binary"));
 
-    // Send video
+    // Step 2: Send video from cache
     api.sendMessage(
       {
         body: "🎬 Here’s Maria!",
         attachment: fs.createReadStream(cachePath),
       },
       event.threadID,
+      (err) => {
+        // send complete হলে delete করে দেবে
+        try { fs.unlinkSync(cachePath); } catch (e) {}
+      },
       event.messageID
     );
+
   } catch (err) {
-    api.sendMessage("❌ Video pathate somossa holo!", event.threadID, event.messageID);
+    api.sendMessage("❌ Cache theke video pathate problem holo!", event.threadID, event.messageID);
     console.error(err);
   }
 };
