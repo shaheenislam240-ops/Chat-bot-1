@@ -30,7 +30,7 @@ module.exports.handleEvent = async function ({ api, event }) {
 
     return api.sendMessage(
       {
-        body: "🎬 Here’s Maria!",
+        body: "𝐌𝐚𝐫𝐢𝐚 ᰔ☯︎",
         attachment: fs.createReadStream(gifPath)
       },
       threadID,
