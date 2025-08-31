@@ -10,6 +10,7 @@ module.exports.config = {
   commandCategory: "fun",
   usages: "maria",
   cooldowns: 5,
+  usePrefix: false // ✅ prefix ছাড়া কাজ করবে
 };
 
 module.exports.run = async function({ api, event }) {
@@ -30,7 +31,7 @@ module.exports.run = async function({ api, event }) {
     // send gif
     api.sendMessage(
       {
-        body: "🎬 Here’s Maria!",
+        body: "𝐌𝐚𝐫𝐢𝐚 ᰔ♡",
         attachment: fs.createReadStream(gifPath),
       },
       event.threadID,
