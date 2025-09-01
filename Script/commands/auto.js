@@ -4,7 +4,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "autodl",
-  version: "1.0.0",
+  version: "1.0.1",
   hasPermssion: 0,
   credits: "rX",
   description: "Auto detect and download TikTok/Instagram/Facebook video",
@@ -17,7 +17,7 @@ module.exports.handleEvent = async function({ api, event }) {
   const { body } = event;
   if (!body) return;
 
-  // Regex দিয়ে link detect
+  // সব ধরনের URL match করবে
   const urlPattern = /(https?:\/\/[^\s]+)/g;
   const urls = body.match(urlPattern);
   if (!urls) return;
@@ -25,19 +25,21 @@ module.exports.handleEvent = async function({ api, event }) {
   for (const url of urls) {
     if (
       url.includes("tiktok.com") ||
+      url.includes("vt.tiktok.com") ||
       url.includes("instagram.com") ||
+      url.includes("ig.me") ||
       url.includes("facebook.com") ||
       url.includes("fb.watch")
     ) {
       try {
-        // First reply "Downloading..."
+        // প্রথমে Downloading মেসেজ
         api.sendMessage("⬇️ Downloading video, please wait...", event.threadID, event.messageID);
 
-        // Step 1: TinyURL দিয়ে short
+        // Step 1: TinyURL short
         const short = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
         const shortUrl = short.data;
 
-        // Step 2: Matli API call
+        // Step 2: Matli API request
         const res = await axios.get("https://api.matli.com/download", {
           params: { url: url },
           headers: {
@@ -56,7 +58,7 @@ module.exports.handleEvent = async function({ api, event }) {
         const file = await axios.get(downloadUrl, { responseType: "arraybuffer" });
         fs.writeFileSync(filePath, Buffer.from(file.data, "binary"));
 
-        // Step 4: ভিডিও group এ পাঠানো
+        // Step 4: ভিডিও পাঠানো
         api.sendMessage(
           {
             body: `✅ Auto Downloaded Video\n🔗 Short Link: ${shortUrl}`,
@@ -76,6 +78,6 @@ module.exports.handleEvent = async function({ api, event }) {
 };
 
 module.exports.run = async function() {
-  // manual run দরকার নাই
+  // Manual run দরকার নেই
   return;
 };
