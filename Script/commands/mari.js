@@ -144,7 +144,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
   const senderName = await Users.getNameUser(event.senderID);
 
-  const triggers = ["bebe", "mona", "xan", "bbz", "mari", "rx"];
+  const triggers = ["bebe", "baby", "xan", "bbz", "mari", "bby"];
   if (triggers.includes(text)) {
     const replies = [
       "𝘼𝙨𝙨𝙖𝙡𝙖𝙢𝙪𝙖𝙡𝙖𝙞𝙠𝙪𝙢♥",
@@ -176,7 +176,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     });
   }
 
-  const matchPrefix = /^(bebe|mona|xan|bbz|mari|rx)\s+/i;
+  const matchPrefix = /^(bebe|baby|xan|bbz|mari|bby)\s+/i;
   if (matchPrefix.test(text)) {
     const query = text.replace(matchPrefix, "").trim();
     if (!query) return;
