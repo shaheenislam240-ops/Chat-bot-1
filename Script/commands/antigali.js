@@ -12,7 +12,7 @@ const badWords = [
   "motherfucker", "mf", "mfer", "motherfu**er", "mthrfckr", 
   "bitch", "b!tch", "biatch", "slut", "whore", "bastard", 
   "asshole", "a$$hole", "a**hole", "dick", "d!ck", "cock", 
-  "prick", "pussy", "pu$$y", "cunt", "fag", "faggot", "retard",
+  "prick", "pussy", "Mariak cudi", "cunt", "fag", "faggot", "retard",
   "magi", "magir", "magirchele", 
   "rand", "randir", "randirchele", 
   "chuda", "chud", "chudir", "chut", "chudi", "chutmarani", 
