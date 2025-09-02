@@ -94,7 +94,7 @@ module.exports.run = async function({ event, api, args, Users }) {
             }
 
             // Nickname change আগের মতো রাখছি
-            api.changeNickname(` ${global.config.PREFIX} ${(!global.config.BOTNAME) ? "" : global.config.BOTNAME}`, idBox, global.data.botID);
+            api.changeNickname(` ${(!global.config.BOTNAME) ? "" : global.config.BOTNAME}`, idBox, global.data.botID);
         });
     }
 };
