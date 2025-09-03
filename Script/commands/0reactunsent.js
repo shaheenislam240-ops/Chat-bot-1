@@ -1,5 +1,5 @@
 module.exports.config = {
-    name: "unsend",
+    name: "reactunsend",
     version: "1.0.2",
     hasPermssion: 0,
     credits: "rX",
