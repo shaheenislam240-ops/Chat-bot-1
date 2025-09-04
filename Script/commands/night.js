@@ -3,7 +3,7 @@ module.exports.config = {
 	name: "night",
     version: "1.0.1",
 	hasPermssion: 0,
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️", 
+	credits: "rX", 
 	description: "hihihihi",
 	commandCategory: "no prefix",
 	usages: "night",
@@ -14,7 +14,7 @@ module.exports.handleEvent = function({ api, event, client, __GLOBAL }) {
 	var { threadID, messageID } = event;
 	if (event.body.indexOf("Good night")==0 || event.body.indexOf("good night")==0 || event.body.indexOf("Gud night")==0 || event.body.indexOf("Gud nini")==0) {
 		var msg = {
-				body: "Good night 🌉✨ Bye tc 💫🥀 Sweet dreams 😴",
+				body: "so jaw bby 😴",
 				attachment: fs.createReadStream(__dirname + `/cache/night.jpg`)
 			}
 			api.sendMessage(msg, threadID, messageID);
