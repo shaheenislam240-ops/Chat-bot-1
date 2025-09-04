@@ -40,19 +40,19 @@ module.exports.run = async function ({ api, event }) {
 ╭───× 𝐆𝐫𝐨𝐮𝐩 𝐈𝐧𝐟𝐨 ×───╮
 │ ᰔ 𝐌𝐚𝐫𝐢𝐚 × 𝐑𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭
 │ ───×
-│ 📛 𝗡𝗮𝗺𝗲: ${groupName}
-│ 🆔 𝗚𝗿𝗼𝘂𝗽 𝗜𝗗: ${groupID}
-│ 📩 𝗔𝗽𝗽𝗿𝗼𝘃𝗮𝗹: ${approvalMode}
-│ 🎭 𝗘𝗺𝗼𝗷𝗶: ${emoji}
+│ 𝐍𝐚𝐦𝐞: ${groupName}
+│ 𝐆𝐫𝐨𝐮𝐩 𝐢𝐝: ${groupID}
+│ 𝐀𝐩𝐩𝐫𝐨𝐯𝐚𝐥: ${approvalMode}
+│ 𝐄𝐦𝐨𝐣𝐢: ${emoji}
 │ ───×
-│ 👥 𝗠𝗲𝗺𝗯𝗲𝗿𝘀: ${members}
-│ ♂️ 𝗠𝗮𝗹𝗲: ${male}
-│ ♀️ 𝗙𝗲𝗺𝗮𝗹𝗲: ${female}
+│ 👥 𝐌𝐞𝐦𝐛𝐞𝐫𝐬: ${members}
+│ ♂️ 𝐌𝐚𝐥𝐞: ${male}
+│ ♀️ 𝐅𝐞𝐦𝐚𝐥𝐞: ${female}
 │ ───×
-│ 👑 𝗔𝗱𝗺𝗶𝗻𝘀 (${admins}):
+│ 👑 𝐚𝐝𝐦𝐢𝐧𝐬 (${admins}):
 │ ${adminList.join("\n│ ")}
 │ ───×
-│ 💬 𝗧𝗼𝘁𝗮𝗹 𝗠𝗲𝘀𝘀𝗮𝗴𝗲𝘀: ${totalMsg} msgs
+│ 💬 𝐓𝐨𝐭𝐚𝐥 𝐌𝐞𝐬𝐬𝐚𝐠𝐞: ${totalMsg} msgs
 ╰─────────────⧕
 `.trim();
 
