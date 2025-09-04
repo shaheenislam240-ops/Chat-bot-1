@@ -61,18 +61,12 @@ users.needObject=Have to be an Object
 
 handleCommand.userBanned=𝐘𝐨𝐮 𝐰𝐚𝐬 𝐁𝐚𝐧𝐧𝐞𝐝 𝐟𝐫𝐨𝐦 𝐭𝐡𝐢𝐬 𝐛𝐨𝐱-!!🚫
 handleCommand.threadBanned=Group Has Been Banned..!⛔️\nPlease Contact Owner rX Abdullah  For Unban ⚠️
-handleCommand.commandNotExist=✩̣̣̣̣̣ͯ┄•͙✧⃝•͙┄✩ͯ•͙͙✧⃝•͙͙✩ͯ┄•͙✧⃝•͙┄✩̣̣̣̣̣ͯ
- \n   Hᴇʏ Xᴀɴ I’ᴍ Mᴀʀɪᴀ Bᴀʙʏ✨\n•❅──────✧❅✦❅✧──────❅•
-\n\n𝐓𝐡𝐢𝐬 𝐂𝐨𝐦𝐦𝐚𝐧𝐝 𝐢𝐬 𝐧𝐨𝐭 𝐯𝐚𝐥𝐢𝐝.\n\n𝐓𝐫𝐲 𝐭𝐡𝐢𝐬 『 %1 』\n\nᰔ𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭\n‧̍̊·̊‧̥°̩̥˚̩̩̥͙°̩̥‧̥·̊‧̍̊ ♡ °̩̥˚̩̩̥͙°̩̥ ·͙*̩̩͙˚̩̥̩̥*̩̩̥͙·̩̩̥͙*̩̩̥͙˚̩̥̩̥*̩̩͙‧͙ °̩̥˚̩̩̥͙°̩̥ ♡ ‧̍̊·̊‧̥°̩̥˚̩̩̥͙°̩̥‧̥·̊‧̍̊
-".
+handleCommand.commandNotExist=━━━━━━━✦━━━━━━━ \n   Hᴇʏ Xᴀɴ I’ᴍ Mᴀʀɪᴀ Bᴀʙʏ✨\n━━━━━━━✦━━━━━━━\n\n𝐓𝐡𝐢𝐬 𝐂𝐨𝐦𝐦𝐚𝐧𝐝 𝐢𝐬 𝐧𝐨𝐭 𝐯𝐚𝐥𝐢𝐝.\n\n𝐓𝐫𝐲 𝐭𝐡𝐢𝐬 『 %1 』\n\nᰔ𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭\n━━━━━━━✦━━━━━━━".
 handleCommand.commandThreadBanned=Your thread is unable to use command "%1"
 handleCommand.commandUserBanned=You are unable to use command "%1"
 handleCommand.threadNotAllowNSFW=This Commnd Only use Andmi
 handleCommand.cantGetInfoThread=Can't get your thread's info, error: %1
-handleCommand.permssionNotEnough="%1"\n⊶⊷⊶⊷⊶⊷⋆⊶⊷⊶⊷⊶
-\n\n✨ 𝐎𝐧𝐥𝐲 𝐌𝐚𝐡𝐚𝐫𝐚𝐣𝐚 𝐫𝐗 𝐀𝐛𝐝𝐮𝐥𝐥𝐚𝐡 𝐢𝐬 𝐚𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐞𝐝 𝐭𝐨 𝐮𝐬𝐞 𝐭𝐡𝐢𝐬 𝐜𝐨𝐦𝐦𝐚𝐧𝐝.\n»»-------------¤-------------««
-\n"%1"\n»»-------------¤-------------««
-\n✨ 𝐄𝐲𝐞 𝐜𝐨𝐦𝐦𝐚𝐧𝐝 𝐬𝐢𝐫𝐩 𝐫𝐗 𝐀𝐛𝐝𝐮𝐥𝐥𝐚𝐡 𝐤 𝐥𝐢𝐲𝐞 𝐡𝐚𝐢🫣
+handleCommand.permssionNotEnough="%1"\n⎯⎯⎯⎯⎯⎯\n\n✨ 𝐎𝐧𝐥𝐲 𝐌𝐚𝐡𝐚𝐫𝐚𝐣𝐚 𝐫𝐗 𝐀𝐛𝐝𝐮𝐥𝐥𝐚𝐡 𝐢𝐬 𝐚𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐞𝐝 𝐭𝐨 𝐮𝐬𝐞 𝐭𝐡𝐢𝐬 𝐜𝐨𝐦𝐦𝐚𝐧𝐝.\n⎯⎯⎯⎯⎯⎯\n"%1"\n⎯⎯⎯⎯⎯⎯\n✨ 𝐄𝐲𝐞 𝐜𝐨𝐦𝐦𝐚𝐧𝐝 𝐬𝐢𝐫𝐩 𝐫𝐗 𝐀𝐛𝐝𝐮𝐥𝐥𝐚𝐡 𝐤 𝐥𝐢𝐲𝐞 𝐡𝐚𝐢🫣
 handleCommand.cantSetMessageReaction=Having some unexpected error at setMessageReaction, error: %1
 handleCommand.executeCommand=[ %1 ] Command used: %2 by user: %3 at thread: %4 | Args included: %5 | Processing time: %6ms
 handleCommand.commandError=Having some unexpected error when using command %1, error: %2
