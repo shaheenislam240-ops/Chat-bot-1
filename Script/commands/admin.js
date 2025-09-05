@@ -1,6 +1,6 @@
 var request = require("request");const { readdirSync, readFileSync, writeFileSync, existsSync, copySync, createWriteStream, createReadStream } = require("fs-extra");
 module.exports.config = {
-	name: "0admin",
+	name: "admin",
 	version: "1.0.5",
 	hasPermssion: 0,
 	credits: "rX",
