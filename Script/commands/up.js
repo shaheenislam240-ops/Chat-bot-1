@@ -1,15 +1,14 @@
 const os = require("os");
-const fs = require("fs-extra");
 
-const startTime = new Date(); // Bot start time
+const startTime = new Date();
 
 module.exports = {
   config: {
     name: "up",
-    version: "1.0.0",
+    version: "2.0.0",
     hasPermssion: 0,
-    credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭 ⚡ Updated with ADK by RX",
-    description: "Show uptime + system info + ADK style stats",
+    credits: "𝐌𝐚𝐫𝐢𝐚⚡ Updated with ADK by RX",
+    description: "Show digital uptime + system info + ADK style stats with progress bars",
     commandCategory: "box",
     usages: "uptime3",
     prefix: false,
@@ -19,6 +18,13 @@ module.exports = {
 
   run: async function ({ api, event }) {
     try {
+      // Function to send progress bar in steps
+      const progressBars = ["█▒▒▒▒▒▒▒▒▒ 10%", "████▒▒▒▒▒ 30%", "█████▒▒▒▒ 50%", "████████▒ 80%", "██████████ 100%"];
+      for (const bar of progressBars) {
+        await api.sendMessage(bar, event.threadID);
+        await new Promise(resolve => setTimeout(resolve, 200)); // short delay for animation
+      }
+
       // Format uptime
       const uptimeInSeconds = (new Date() - startTime) / 1000;
       const days = Math.floor(uptimeInSeconds / (3600 * 24));
@@ -56,47 +62,32 @@ module.exports = {
       const internalId = "RX-CHATBOT-6931";
       const botVersion = "v1.4.7-rx-stable";
 
-      // Ping Test
-      const timeStart = Date.now();
-      await api.sendMessage("🔎 Checking system...", event.threadID);
-      const ping = Date.now() - timeStart;
-      const pingStatus = ping < 1000 ? "✅ Smooth System" : "⛔ Bad System";
-
-      // Final message
-      const info = `♡   ∩_∩
-（„• ֊ •„)♡
-╭─∪∪────────────⟡
-│ 🎀 Rx Chat Bot
-├───────────────⟡
-
+      // Final info message with new frame
+      const info = `
+╭───× 𝐒𝐞𝐫𝐯𝐞𝐫 𝐝𝐞𝐭𝐚𝐢𝐥𝐬 ×───╮
+│ ᰔ𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭
+│ ───×
 │ ⏳ RUNTIME INFO
 │ ┗⟡ UPTIME     : ${uptimeFormatted}
 │ ┗⟡ DATE       : ${date}
 │ ┗⟡ TIME       : ${time}
-
-├───────────────⟡
+│ ───×
 │ 🖥️ SYSTEM INFO
 │ ┗⟡ OS         : ${os.type()} ${os.arch()}
 │ ┗⟡ LANG VER   : ${process.version}
 │ ┗⟡ CPU MODEL  : ${cpuModel}
 │ ┗⟡ CPU USAGE  : ${cpuUsage.toFixed(1)}%
 │ ┗⟡ RAM USAGE  : ${usedMemory.toFixed(2)} GB / ${totalMemory.toFixed(2)} GB
-
-├───────────────⟡
+│ ───×
 │ 🧠 ADVANCED DEVICE KNOWLEDGE (ADK)
-│ ┗⟡ HOSTNAME    : ${hostname}
+│ ┗⟡ HOSTNAME    : 𝐡𝐢𝐝𝐞 𝐛𝐲 𝐫𝐗
 │ ┗⟡ LOAD AVG    : ${loadAvg}
 │ ┗⟡ TOTAL CORES : ${totalCores}
 │ ┗⟡ OS UPTIME   : ${osUptime}
 │ ┗⟡ INTERNAL ID : ${internalId}
 │ ┗⟡ BOT VERSION : ${botVersion}
-
-├───────────────⟡
-│ 🌐 NETWORK STATUS
-│ ┗⟡ PING        : ${ping}ms
-│ ┗⟡ STATUS      : ${pingStatus}
-
-╰───────────────⟡`;
+╰─────────────⧕
+      `;
 
       api.sendMessage(info, event.threadID);
     } catch (error) {
