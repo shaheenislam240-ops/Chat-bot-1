@@ -23,14 +23,14 @@ module.exports.handleEvent = async function({ api, event, Users }) {
         var info = busyData[senderID];
         delete busyData[senderID];
         fs.writeFileSync(busyPath, JSON.stringify(busyData, null, 4));
-        return api.sendMessage(`🎀─── [NOTIFICATION] ───🎀\n\n[BOT CUTE] - Welcome back, Master 🥰\n\n🎀───── •🌸• ─────🎀`, threadID, () => {
-            if (info.tag.length == 0) api.sendMessage("[BOT CUTE] - While Master was away, nobody mentioned you ❤️", threadID);
+        return api.sendMessage(`🎀─── [NOTIFICATION] ───🎀\n\n『 𝐌𝐀𝐑𝐈𝐀 』 - Welcome back, Master 🥰\n\n🎀───── •🌸• ─────🎀`, threadID, () => {
+            if (info.tag.length == 0) api.sendMessage("『 𝐌𝐀𝐑𝐈𝐀 』 - While Master was away, nobody mentioned you ❤️", threadID);
             else {
                 var msg = "";
                 for (var i of info.tag) {
                     msg += `${i}\n`
                 }
-                api.sendMessage("[BOT CUTE] - Here’s the list of people who mentioned you while you were away 🎀:\n\n" + msg, threadID)
+                api.sendMessage("『 𝐌𝐀𝐑𝐈𝐀 』 - Here’s the list of people who mentioned you while you were away 🎀:\n\n" + msg, threadID)
             }
         }, messageID);
     }
