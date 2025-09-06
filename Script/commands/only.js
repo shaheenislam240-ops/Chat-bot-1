@@ -3,40 +3,38 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports.config = {
-  name: "only",
+  name: "only", // command name (যা-খুশি দিতে পারো)
   version: "1.0.0",
   hasPermssion: 0,
   credits: "rxabdullah",
   description: "Send photo from Imgur when only prefix is sent",
-  commandCategory: "system",
-  usages: "!",
+  commandCategory: "fun", // command category
+  usages: "",
   cooldowns: 5
 };
 
 module.exports.handleEvent = async function({ api, event }) {
-  const prefix = global.config.PREFIX; // Bot er prefix config theke nibe
-  const imgurLink = "https://i.imgur.com/SRQbljq.jpeg"; // তোমার Imgur link
+  const prefix = global.config.PREFIX; // Bot এর prefix
+  const imgurLink = "https://i.imgur.com/SRQbljq.jpeg"; // Imgur link
   const customText = "𝐇𝐞𝐲 𝐛𝐛𝐲 𝐢𝐚𝐦 𝐦𝐚𝐫𝐢𝐚 𝐛𝐛𝐲"; // Custom text
 
+  // যদি কেউ শুধু prefix পাঠায়
   if (event.body && event.body.trim() === prefix) {
     try {
       const cacheDir = path.resolve(__dirname, "cache");
-      const imgPath = path.join(cacheDir, "maria.jpg");
+      const imgPath = path.join(cacheDir, "only.jpg");
 
-      // cache folder না থাকলে বানাও
-      if (!fs.existsSync(cacheDir)) {
-        fs.mkdirSync(cacheDir);
-      }
+      if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
-      // download image
+      // Image download
       const response = await axios.get(imgurLink, { responseType: "arraybuffer" });
       fs.writeFileSync(imgPath, Buffer.from(response.data, "binary"));
 
-      // send with attachment
+      // Send with attachment
       return api.sendMessage(
         { body: customText, attachment: fs.createReadStream(imgPath) },
         event.threadID,
-        () => fs.unlinkSync(imgPath), // পাঠানোর পর cache থেকে মুছে ফেলবে
+        () => fs.unlinkSync(imgPath),
         event.messageID
       );
     } catch (err) {
@@ -45,6 +43,6 @@ module.exports.handleEvent = async function({ api, event }) {
   }
 };
 
-module.exports.run = async function () {
-  // এখানে কিছু দরকার নাই
+module.exports.run = async function() {
+  // এখানে run দরকার নেই
 };
