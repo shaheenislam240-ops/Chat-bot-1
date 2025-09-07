@@ -1,38 +1,39 @@
 const { spawn } = require("child_process");
 const axios = require("axios");
 const logger = require("./utils/log");
+const express = require("express");
+const path = require("path");
 
-///////////////////////////////////////////////////////////
-//========= Create website for dashboard/uptime =========//
-///////////////////////////////////////////////////////////
+// ==================== Load package.json ====================
+let pkg = {};
+try {
+    pkg = require(path.join(__dirname, "package.json"));
+} catch (err) {
+    logger(`Failed to load package.json: ${err.message}`, "[ Error ]");
+}
+const BOT_NAME = pkg.name || "𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭";
+const BOT_VERSION = pkg.version || "2.0.0";
+const BOT_DESC = pkg.description || "𝐘𝐓 : 𝐆𝐫𝐨𝐰 𝐰𝐢𝐭𝐡 𝐫𝐱";
 
-const express = require('express');
-const path = require('path');
-
+// ==================== Express Server ====================
 const app = express();
 const port = process.env.PORT || 8080;
 
-// Serve the index.html file
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '/index.html'));
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "/index.html"));
 });
 
-// Start the server and add error handling
 app.listen(port, () => {
     logger(`Server is running on port ${port}...`, "[ Starting ]");
-}).on('error', (err) => {
-    if (err.code === 'EACCES') {
+}).on("error", (err) => {
+    if (err.code === "EACCES") {
         logger(`Permission denied. Cannot bind to port ${port}.`, "[ Error ]");
     } else {
         logger(`Server error: ${err.message}`, "[ Error ]");
     }
 });
 
-/////////////////////////////////////////////////////////
-//========= Create start bot and make it loop =========//
-/////////////////////////////////////////////////////////
-
-// Initialize global restart counter
+// ==================== Start Bot ====================
 global.countRestart = global.countRestart || 0;
 
 function startBot(message) {
@@ -57,21 +58,23 @@ function startBot(message) {
     child.on("error", (error) => {
         logger(`An error occurred: ${JSON.stringify(error)}`, "[ Error ]");
     });
-};
+}
 
-////////////////////////////////////////////////
-//========= Check update from Github =========//
-////////////////////////////////////////////////
+// ==================== Log Meta Info ====================
+logger(BOT_NAME, "[ NAME ]");
+logger(`Version: ${BOT_VERSION}`, "[ VERSION ]");
+logger(BOT_DESC, "[ DESCRIPTION ]");
 
-axios.get("https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json")
+// ==================== GitHub Update Check (Optional) ====================
+axios.get("https://raw.githubusercontent.com/cyber-ullash/cyber-bot/main/data.json")
     .then((res) => {
-        logger(res.data.name, "[ NAME ]");
-        logger(`Version: ${res.data.version}`, "[ VERSION ]");
-        logger(res.data.description, "[ DESCRIPTION ]");
+        logger(res.data.name || BOT_NAME, "[ UPDATE NAME ]");
+        logger(`Version: ${res.data.version || BOT_VERSION}`, "[ UPDATE VERSION ]");
+        logger(res.data.description || BOT_DESC, "[ UPDATE DESCRIPTION ]");
     })
     .catch((err) => {
         logger(`Failed to fetch update info: ${err.message}`, "[ Update Error ]");
     });
 
-// Start the bot
+// ==================== Start Bot ====================
 startBot();
