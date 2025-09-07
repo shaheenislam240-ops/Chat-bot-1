@@ -4,12 +4,12 @@ const path = require("path");
 
 module.exports.config = {
   name: "message",
-  version: "3.4.0",
+  version: "3.5.0",
   hasPermssion: 2,
   credits: "rX Abdullah",
-  description: "Send announcement with optional image/text (reply photo saved to cache) to all groups",
+  description: "Send announcement with optional image/GIF/video/text (reply message optional) to all groups",
   commandCategory: "system",
-  usages: "[your message] (reply to photo optional)",
+  usages: "[your message] (reply to media/text optional)",
   cooldowns: 5,
 };
 
@@ -30,21 +30,25 @@ module.exports.run = async ({ api, event, args }) => {
       input = reply.body;
     }
 
-    // If reply has image(s)
+    // If reply has media attachments
     if (reply.attachments && reply.attachments.length > 0) {
       for (const atc of reply.attachments) {
-        if (atc.type === "photo") {
-          const imgPath = path.join(cacheDir, `${Date.now()}_${Math.floor(Math.random() * 9999)}.jpg`);
-          const res = await axios.get(atc.url, { responseType: "arraybuffer" });
-          fs.writeFileSync(imgPath, Buffer.from(res.data, "binary"));
-          attachment.push(imgPath); // শুধু path রাখলাম
-        }
+        let ext;
+        if (atc.type === "photo") ext = ".jpg";
+        else if (atc.type === "animated_image") ext = ".gif";
+        else if (atc.type === "video") ext = ".mp4";
+        else continue; // Skip unsupported types
+
+        const filePath = path.join(cacheDir, `${Date.now()}_${Math.floor(Math.random() * 9999)}${ext}`);
+        const res = await axios.get(atc.url, { responseType: "arraybuffer" });
+        fs.writeFileSync(filePath, Buffer.from(res.data, "binary"));
+        attachment.push(filePath);
       }
     }
   }
 
   if (!input && attachment.length === 0) {
-    return api.sendMessage("📢 Use like this:\n!message [your message]\n(or reply to photo/text)", event.threadID, event.messageID);
+    return api.sendMessage("📢 Use like this:\n!message [your message]\n(or reply to media/text)", event.threadID, event.messageID);
   }
 
   const title = "📣 ANNOUNCEMENT";
