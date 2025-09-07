@@ -1,37 +1,37 @@
-# If you want to move down the line, please use \n. e.g: tina\nULLASH.
+# If you want to move down the line, please use \n. e.g: Rxabdullah\nAbdullah.
 # After changed, you have to restart the bot to use.
 # Put the # character at the beginning of each sentence if you don't want the code to run those lines. 
 # Thanks to https://www.facebook.com/duong.than.net for translate to English!
 
-# Cyber.js 
+# Abdullah.js 
 
-Cyber.newVersionDetected=𝐘𝐨𝐮 𝐚𝐫𝐞 𝐮𝐬𝐢𝐧𝐠 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 %1, 𝐭𝐡𝐞 𝐥𝐚𝐭𝐞𝐬𝐭 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 𝐢𝐬 %2. 
-Cyber.errorFormat=Malformed module!
-Cyber.nameExist=Module's name is similar to another module!
-Cyber.notFoundLanguage=Module %1 don't support your language
-Cyber.notFoundPackage=Can't find package %1 support for module %2, installing...
-Cyber.cantInstallPackage=Can't install package %1 for module %2, error: %3
-Cyber.loadedPackage=Installed whole package successfully for module %1
-Cyber.loadedConfig=Installed config successfully for module %1
-Cyber.cantLoadConfig=Can't install config of module %1, error: %2
-Cyber.cantOnload=Can't launch setup of module %1, error: %1
-Cyber.successLoadModule=Successfully installed module %1
-Cyber.failLoadModule=Can't install module %1, error: %2
-Cyber.finishLoadModule=Installed %1 module commands and %2 module events successfully 
-Cyber.foundPathAppstate=Ullashstate successfully
-Cyber.notFoundPathAppstate=Error can't find appstate file maybe file is malformed!
-Cyber.checkListGban=Checking global ban list...
-Cyber.banDevice=Your device have been banned from ULLASH, please contact to facebook m.me/100086680386976 to know more information or asking for unban key, if you already have unban key, please fill it below.
-Cyber.keyNotSameFormat=Wrong format, code must contain 6 number.
-Cyber.codeInputExpired=Your code is wrong or out of date.
-Cyber.unbanDeviceSuccess=Your device are unban now, please restart to use.
-Cyber.userBanned=You had been banned from ullash when %1 with reason: %2. Please contact to facebook m.me/100086680386976 to have more information!
-Cyber.finishCheckListGban=Checked global ban list
-Cyber.handleListenError=handleListene has occurred some unexpected errorr, error : %1
-Cyber.warningSourceCode=DETECTED THAT SOURCE CODE'S STRUCTURE HAD BEEN CHANGED , STOP NOW!
-Cyber.refreshListen=Refreshed handleListener...
-Cyber.successConnectDatabase=Connected to database successfully!
-Cyber.failConnectDatabase=Failed to connect to database, error: %1
+rxabdullah.newVersionDetected=𝐘𝐨𝐮 𝐚𝐫𝐞 𝐮𝐬𝐢𝐧𝐠 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 %1, 𝐭𝐡𝐞 𝐥𝐚𝐭𝐞𝐬𝐭 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 𝐢𝐬 %2. 𝐏𝐥𝐞𝐚𝐬𝐞 𝐮𝐩𝐝𝐚𝐭𝐞 𝐭𝐨 𝐭𝐡𝐞 𝐥𝐚𝐭𝐞𝐬𝐭 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 𝐨𝐟 𝐟𝐨𝐫 𝐛𝐞𝐭𝐭𝐞𝐫 𝐛𝐨𝐭 𝐩𝐞𝐫𝐟𝐨𝐫𝐦𝐚𝐧𝐜𝐞. 𝐅𝐨𝐫 𝐮𝐩𝐝𝐚𝐭𝐞 𝐭𝐲𝐩𝐞 𝐢𝐧 𝐜𝐨𝐧𝐬𝐨𝐥𝐞/𝐜𝐦𝐝: 𝐧𝐨𝐝𝐞 𝐮𝐩𝐝𝐚𝐭𝐞
+rxabdullah.errorFormat=Malformed module!
+rxabdullah.nameExist=Module's name is similar to another module!
+rxabdullah.notFoundLanguage=Module %1 don't support your language
+rxabdullah.notFoundPackage=Can't find package %1 support for module %2, installing...
+rxabdullah.cantInstallPackage=Can't install package %1 for module %2, error: %3
+rxabdullah.loadedPackage=Installed whole package successfully for module %1
+rxabdullah.loadedConfig=Installed config successfully for module %1
+rxabdullah.cantLoadConfig=Can't install config of module %1, error: %2
+rxabdullah.cantOnload=Can't launch setup of module %1, error: %1
+rxabdullah.successLoadModule=Successfully installed module %1
+rxabdullah.failLoadModule=Can't install module %1, error: %2
+rxabdullah.finishLoadModule=Installed %1 module commands and %2 module events successfully 
+rxabdullah.foundPathAppstate=Found appstate file now logging in...
+rxabdullah.notFoundPathAppstate=Error can't find appstate file maybe file is malformed!
+rxabdullah.checkListGban=Checking global ban list...
+rxabdullah.banDevice=Your device have been banned from Rxproject, please contact to facebook https://fb.me/rxabdullah007 to know more information or asking for unban key, if you already have unban key, please fill it below.
+rxabdullah.keyNotSameFormat=Wrong format, code must contain 6 number.
+rxabdullah.codeInputExpired=Your code is wrong or out of date.
+rxabdullah.unbanDeviceSuccess=Your device are unban now, please restart to use.
+rxabdullah.userBanned=You had been banned from rxproject when %1 with reason: %2. Please contact to facebook https://fb.me/Priyanshu.Rajput.official to have more information!
+rxabdullah.finishCheckListGban=Checked global ban list
+rxabdullah.handleListenError=handleListene has occurred some unexpected errorr, error : %1
+rxabdullah.warningSourceCode=DETECTED THAT SOURCE CODE'S STRUCTURE HAD BEEN CHANGED , STOP NOW!
+rxabdullah.refreshListen=Refreshed handleListener...
+rxabdullah.successConnectDatabase=Connected to database successfully!
+rxabdullah.failConnectDatabase=Failed to connect to database, error: %1
 
 # includes/listen.js
 
@@ -59,14 +59,14 @@ users.needObject=Have to be an Object
 
 # includes/handle/handleCommand.js
 
-handleCommand.userBanned=বক্স এ আবলামি করার অপরাধে তোরে  বেন করে দেওয়া হয়েছে-!!🚫
-handleCommand.threadBanned=Group Has Been Banned..!⛔️\nPlease Contact Owner Md Jahid Hasan Rajib  For Unban ⚠️
-handleCommand.commandNotExist=━━━━━━━✦━━━━━━━ \n    ✨ Assalamu Alaikum! 💖🌟\n━━━━━━━✦━━━━━━━\n\nThe command you gave is not valid here.\n\nCould it be— \n\n•—» %1  «—•\n\nCheck your input, please!\n━━━━━━━✦━━━━━━━".
+handleCommand.userBanned=𝐘𝐨𝐮 𝐰𝐚𝐬 𝐁𝐚𝐧𝐧𝐞𝐝 𝐟𝐫𝐨𝐦 𝐭𝐡𝐢𝐬 𝐛𝐨𝐱-!!🚫
+handleCommand.threadBanned=Group Has Been Banned..!⛔️\nPlease Contact Owner rX Abdullah  For Unban ⚠️
+handleCommand.commandNotExist=━━━━━━━✦━━━━━━━ \n   Hᴇʏ Xᴀɴ I’ᴍ Mᴀʀɪᴀ Bᴀʙʏ✨\n━━━━━━━✦━━━━━━━\n\n𝐓𝐡𝐢𝐬 𝐂𝐨𝐦𝐦𝐚𝐧𝐝 𝐢𝐬 𝐧𝐨𝐭 𝐯𝐚𝐥𝐢𝐝.\n\n𝐓𝐫𝐲 𝐭𝐡𝐢𝐬 『 %1 』\n\nᰔ𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭\n━━━━━━━✦━━━━━━━".
 handleCommand.commandThreadBanned=Your thread is unable to use command "%1"
 handleCommand.commandUserBanned=You are unable to use command "%1"
 handleCommand.threadNotAllowNSFW=This Commnd Only use Andmi
 handleCommand.cantGetInfoThread=Can't get your thread's info, error: %1
-handleCommand.permssionNotEnough="%1"\n⎯⎯⎯⎯⎯⎯\n\n✨ Only Maharaja ULLASH is authorized to use this command.\n✨ You are just a subject, not allowed to use this 🙂🐸\n⎯⎯⎯⎯⎯⎯\n"%1"\n⎯⎯⎯⎯⎯⎯\n✨ শুধু মহারাজ উল্লাস এই কমান্ড ব্যবহার করতে পারবেন।\n✨ তুই তো কেবল প্রজা! তুই এই কমান্ড ব্যবহার করতে পারবি না 🙂🐸
+handleCommand.permssionNotEnough="%1"\n⎯⎯⎯⎯⎯⎯\n\n✨ 𝐎𝐧𝐥𝐲 𝐌𝐚𝐡𝐚𝐫𝐚𝐣𝐚 𝐫𝐗 𝐀𝐛𝐝𝐮𝐥𝐥𝐚𝐡 𝐢𝐬 𝐚𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐞𝐝 𝐭𝐨 𝐮𝐬𝐞 𝐭𝐡𝐢𝐬 𝐜𝐨𝐦𝐦𝐚𝐧𝐝.\n⎯⎯⎯⎯⎯⎯\n"%1"\n⎯⎯⎯⎯⎯⎯\n✨ 𝐄𝐲𝐞 𝐜𝐨𝐦𝐦𝐚𝐧𝐝 𝐬𝐢𝐫𝐩 𝐫𝐗 𝐀𝐛𝐝𝐮𝐥𝐥𝐚𝐡 𝐤 𝐥𝐢𝐲𝐞 𝐡𝐚𝐢🫣
 handleCommand.cantSetMessageReaction=Having some unexpected error at setMessageReaction, error: %1
 handleCommand.executeCommand=[ %1 ] Command used: %2 by user: %3 at thread: %4 | Args included: %5 | Processing time: %6ms
 handleCommand.commandError=Having some unexpected error when using command %1, error: %2
@@ -101,7 +101,7 @@ handleSchedule.exectuteError=Having some error when schedule at module %1, error
 
 # utils/index.js
 
-utils.throwError=ℹ️ [!] ɪғ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ ɪs ɴᴏᴛ ᴡᴏʀᴋɪɴɢ, ᴘʟᴇᴀsᴇ ᴜsᴇ ᴀɴᴏᴛʜᴇʀ ᴄᴏᴍᴍᴀɴᴅ ғᴏʀ ᴀɴʏ ᴘʀᴏʙʟᴇᴍ. %1help %2 ᴜsᴇ ғᴏʀ ᴍᴏʀᴇ ᴜsᴀɢᴇ💙🥺
+utils.throwError=ℹ️ →!← 𝐓𝐡𝐢𝐬 𝐜𝐨𝐦𝐦𝐚𝐧𝐝 𝐢𝐬 𝐧𝐨𝐭 𝐰𝐨𝐫𝐤𝐢𝐧𝐠 %1help %2 𝐮𝐬𝐞 𝐟𝐨𝐫 𝐨𝐭𝐡𝐞𝐫 𝐜𝐦𝐝💙🥺
 # updater.js
 
 updater.latestVersion=You are using the latest version
