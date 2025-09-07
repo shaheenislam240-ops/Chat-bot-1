@@ -156,7 +156,7 @@ try{
 module.exports.handleEvent = async function ({ api, event }) {
 try{
    const body = event.body ? event.body?.toLowerCase() : ""
-        if (body.startsWith("বেবি") || body.startsWith("hippi") || body.startsWith("bepi") || body.startsWith("arshi") || body.startsWith("mahira") || body.startsWith("janu")) {
+        if (body.startsWith("বেবি") || body.startsWith("hippi") || body.startsWith("bepi") || body.startsWith("bby") || body.startsWith("mahira") || body.startsWith("baby")) {
             const arr = body.replace(/^\S+\s*/, "")
         const randomReplies = ["😚", "Yes 😀, I am here", "𝐡𝐞𝐲 𝐱𝐚𝐧 𝐭𝐫𝐮𝐬𝐭 𝐦𝐞 𝐢𝐚𝐦 𝐦𝐚𝐫𝐢𝐚 𝐛𝐛𝐲", "Bolo jaan ki korte panmr jonno"];
             if (!arr) {
