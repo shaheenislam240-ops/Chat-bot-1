@@ -5,10 +5,11 @@
     "autoCreateDB": true,
     "notiGroup": true,
     "NOTIFICATION": true,
-    "allowInbox": false,
+    "allowInbox": true,
     "autoClean": true,
     "commandDisabled": [
-        "sim.js"
+        "mari.js", 
+        "hippi.js"
     ],
     "eventDisabled": [
         "join.js"
