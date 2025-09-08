@@ -8,8 +8,7 @@
     "allowInbox": true,
     "autoClean": true,
     "commandDisabled": [
-        "mari.js", 
-        "hippi.js"
+        "sim.js"
     ],
     "eventDisabled": [
         "join.js"
