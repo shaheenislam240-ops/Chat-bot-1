@@ -1,24 +1,24 @@
 const fs = require("fs");
 module.exports.config = {
-	name: "wednesday",
+	name: "abdullah",
     version: "1.0.1",
 	hasPermssion: 0,
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️", 
+	credits: "𝐫𝐗", 
 	description: "hihihihi",
 	commandCategory: "no prefix",
-	usages: "wednesday",
+	usages: "abdullah",
     cooldowns: 5, 
 };
 
 module.exports.handleEvent = function({ api, event, client, __GLOBAL }) {
 	var { threadID, messageID } = event;
-	if (event.body.indexOf("Wednesday")==0 || event.body.indexOf("wednesday")==0 || event.body.indexOf("wednesday")==0 || event.body.indexOf("wednesday")==0) {
+	if (event.body.indexOf("rx")==0 || event.body.indexOf("Rx")==0 || event.body.indexOf("Rx abdullah")==0 || event.body.indexOf("Abdullah")==0) {
 		var msg = {
-				body: "Wednesday 🧛🏻‍♀️",
+				body: "◌⑅⃝●♡⋆♡𝐫𝐗 𝐀𝐛𝐝𝐮𝐥𝐥𝐚𝐡♡⋆♡●⑅⃝◌",
 				attachment: fs.createReadStream(__dirname + `/noprefix/wednesday.mp4`)
 			}
 			api.sendMessage(msg, threadID, messageID);
-    api.setMessageReaction("🧛🏻‍♀️", event.messageID, (err) => {}, true)
+    api.setMessageReaction("⚡", event.messageID, (err) => {}, true)
 		}
 	}
 	module.exports.run = function({ api, event, client, __GLOBAL }) {
