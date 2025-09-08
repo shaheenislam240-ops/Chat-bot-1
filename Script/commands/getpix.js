@@ -6,7 +6,7 @@ module.exports.config = {
   name: "getpix",
   version: "1.1",
   hasPermssion: 2,
-  credits: "rX Abdullah + Modified by ChatGPT",
+  credits: "𝐫𝐗",
   description: "Download and send video from Pixeldrain using file ID",
   commandCategory: "media",
   usages: "[fileID]",
@@ -27,7 +27,7 @@ module.exports.run = async function({ api, event, args }) {
     await fs.ensureDir(cacheDir);
 
     // Step 1: Send "retrieving" message
-    api.sendMessage("⏳ 𝗥𝗲𝘁𝗿𝗶𝗲𝘃𝗶𝗻𝗴 𝘆𝗼𝘂𝗿 𝘃𝗶𝗱𝗲𝗼...", event.threadID, async (err, info) => {
+    api.sendMessage("⏳ 𝐏𝐥𝐞𝐚𝐬𝐞 𝐰𝐚𝐢𝐭...", event.threadID, async (err, info) => {
       if (err) return;
 
       try {
@@ -46,7 +46,7 @@ module.exports.run = async function({ api, event, args }) {
 
           // Step 3: Send actual video
           api.sendMessage({
-            body: `🎬 Here's your video from Pixeldrain! ID: ${fileID}`,
+            body: `𝐄𝐧𝐣𝐨𝐲 𝐲𝐨𝐮𝐫 𝐯𝐢𝐝𝐞𝐨`,
             attachment: fs.createReadStream(filePath)
           }, event.threadID, () => fs.unlinkSync(filePath), event.messageID);
         });
