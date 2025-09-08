@@ -16,7 +16,7 @@ module.exports.config = {
 module.exports.run = async function({ api, event, args }) {
   const fileID = args[0];
   if (!fileID) {
-    return api.sendMessage("❌ Please provide a Pixeldrain file ID!", event.threadID, event.messageID);
+    return api.sendMessage("Type pixlist to see many IDs, then choose one and use it like: !pixlist abc123", event.threadID, event.messageID);
   }
 
   const downloadURL = `https://pixeldrain.com/api/file/${fileID}?download`;
