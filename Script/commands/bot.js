@@ -5,7 +5,7 @@ const apiJsonURL = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/hea
 
 module.exports.config = {
   name: "obot",
-  version: "1.0.4",
+  version: "1.0.6",
   hasPermssion: 0,
   credits: "𝐫𝐗",
   description: "Maria Baby-style reply system (only exact 'bot' trigger)",
@@ -14,7 +14,7 @@ module.exports.config = {
   cooldowns: 3
 };
 
-// Fetch rx API from GitHub JSON
+// RX API fetch function
 async function getRxAPI() {
   try {
     const res = await axios.get(apiJsonURL);
@@ -28,12 +28,11 @@ async function getRxAPI() {
 
 module.exports.handleEvent = async function({ api, event, Users }) {
   const { threadID, messageID, body, senderID, messageReply } = event;
-
   if (!body) return;
 
   const name = await Users.getNameUser(senderID);
 
-  // ---- First "bot" trigger: frame + mention ----
+  // ---- "bot" trigger: send frame + mention ----
   if (body.trim().toLowerCase() === "bot") {
     const replies = [
       "বেশি Bot Bot করলে leave নিবো কিন্তু😒",
@@ -56,12 +55,21 @@ module.exports.handleEvent = async function({ api, event, Users }) {
 
 ╰──────•◈•──────╯`;
 
-    return api.sendMessage(message, threadID, messageID);
+    // Send message with hidden marker (invisible to user)
+    return api.sendMessage(
+      { body: message, metadata: { rxbotsystem: true } },
+      threadID,
+      messageID
+    );
   }
 
-  // ---- Reply to bot message: RX API ----
-  if (event.messageReply && event.messageReply.senderID === api.getCurrentUserID()) {
-    const replyText = body;
+  // ---- Reply to bot message only ----
+  if (
+    messageReply &&
+    messageReply.senderID === api.getCurrentUserID() &&
+    messageReply.metadata?.rxbotsystem // check hidden marker
+  ) {
+    const replyText = body.trim();
     if (!replyText) return;
 
     const rxAPI = await getRxAPI();
