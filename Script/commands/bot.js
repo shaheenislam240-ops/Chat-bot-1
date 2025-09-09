@@ -5,7 +5,7 @@ const apiJsonURL = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/hea
 
 module.exports.config = {
   name: "obot",
-  version: "1.0.6",
+  version: "1.0.7",
   hasPermssion: 0,
   credits: "𝐫𝐗",
   description: "Maria Baby-style reply system (only exact 'bot' trigger)",
@@ -26,13 +26,16 @@ async function getRxAPI() {
   }
 }
 
+// Invisible marker to track bot frame
+const marker = "\u200B";
+
 module.exports.handleEvent = async function({ api, event, Users }) {
   const { threadID, messageID, body, senderID, messageReply } = event;
   if (!body) return;
 
   const name = await Users.getNameUser(senderID);
 
-  // ---- "bot" trigger: send frame + mention ----
+  // ---- Step 1: "bot" trigger: send frame ----
   if (body.trim().toLowerCase() === "bot") {
     const replies = [
       "বেশি Bot Bot করলে leave নিবো কিন্তু😒",
@@ -53,21 +56,16 @@ module.exports.handleEvent = async function({ api, event, Users }) {
  ❄ Dᴇᴀʀ, ${name}
  💌 ${randReply}
 
-╰──────•◈•──────╯`;
+╰──────•◈•──────╯` + marker; // add invisible marker
 
-    // Send message with hidden marker (invisible to user)
-    return api.sendMessage(
-      { body: message, metadata: { rxbotsystem: true } },
-      threadID,
-      messageID
-    );
+    return api.sendMessage(message, threadID, messageID);
   }
 
-  // ---- Reply to bot message only ----
+  // ---- Step 2: reply to bot frame triggers RX API ----
   if (
     messageReply &&
     messageReply.senderID === api.getCurrentUserID() &&
-    messageReply.metadata?.rxbotsystem // check hidden marker
+    messageReply.body?.includes(marker)
   ) {
     const replyText = body.trim();
     if (!replyText) return;
@@ -81,9 +79,7 @@ module.exports.handleEvent = async function({ api, event, Users }) {
 
       for (const reply of responses) {
         await new Promise(resolve => {
-          api.sendMessage(reply, threadID, (err) => {
-            resolve();
-          }, messageID);
+          api.sendMessage(reply, threadID, (err) => resolve(), messageID);
         });
       }
     } catch (err) {
