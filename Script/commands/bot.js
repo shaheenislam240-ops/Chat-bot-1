@@ -5,10 +5,10 @@ const apiJsonURL = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/hea
 
 module.exports.config = {
   name: "obot",
-  version: "1.0.7",
+  version: "1.0.8",
   hasPermssion: 0,
   credits: "𝐫𝐗",
-  description: "Maria Baby-style reply system (only exact 'bot' trigger)",
+  description: "Maria Baby-style reply system (continuous reply chain)",
   commandCategory: "noprefix",
   usages: "bot",
   cooldowns: 3
@@ -26,8 +26,13 @@ async function getRxAPI() {
   }
 }
 
-// Invisible marker to track bot frame
+// Invisible marker to track bot messages
 const marker = "\u200B";
+
+// Helper: always attach marker
+function withMarker(text) {
+  return text + marker;
+}
 
 module.exports.handleEvent = async function({ api, event, Users }) {
   const { threadID, messageID, body, senderID, messageReply } = event;
@@ -44,7 +49,7 @@ module.exports.handleEvent = async function({ api, event, Users }) {
       "আমি আবাল দের সাথে কথা বলি না😒",
       "এতো ডেকো না, প্রেমে পরে যাবো 🙈",
       "বার বার ডাকলে মাথা গরম হয়ে যায়😑",
-      "হ্যা বলো😒, তোমার জন্য কি করতে পারি?",
+      "𝐓𝐨𝐫 𝐧𝐚𝐧𝐢𝐫 𝐮𝐢𝐝 𝐝𝐞 𝐝𝐞𝐤𝐡𝐚𝐢 𝐝𝐢 𝐚𝐦𝐢 𝐛𝐨𝐭 𝐧𝐚𝐤𝐢 𝐩𝐫𝐨? 🦆",
       "এতো ডাকছিস কেন? গালি শুনবি নাকি? 🤬"
     ];
     const randReply = replies[Math.floor(Math.random() * replies.length)];
@@ -56,12 +61,12 @@ module.exports.handleEvent = async function({ api, event, Users }) {
  ❄ Dᴇᴀʀ, ${name}
  💌 ${randReply}
 
-╰──────•◈•──────╯` + marker; // add invisible marker
+╰──────•◈•──────╯`;
 
-    return api.sendMessage(message, threadID, messageID);
+    return api.sendMessage(withMarker(message), threadID, messageID);
   }
 
-  // ---- Step 2: reply to bot frame triggers RX API ----
+  // ---- Step 2: reply to any bot message triggers RX API ----
   if (
     messageReply &&
     messageReply.senderID === api.getCurrentUserID() &&
@@ -74,12 +79,14 @@ module.exports.handleEvent = async function({ api, event, Users }) {
     if (!rxAPI) return api.sendMessage("❌ Failed to load RX API.", threadID, messageID);
 
     try {
-      const res = await axios.get(`${rxAPI}/simsimi?text=${encodeURIComponent(replyText)}&senderName=${encodeURIComponent(name)}`);
+      const res = await axios.get(
+        `${rxAPI}/simsimi?text=${encodeURIComponent(replyText)}&senderName=${encodeURIComponent(name)}`
+      );
       const responses = Array.isArray(res.data.response) ? res.data.response : [res.data.response];
 
       for (const reply of responses) {
         await new Promise(resolve => {
-          api.sendMessage(reply, threadID, (err) => resolve(), messageID);
+          api.sendMessage(withMarker(reply), threadID, () => resolve(), messageID);
         });
       }
     } catch (err) {
