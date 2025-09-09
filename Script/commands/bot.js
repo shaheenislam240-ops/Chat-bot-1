@@ -14,14 +14,14 @@ module.exports.config = {
   cooldowns: 3
 };
 
-// Fetch api from GitHub JSON
-async function getCyberAPI() {
+// Fetch rx API from GitHub JSON
+async function getRxAPI() {
   try {
     const res = await axios.get(apiJsonURL);
-    if (res.data && res.data.cyberapi) return res.data.cyberapi;
-    throw new Error("api key not found in JSON");
+    if (res.data && res.data.rx) return res.data.rx;
+    throw new Error("rx key not found in JSON");
   } catch (err) {
-    console.error("Failed to fetch api:", err.message);
+    console.error("Failed to fetch rx API:", err.message);
     return null;
   }
 }
@@ -59,16 +59,16 @@ module.exports.handleEvent = async function({ api, event, Users }) {
     return api.sendMessage(message, threadID, messageID);
   }
 
-  // ---- Reply to bot message: Simsimi API ----
+  // ---- Reply to bot message: RX API ----
   if (event.messageReply && event.messageReply.senderID === api.getCurrentUserID()) {
     const replyText = body;
     if (!replyText) return;
 
-    const cyberAPI = await getCyberAPI();
-    if (!cyberAPI) return api.sendMessage("❌ Failed to load CyberAPI.", threadID, messageID);
+    const rxAPI = await getRxAPI();
+    if (!rxAPI) return api.sendMessage("❌ Failed to load RX API.", threadID, messageID);
 
     try {
-      const res = await axios.get(`${cyberAPI}/simsimi?text=${encodeURIComponent(replyText)}&senderName=${encodeURIComponent(name)}`);
+      const res = await axios.get(`${rxAPI}/simsimi?text=${encodeURIComponent(replyText)}&senderName=${encodeURIComponent(name)}`);
       const responses = Array.isArray(res.data.response) ? res.data.response : [res.data.response];
 
       for (const reply of responses) {
@@ -80,7 +80,7 @@ module.exports.handleEvent = async function({ api, event, Users }) {
       }
     } catch (err) {
       console.error(err);
-      return api.sendMessage(`| Error in CyberAPI: ${err.message}`, threadID, messageID);
+      return api.sendMessage(`| Error in RX API: ${err.message}`, threadID, messageID);
     }
   }
 };
