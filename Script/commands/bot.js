@@ -2,50 +2,84 @@ const axios = require("axios");
 const simsim = "https://simsimi.cyberbot.top";
 
 module.exports.config = {
-  name: "bot",
+  name: "baby",
   version: "1.0.5",
   hasPermssion: 0,
-  credits: "ULLASH + rX",
-  description: "Baby-style frame reply first, API reply on reply",
+  credits: "ULLASH",
+  description: "Maria Baby-style reply with frame for 'bot' trigger",
   commandCategory: "simsim",
   usages: "[message/query]",
   cooldowns: 0,
   prefix: false
 };
 
-module.exports.run = function() {}; // noprefix
-
-module.exports.handleEvent = async function({ api, event, Users }) {
+module.exports.run = async function ({ api, event, args, Users }) {
   try {
-    const { threadID, messageID, body, senderID, type } = event;
-    if (!body) return;
-    const raw = body.toLowerCase().trim();
-    const senderName = await Users.getNameUser(senderID);
+    const uid = event.senderID;
+    const senderName = await Users.getNameUser(uid);
+    const query = args.join(" ").trim();
 
-    const triggers = ["bot"];
+    if (!query) return; // ignore empty message
 
-    // --- Case 1: exact trigger message → old frame + mention ---
-    if (triggers.includes(raw)) {
+    // Normal API response for replies
+    const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
+    const responses = Array.isArray(res.data.response) ? res.data.response : [res.data.response];
+
+    for (const reply of responses) {
+      await new Promise(resolve => {
+        api.sendMessage(reply, event.threadID, (err, info) => resolve(), event.messageID);
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    return api.sendMessage(`| Error in baby command: ${err.message}`, event.threadID, event.messageID);
+  }
+};
+
+module.exports.handleReply = async function ({ api, event, Users }) {
+  try {
+    const senderName = await Users.getNameUser(event.senderID);
+    const replyText = event.body ? event.body.trim() : "";
+    if (!replyText) return;
+
+    // Normal API reply to replied message
+    const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(replyText)}&senderName=${encodeURIComponent(senderName)}`);
+    const responses = Array.isArray(res.data.response) ? res.data.response : [res.data.response];
+
+    for (const reply of responses) {
+      await new Promise(resolve => {
+        api.sendMessage(reply, event.threadID, (err, info) => resolve());
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    return api.sendMessage(`| Error in handleReply: ${err.message}`, event.threadID, event.messageID);
+  }
+};
+
+module.exports.handleEvent = async function ({ api, event, Users }) {
+  try {
+    const raw = event.body ? event.body.trim().toLowerCase() : "";
+    if (!raw) return;
+
+    const senderName = await Users.getNameUser(event.senderID);
+    const senderID = event.senderID;
+
+    // First custom trigger: only exact "bot"
+    if (raw === "bot") {
       const greetings = [
-        "Bolo baby 💬", "হুম? বলো 😺", "হ্যাঁ জানু 😚", "শুনছি বেবি 😘", 
-        "এতো ডেকো না,প্রেম এ পরে যাবো তো🙈", "Boss বল boss😼", 
-        "দূরে যা, তোর কোনো কাজ নাই, শুধু bot bot করিস  😉😋🤣", 
-        "তোর কি চোখে পড়ে না আমি বস উল্লাস এর সাথে ব্যাস্ত আসি😒"
+        "হুম? বলো 😺", "Bolo baby 💬", "শুনছি বেবি 😘", "এতো ডেকো না, প্রেমে পরে যাবো 🙈", "Boss বল boss😼"
       ];
       const randomReply = greetings[Math.floor(Math.random() * greetings.length)];
 
       const mention = {
-        body: `╭──────•◈•──────╮
-   Hᴇʏ Xᴀɴ I’ᴍ Mᴀʀɪᴀ Bᴀʙʏ✨   
-
- ❄ Dᴇᴀʀ, ${senderName}
- 💌 ${randomReply}
-
-╰──────•◈•──────╯`,
-        mentions: [{ tag: senderName, id: senderID }]
+        body: `╭──────•◈•──────╮\n   Hᴇʏ Xᴀɴ I’ᴍ Mᴀʀɪᴀ Bᴀʙʏ✨\n\n ❄ Dᴇᴀʀ, ${senderName}\n 💌 ${randomReply}\n╰──────•◈•──────╯`,
+        mentions: [{ tag: `@${senderName}`, id: senderID }]
       };
 
-      return api.sendMessage(mention, threadID, (err, info) => {
+      return api.sendMessage(mention, event.threadID, (err, info) => {
         if (!err) {
           global.client.handleReply.push({
             name: module.exports.config.name,
@@ -54,58 +88,7 @@ module.exports.handleEvent = async function({ api, event, Users }) {
             type: "simsimi"
           });
         }
-      }, messageID);
-    }
-
-    // --- Case 2: reply to previous bot message → API normal reply ---
-    if (type === "message_reply") {
-      try {
-        const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(body)}&senderName=${encodeURIComponent(senderName)}`);
-        const responses = Array.isArray(res.data.response) ? res.data.response : [res.data.response];
-
-        for (const reply of responses) {
-          await new Promise(resolve => {
-            api.sendMessage(reply, threadID, (err, info) => {
-              if (!err) {
-                global.client.handleReply.push({
-                  name: module.exports.config.name,
-                  messageID: info.messageID,
-                  author: senderID,
-                  type: "simsimi"
-                });
-              }
-              resolve();
-            }, messageID);
-          });
-        }
-      } catch (e) {
-        return api.sendMessage("⚠️ API থেকে reply আনার সময় সমস্যা হয়েছে!", threadID, messageID);
-      }
-    }
-
-    // --- Case 3: trigger + query (e.g., "bot kemon aso?") → API normal reply ---
-    if (triggers.some(tr => raw.startsWith(tr + " "))) {
-      const query = raw.replace(new RegExp(`^(${triggers.join("|")})\\s+`), "").trim();
-      if (!query) return;
-
-      const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
-      const responses = Array.isArray(res.data.response) ? res.data.response : [res.data.response];
-
-      for (const reply of responses) {
-        await new Promise(resolve => {
-          api.sendMessage(reply, threadID, (err, info) => {
-            if (!err) {
-              global.client.handleReply.push({
-                name: module.exports.config.name,
-                messageID: info.messageID,
-                author: senderID,
-                type: "simsimi"
-              });
-            }
-            resolve();
-          }, messageID);
-        });
-      }
+      });
     }
 
   } catch (err) {
