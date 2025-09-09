@@ -14,10 +14,10 @@ const badWords = [
 
 module.exports.config = {
   name: "antigali",
-  version: "2.5.0",
+  version: "2.7.0",
   hasPermssion: 0,
   credits: "Rx Abdullah",
-  description: "Direct Kick on 3rd offense, Leave on 4th, auto unsend",
+  description: "Auto kick on 3rd offense, leave on 4th, auto unsend (no mention required)",
   commandCategory: "moderation",
   usages: "!antigali on / !antigali off",
   cooldowns: 0
@@ -42,21 +42,18 @@ module.exports.handleEvent = async function ({ api, event }) {
       const userInfo = await api.getUserInfo(userID);
       const userName = userInfo[userID]?.name || "User";
 
-      const mentionTag = { id: userID, tag: userName };
-
       const warningMsg = 
 `𝗔𝗨𝗧𝗢𝗠𝗢𝗗 𝗔𝗟𝗘𝗥𝗧 🚫
 ╔════════════════════════════════════╗
 ║ ⚠️ 𝗪𝗔𝗥𝗡𝗜𝗡𝗚: Offensive Language Detected
-║ 👤 User: @${mentionTag.tag}
+║ 👤 User: ${userName}
 ║ 📄 Message: Contains prohibited words
-║ 🧹 Action: Please delete/unsend immediately
 ║ 🔁 Offense Count: ${count}
-╚════════════════════════════════════╝
-⚠️ Reminder: Please speak respectfully.`;
+║ 🧹 Action: Please delete/unsend immediately
+╚════════════════════════════════════╝`;
 
       // Send warning
-      await api.sendMessage({ body: warningMsg, mentions: [mentionTag] }, threadID, event.messageID);
+      await api.sendMessage(warningMsg, threadID, event.messageID);
 
       // Auto unsend offending message after 1 minute
       setTimeout(() => {
@@ -68,9 +65,9 @@ module.exports.handleEvent = async function ({ api, event }) {
         try {
           await api.removeUserFromGroup(userID, threadID);
           offenseTracker[threadID][userID] = 0; // reset count after kick
-          return api.sendMessage(`🚨 User @${mentionTag.tag} has been removed due to repeated offenses.`, threadID, null, { mentions: [mentionTag] });
+          return api.sendMessage(`🚨 User ${userName} has been removed due to repeated offenses.`, threadID);
         } catch (kickErr) {
-          return api.sendMessage(`⚠️ Failed to kick @${mentionTag.tag}. Please check bot permissions.`, threadID, null, { mentions: [mentionTag] });
+          return api.sendMessage(`⚠️ Failed to kick ${userName}. Please check bot permissions.`, threadID);
         }
       }
 
