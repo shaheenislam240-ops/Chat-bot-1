@@ -1,6 +1,6 @@
 module.exports.config = {
     name: "cmd",
-    version: "1.0.0",
+    version: "1.0.1",
     hasPermssion: 2,
     credits: "Modified by rX Abdullah",
     description: "Manage/Control all bot modules",
@@ -16,8 +16,7 @@ module.exports.config = {
 
 const loadCommand = function ({ moduleList, threadID, messageID, api }) {
     const { execSync } = global.nodemodule["child_process"];
-    const { writeFileSync, unlinkSync, readFileSync } = global.nodemodule["fs-extra"];
-    const { join } = global.nodemodule["path"];
+    const { writeFileSync, unlinkSync } = global.nodemodule["fs-extra"];
     const { configPath, mainPath } = global.client;
     const logger = require(mainPath + "/utils/log");
 
@@ -106,13 +105,15 @@ module.exports.run = function ({ event, args, api }) {
             return unloadModule({ moduleList, threadID, messageID, api });
         }
         case "loadAll": {
-            moduleList = readdirSync(__dirname).filter(file => file.endsWith(".js") && !file.includes("example"));
-            moduleList = moduleList.map(item => item.replace(/\.js/g, ""));
+            moduleList = readdirSync(__dirname)
+                .filter(file => file.endsWith(".js") && !file.includes("example") && file != "cmd.js")
+                .map(item => item.replace(/\.js$/g, ""));
             return loadCommand({ moduleList, threadID, messageID, api });
         }
         case "unloadAll": {
-            moduleList = readdirSync(__dirname).filter(file => file.endsWith(".js") && !file.includes("example") && !file.includes("command"));
-            moduleList = moduleList.map(item => item.replace(/\.js/g, ""));
+            moduleList = readdirSync(__dirname)
+                .filter(file => file.endsWith(".js") && !file.includes("example") && file != "cmd.js")
+                .map(item => item.replace(/\.js$/g, ""));
             return unloadModule({ moduleList, threadID, messageID, api });
         }
         case "info": {
