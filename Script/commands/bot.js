@@ -1,17 +1,30 @@
 const axios = require("axios");
 const fs = global.nodemodule["fs-extra"];
-const simsim = "https://simsimi.cyberbot.top";
+
+const apiJsonURL = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json";
 
 module.exports.config = {
   name: "obot",
   version: "1.0.4",
   hasPermssion: 0,
-  credits: "Modified by rX",
+  credits: "𝐫𝐗",
   description: "Maria Baby-style reply system (only exact 'bot' trigger)",
   commandCategory: "noprefix",
   usages: "bot",
   cooldowns: 3
 };
+
+// Fetch api from GitHub JSON
+async function getCyberAPI() {
+  try {
+    const res = await axios.get(apiJsonURL);
+    if (res.data && res.data.cyberapi) return res.data.cyberapi;
+    throw new Error("api key not found in JSON");
+  } catch (err) {
+    console.error("Failed to fetch api:", err.message);
+    return null;
+  }
+}
 
 module.exports.handleEvent = async function({ api, event, Users }) {
   const { threadID, messageID, body, senderID, messageReply } = event;
@@ -51,8 +64,11 @@ module.exports.handleEvent = async function({ api, event, Users }) {
     const replyText = body;
     if (!replyText) return;
 
+    const cyberAPI = await getCyberAPI();
+    if (!cyberAPI) return api.sendMessage("❌ Failed to load CyberAPI.", threadID, messageID);
+
     try {
-      const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(replyText)}&senderName=${encodeURIComponent(name)}`);
+      const res = await axios.get(`${cyberAPI}/simsimi?text=${encodeURIComponent(replyText)}&senderName=${encodeURIComponent(name)}`);
       const responses = Array.isArray(res.data.response) ? res.data.response : [res.data.response];
 
       for (const reply of responses) {
@@ -64,7 +80,7 @@ module.exports.handleEvent = async function({ api, event, Users }) {
       }
     } catch (err) {
       console.error(err);
-      return api.sendMessage(`| Error in Simsimi API: ${err.message}`, threadID, messageID);
+      return api.sendMessage(`| Error in CyberAPI: ${err.message}`, threadID, messageID);
     }
   }
 };
