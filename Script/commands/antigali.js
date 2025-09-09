@@ -14,10 +14,10 @@ const badWords = [
 
 module.exports.config = {
   name: "antigali",
-  version: "2.4.0",
+  version: "2.5.0",
   hasPermssion: 0,
   credits: "Rx Abdullah",
-  description: "Anti-Gali with progressive action + auto unsend + error messages",
+  description: "Direct Kick on 3rd offense, Leave on 4th, auto unsend",
   commandCategory: "moderation",
   usages: "!antigali on / !antigali off",
   cooldowns: 0
@@ -58,42 +58,30 @@ module.exports.handleEvent = async function ({ api, event }) {
       // Send warning
       await api.sendMessage({ body: warningMsg, mentions: [mentionTag] }, threadID, event.messageID);
 
-      // Auto unsend offending message after 1 minute (60,000ms)
+      // Auto unsend offending message after 1 minute
       setTimeout(() => {
         api.unsendMessage(event.messageID).catch(err => console.error("Failed to unsend:", err));
       }, 60000);
 
-      // 3rd offense -> kick if admin
+      // 3rd offense -> direct kick
       if (count === 3) {
         try {
-          const botID = await api.getCurrentUserID();
-          const threadInfo = await api.getThreadInfo(threadID);
-          const adminIDs = threadInfo.adminIDs.map(adm => adm.id.toString());
-          const botIsAdmin = adminIDs.includes(botID.toString());
+          await api.removeUserFromGroup(userID, threadID);
+          offenseTracker[threadID][userID] = 0; // reset count after kick
+          return api.sendMessage(`🚨 User @${mentionTag.tag} has been removed due to repeated offenses.`, threadID, null, { mentions: [mentionTag] });
+        } catch (kickErr) {
+          return api.sendMessage(`⚠️ Failed to kick @${mentionTag.tag}. Please check bot permissions.`, threadID, null, { mentions: [mentionTag] });
+        }
+      }
 
-          if (botIsAdmin) {
-            // Try to kick user
-            try {
-              await api.removeUserFromGroup(userID, threadID);
-              offenseTracker[threadID][userID] = 0; // reset after kick
-              return api.sendMessage(`🚨 User @${mentionTag.tag} has been removed due to repeated offenses.`, threadID, null, { mentions: [mentionTag] });
-            } catch (kickErr) {
-              // Kick failed -> send error message
-              return api.sendMessage(`⚠️ Failed to kick @${mentionTag.tag}. Please check bot permissions.`, threadID, null, { mentions: [mentionTag] });
-            }
-          } else {
-            // Bot not admin -> leave on 4th offense
-            if (count >= 4) {
-              try {
-                await api.sendMessage("⚠️ I cannot moderate properly. Leaving the group.", threadID);
-                return api.leaveThread(threadID);
-              } catch (leaveErr) {
-                return api.sendMessage("⚠️ Failed to leave the group. Please check bot permissions.", threadID);
-              }
-            }
-          }
-        } catch (err) {
-          console.error("Error handling kick/leave:", err);
+      // 4th offense -> bot leave
+      if (count === 4) {
+        try {
+          await api.sendMessage("⚠️ I am leaving the group due to repeated offenses and lack of permissions.", threadID);
+          offenseTracker[threadID][userID] = 0; // reset count before leave
+          return api.leaveThread(threadID);
+        } catch (leaveErr) {
+          return api.sendMessage("⚠️ Failed to leave the group. Please check bot permissions.", threadID);
         }
       }
     }
