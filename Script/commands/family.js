@@ -5,7 +5,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "family",
-  version: "3.1.0",
+  version: "3.2.0",
   hasPermssion: 0,
   credits: "Rx Abdullah",
   description: "Create a family photo from group members",
@@ -30,26 +30,15 @@ module.exports.run = async function({ api, event, args }) {
       return api.sendMessage("❌ No members found in this group!", event.threadID, event.messageID);
     }
 
-    // STEP 1: Download background from postimg
+    // STEP 1: Download background
     const bgUrl = "https://i.postimg.cc/zfMsysk9/status-bg.jpg";
     const bgPath = path.join(cacheDir, `family_bg_${event.threadID}.jpg`);
 
-    try {
-      const bgBuffer = (await axios.get(bgUrl, { responseType: "arraybuffer" })).data;
-      fs.writeFileSync(bgPath, bgBuffer);
-    } catch (e) {
-      console.error("❌ Background download error:", e);
-      return api.sendMessage("❌ Failed to download background from postimg!", event.threadID, event.messageID);
-    }
+    const bgBuffer = (await axios.get(bgUrl, { responseType: "arraybuffer" })).data;
+    fs.writeFileSync(bgPath, bgBuffer);
 
     // Load background
-    let bgImg;
-    try {
-      bgImg = await Canvas.loadImage(bgPath);
-    } catch (e) {
-      console.error("❌ Background load error:", e);
-      return api.sendMessage("❌ Failed to load background image!", event.threadID, event.messageID);
-    }
+    const bgImg = await Canvas.loadImage(bgPath);
 
     const canvas = Canvas.createCanvas(bgImg.width, bgImg.height);
     const ctx = canvas.getContext("2d");
@@ -65,7 +54,7 @@ module.exports.run = async function({ api, event, args }) {
         const imgBuffer = (await axios.get(imgUrl, { responseType: "arraybuffer" })).data;
         const img = await Canvas.loadImage(imgBuffer);
 
-        const size = 150;
+        const size = 200; // base size (adjustable)
         const canvas2 = Canvas.createCanvas(size, size);
         const ctx2 = canvas2.getContext("2d");
 
@@ -82,22 +71,24 @@ module.exports.run = async function({ api, event, args }) {
       }
     }
 
-    // STEP 2: Arrange member pics
-    const perRow = Math.ceil(Math.sqrt(members.length));
-    const picSize = Math.min(canvas.width / perRow, canvas.height / perRow);
+    // STEP 2: Arrange members dynamically
+    const total = members.length;
+    const perRow = Math.ceil(Math.sqrt(total));
+    const picSize = Math.min(canvas.width / (perRow + 1), canvas.height / (perRow + 2));
 
-    let x = 0, y = 200; // 200px niche theke suru (title rakhbo upore)
+    let x = (canvas.width - (perRow * picSize)) / 2;
+    let y = 200; // leave space for title
 
-    for (const id of members) {
+    for (let i = 0; i < total; i++) {
+      const id = members[i];
       const circle = await circleImage(id);
       if (circle) {
         ctx.drawImage(circle, x, y, picSize, picSize);
-      } else {
-        console.log(`⚠️ Skipped member ${id}`);
       }
+
       x += picSize;
-      if (x + picSize > canvas.width) {
-        x = 0;
+      if ((i + 1) % perRow === 0) {
+        x = (canvas.width - (perRow * picSize)) / 2;
         y += picSize;
       }
     }
@@ -124,6 +115,6 @@ module.exports.run = async function({ api, event, args }) {
 
   } catch (e) {
     console.error("❌ Family command error:", e);
-    return api.sendMessage("❌ Family command failed! Check console for details.", event.threadID, event.messageID);
+    return api.sendMessage("❌ Family command failed! Check console.", event.threadID, event.messageID);
   }
 };
