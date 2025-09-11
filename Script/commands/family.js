@@ -5,18 +5,19 @@ const path = require("path");
 
 module.exports.config = {
   name: "family",
-  version: "3.0.0",
-  role: 0,
-  author: "Rx Abdullah",
-  cooldowns: 5,
+  version: "3.1.0",
   hasPermssion: 0,
-  description: "Make a family photo of group members",
+  credits: "Rx Abdullah",
+  description: "Create a family photo from group members",
   commandCategory: "group",
-  usages: "[all]"
+  usages: "family all",
+  cooldowns: 10
 };
 
 module.exports.run = async function({ api, event, args }) {
-  if (args[0] !== "all") return api.sendMessage("Use: !family all", event.threadID, event.messageID);
+  if (args[0] !== "all") {
+    return api.sendMessage("📌 Usage: family all", event.threadID, event.messageID);
+  }
 
   const cacheDir = path.join(__dirname, "cache");
   if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
@@ -26,7 +27,7 @@ module.exports.run = async function({ api, event, args }) {
     const members = threadInfo.participantIDs;
 
     if (!members || members.length === 0) {
-      return api.sendMessage("❌ Error: No members found!", event.threadID, event.messageID);
+      return api.sendMessage("❌ No members found in this group!", event.threadID, event.messageID);
     }
 
     // STEP 1: Download background from postimg
@@ -38,7 +39,7 @@ module.exports.run = async function({ api, event, args }) {
       fs.writeFileSync(bgPath, bgBuffer);
     } catch (e) {
       console.error("❌ Background download error:", e);
-      return api.sendMessage("❌ Error: Failed to download background!", event.threadID, event.messageID);
+      return api.sendMessage("❌ Failed to download background from postimg!", event.threadID, event.messageID);
     }
 
     // Load background
@@ -47,7 +48,7 @@ module.exports.run = async function({ api, event, args }) {
       bgImg = await Canvas.loadImage(bgPath);
     } catch (e) {
       console.error("❌ Background load error:", e);
-      return api.sendMessage("❌ Error: Failed to load background image!", event.threadID, event.messageID);
+      return api.sendMessage("❌ Failed to load background image!", event.threadID, event.messageID);
     }
 
     const canvas = Canvas.createCanvas(bgImg.width, bgImg.height);
@@ -85,7 +86,7 @@ module.exports.run = async function({ api, event, args }) {
     const perRow = Math.ceil(Math.sqrt(members.length));
     const picSize = Math.min(canvas.width / perRow, canvas.height / perRow);
 
-    let x = 0, y = 200; // title space niche start
+    let x = 0, y = 200; // 200px niche theke suru (title rakhbo upore)
 
     for (const id of members) {
       const circle = await circleImage(id);
@@ -112,13 +113,17 @@ module.exports.run = async function({ api, event, args }) {
     fs.writeFileSync(outPath, canvas.toBuffer());
 
     api.sendMessage(
-      { body: "👨‍👩‍👧‍👦 Our Family Photo ❤️", attachment: fs.createReadStream(outPath) },
+      {
+        body: "👨‍👩‍👧‍👦 Our Family Photo ❤️",
+        attachment: fs.createReadStream(outPath)
+      },
       event.threadID,
       () => fs.unlinkSync(outPath),
       event.messageID
     );
+
   } catch (e) {
     console.error("❌ Family command error:", e);
-    return api.sendMessage("❌ Error: Family command failed, check console!", event.threadID, event.messageID);
+    return api.sendMessage("❌ Family command failed! Check console for details.", event.threadID, event.messageID);
   }
 };
