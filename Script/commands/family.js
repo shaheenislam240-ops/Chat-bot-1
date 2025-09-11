@@ -5,7 +5,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "family",
-  version: "2.0.0",
+  version: "3.0.0",
   role: 0,
   author: "Rx Abdullah",
   cooldowns: 5,
@@ -29,16 +29,16 @@ module.exports.run = async function({ api, event, args }) {
       return api.sendMessage("❌ Error: No members found!", event.threadID, event.messageID);
     }
 
-    // STEP 1: Download background from imgur (cache)
-    const bgUrl = "https://i.imgur.com/dlO4WQn.jpeg";
+    // STEP 1: Download background from postimg
+    const bgUrl = "https://i.postimg.cc/zfMsysk9/status-bg.jpg";
     const bgPath = path.join(cacheDir, `family_bg_${event.threadID}.jpg`);
 
     try {
       const bgBuffer = (await axios.get(bgUrl, { responseType: "arraybuffer" })).data;
       fs.writeFileSync(bgPath, bgBuffer);
     } catch (e) {
-      console.error("Background download error:", e);
-      return api.sendMessage("❌ Error: Failed to download background from imgur!", event.threadID, event.messageID);
+      console.error("❌ Background download error:", e);
+      return api.sendMessage("❌ Error: Failed to download background!", event.threadID, event.messageID);
     }
 
     // Load background
@@ -46,7 +46,7 @@ module.exports.run = async function({ api, event, args }) {
     try {
       bgImg = await Canvas.loadImage(bgPath);
     } catch (e) {
-      console.error("Background load error:", e);
+      console.error("❌ Background load error:", e);
       return api.sendMessage("❌ Error: Failed to load background image!", event.threadID, event.messageID);
     }
 
@@ -54,10 +54,9 @@ module.exports.run = async function({ api, event, args }) {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-    // Circle crop function
+    // Circle crop helper
     async function circleImage(id) {
       try {
-        // Get direct profile image URL
         const apiUrl = `https://graph.facebook.com/${id}/picture?width=720&height=720&redirect=false&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
         const res = await axios.get(apiUrl);
         const imgUrl = res.data.data.url;
@@ -77,7 +76,7 @@ module.exports.run = async function({ api, event, args }) {
 
         return canvas2;
       } catch (e) {
-        console.error(`Profile pic error for ID ${id}:`, e);
+        console.error(`❌ Profile pic error for ID ${id}:`, e);
         return null;
       }
     }
@@ -86,7 +85,7 @@ module.exports.run = async function({ api, event, args }) {
     const perRow = Math.ceil(Math.sqrt(members.length));
     const picSize = Math.min(canvas.width / perRow, canvas.height / perRow);
 
-    let x = 0, y = 200; // start 200px down to keep title space
+    let x = 0, y = 200; // title space niche start
 
     for (const id of members) {
       const circle = await circleImage(id);
@@ -119,7 +118,7 @@ module.exports.run = async function({ api, event, args }) {
       event.messageID
     );
   } catch (e) {
-    console.error("Family command error:", e);
+    console.error("❌ Family command error:", e);
     return api.sendMessage("❌ Error: Family command failed, check console!", event.threadID, event.messageID);
   }
 };
