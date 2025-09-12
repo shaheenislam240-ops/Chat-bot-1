@@ -1,6 +1,6 @@
 module.exports.config = {
   name: 'listbox',
-  version: '1.0.0',
+  version: '1.0.1',
   credits: '𝐫𝐗',
   hasPermssion: 2,
   description: 'List threads where bot is active',
@@ -23,9 +23,20 @@ module.exports.handleReply = async function({ api, event, Threads, handleReply }
     case "ban": {
       const data = (await Threads.getData(idgr)).data || {};
       data.banned = 1;
+      data.banReason = "Banned by Admin"; // চাইলে reason যোগ করুন
       await Threads.setData(idgr, { data });
       global.data.threadBanned.set(parseInt(idgr), 1);
       api.sendMessage(`[${idgr}] has been banned successfully ✅`, event.threadID, event.messageID);
+      break;
+    }
+
+    case "unban": {
+      const data = (await Threads.getData(idgr)).data || {};
+      data.banned = 0;
+      delete data.banReason;
+      await Threads.setData(idgr, { data });
+      global.data.threadBanned.delete(parseInt(idgr));
+      api.sendMessage(`[${idgr}] has been unbanned successfully ✅`, event.threadID, event.messageID);
       break;
     }
 
@@ -70,7 +81,7 @@ module.exports.run = async function({ api, event }) {
   }
 
   msg += '╰─────────────⧕\n';
-  msg += '\n✨ Reply "out <number>" or "ban <number>" to leave or ban that group.';
+  msg += '\n✨ Reply "out <number>" to leave,\n"ban <number>" to ban,\n"unban <number>" to unban that group.';
 
   api.sendMessage(msg, event.threadID, (err, info) => {
     global.client.handleReply.push({
