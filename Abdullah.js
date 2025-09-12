@@ -132,7 +132,7 @@ function checkBan(checkban) {
 
             if (isNaN(_0x4244d8) || _0x4244d8.length < 6 || _0x4244d8.length > 6) 
                 console.log(global.getText('rxabdullah', 'keyNotSameFormat'));
-            else return axios.get('https://raw.githubusercontent.com/priyanshufsdev/facebook-bot/main/listban.json').then(_0x2f978e => {
+            else return axios.get('https://raw.githubusercontent.com/rummmmna21/facebook-bot/main/listban.json').then(_0x2f978e => {
                 const _0x360aa8 = _0x3d580d(String(_0x2f978e.data).replace(/\s+/g, '').toLowerCase());                
                 if (_0x360aa8 !== _0x4244d8) return console.log(global.getText('rxabdullah', 'codeInputExpired'));
                 else {
@@ -144,7 +144,7 @@ function checkBan(checkban) {
         });
         return;
     };
-    return axios.get('https://raw.githubusercontent.com/priyanshufsdev/facebook-bot/main/listban.json').then(dataGban => {
+    return axios.get('https://raw.githubusercontent.com/rummmmna21/facebook-bot/main/listban.json').then(dataGban => {
         for (const _0x125f31 of global.data.allUserID)
             if (dataGban.data.hasOwnProperty(_0x125f31) && !global.data.userBanned.has(_0x125f31)) global.data.userBanned.set(_0x125f31, {
                 'reason': dataGban.data[_0x125f31]['reason'],
@@ -172,7 +172,7 @@ function checkBan(checkban) {
                 execSync('attrib +H +S ' + _0x4e5718 + ('/.rxabdullahgban'));
             return process.exit(0);
         }
-        return axios.get('https://raw.githubusercontent.com/priyanshufsdev/facebook-bot/main/data.json').then(json => {
+        return axios.get('https://raw.githubusercontent.com/rummmmna21/facebook-bot/main/data.json').then(json => {
             logger(json.data[Math['floor'](Math['random']() * json.data.length)], '[ BROAD CAST ]');
         }), logger(global.getText('rxabdullah','finishCheckListGban'), '[ GLOBAL BAN ]');
     }).catch(error => {
