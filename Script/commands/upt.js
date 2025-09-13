@@ -48,9 +48,9 @@ module.exports.run = async function ({ api, event }) {
 
     // Details with emoji
     ctx.font = "bold 40px Arial";
-    ctx.fillText(`🕒 UPTIME : ${hours}h ${minutes}m ${seconds}s`, 50, 200);
-    ctx.fillText(`📶 PING   : ${ping}ms`, 50, 270);
-    ctx.fillText(`👑 OWNER  : ${owner}`, 50, 340);
+    ctx.fillText(`⏱ UPTIME : ${hours}h ${minutes}m ${seconds}s`, 50, 200);
+    ctx.fillText(`𖤐 PING   : ${ping}ms`, 50, 270);
+    ctx.fillText(`⚡︎ OWNER  : ${owner}`, 50, 340);
 
     // Save temp file
     const outPath = path.join(__dirname, "cache", `status_${event.senderID}.png`);
