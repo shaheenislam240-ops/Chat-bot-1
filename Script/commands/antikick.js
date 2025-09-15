@@ -1,8 +1,8 @@
 const fs = require("fs");
-const path = __dirname + "/cache/antikick.json";
+const path = __dirname + "/antikick.json";
 
 // create storage file if not exists
-if (!fs.existsSync(path)) fs.writeFileSync(path, JSON.stringify({}));
+if (!fs.existsSync(path)) fs.writeFileSync(path, "{}");
 
 let antikickData = JSON.parse(fs.readFileSync(path));
 
@@ -12,7 +12,7 @@ function saveData() {
 
 module.exports.config = {
   name: "antikick",
-  version: "1.0.1",
+  version: "1.0.2",
   role: 1,
   hasPermssion: 1,
   credits: "Rx Abdullah",
@@ -22,25 +22,31 @@ module.exports.config = {
   cooldowns: 2
 };
 
+// when someone sends a message
 module.exports.handleEvent = async function({ api, event }) {
   try {
     const threadID = event.threadID;
-    if (!antikickData[threadID]) return; 
+
+    // check if antikick is enabled for this group
+    if (!antikickData[threadID]) return;
     if (antikickData[threadID] === false) return;
 
+    // get group info
     const threadInfo = await api.getThreadInfo(threadID);
     const isAdmin = threadInfo.adminIDs.some(i => i.id == event.senderID);
 
-    if (isAdmin) return; 
-    if (event.senderID == api.getCurrentUserID()) return; 
+    // don’t kick admins or bot itself
+    if (isAdmin) return;
+    if (event.senderID == api.getCurrentUserID()) return;
 
-    // kick the member
+    // kick user
     return api.removeUserFromGroup(event.senderID, threadID);
   } catch (e) {
-    console.log(e);
+    console.log("Antikick error:", e);
   }
 };
 
+// command to enable/disable
 module.exports.run = async function({ api, event, args }) {
   const threadID = event.threadID;
   const senderID = event.senderID;
@@ -55,11 +61,11 @@ module.exports.run = async function({ api, event, args }) {
   if (args[0] === "on") {
     antikickData[threadID] = true;
     saveData();
-    return api.sendMessage("✅ Antikick system is now ENABLED for this group.", threadID, event.messageID);
+    return api.sendMessage("✅ Antikick ENABLED in this group.", threadID, event.messageID);
   } else if (args[0] === "off") {
     antikickData[threadID] = false;
     saveData();
-    return api.sendMessage("❎ Antikick system is now DISABLED for this group.", threadID, event.messageID);
+    return api.sendMessage("❎ Antikick DISABLED in this group.", threadID, event.messageID);
   } else {
     return api.sendMessage("⚙️ Usage: !antikick [on/off]", threadID, event.messageID);
   }
