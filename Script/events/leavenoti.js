@@ -6,7 +6,7 @@ module.exports.config = {
 	eventType: ["log:unsubscribe"],
 	version: "1.0.7",
 	credits: "rX",
-	description: "Send message when someone leaves or is kicked with fancy name",
+	description: "Send message when someone leaves (skip if kicked) with fancy name",
 	dependencies: {}
 };
 
@@ -29,6 +29,14 @@ module.exports.run = async function({ api, event }) {
 	// Jodi bot-i leave kore
 	if (logMessageData.leftParticipantFbId == api.getCurrentUserID()) return;
 
+	// Check if user was kicked
+	if (logMessageData.kickParticipants && Array.isArray(logMessageData.kickParticipants)) {
+		if (logMessageData.kickParticipants.includes(logMessageData.leftParticipantFbId)) {
+			// Jodi kicked hoy, message skip koro
+			return;
+		}
+	}
+
 	// User info fetch kora
 	let userName = "Someone";
 	try {
@@ -49,20 +57,8 @@ module.exports.run = async function({ api, event }) {
 		}
 	];
 
-	// Check if user was kicked
-	let isKick = false;
-	if (logMessageData.kickParticipants && Array.isArray(logMessageData.kickParticipants)) {
-		isKick = logMessageData.kickParticipants.includes(logMessageData.leftParticipantFbId);
-	}
+	// Send leave message only
+	const msg = `${boldName} left the group.`;
 
-	// Message determine kora
-	let msg = "";
-	if (isKick) {
-		msg = `${boldName} kicked from the group.`;
-	} else {
-		msg = `${boldName} left the group.`;
-	}
-
-	// Send message
 	return api.sendMessage({ body: msg, mentions }, threadID);
 };
