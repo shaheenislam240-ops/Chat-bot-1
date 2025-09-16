@@ -1,9 +1,9 @@
 module.exports.config = {
 	name: "unsend",
-	version: "1.0.1",
+	version: "1.2.0",
 	hasPermssion: 0,
 	credits: "rX",
-	description: "Gỡ tin nhắn của bot",
+	description: "Gỡ tin nhắn của bot hoặc qua emoji-only trigger",
 	commandCategory: "system",
 	usages: "unsend",
 	cooldowns: 0
@@ -20,8 +20,27 @@ module.exports.languages = {
 	}
 }
 
+// 1️⃣ Command-based unsend
 module.exports.run = function({ api, event, getText }) {
-	if (event.messageReply.senderID != api.getCurrentUserID()) return api.sendMessage(getText("returnCant"), event.threadID, event.messageID);
 	if (event.type != "message_reply") return api.sendMessage(getText("missingReply"), event.threadID, event.messageID);
+	if (event.messageReply.senderID != api.getCurrentUserID()) return api.sendMessage(getText("returnCant"), event.threadID, event.messageID);
 	return api.unsendMessage(event.messageReply.messageID);
+}
+
+// 2️⃣ Emoji-only trigger unsend
+module.exports.handleEvent = async function({ api, event }) {
+	const botID = api.getCurrentUserID();
+	if (event.senderID != botID) return;
+
+	// Allowed emojis
+	const allowedEmojis = ["🔪", "🐣", "🤬", "😡"];
+
+	// Body exists and exactly one of allowed emojis
+	if (event.body && allowedEmojis.includes(event.body.trim())) {
+		try {
+			await api.unsendMessage(event.messageID);
+		} catch(e) {
+			console.log("Cannot unsend message:", e);
+		}
 	}
+}
