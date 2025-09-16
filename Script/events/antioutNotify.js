@@ -45,7 +45,7 @@ module.exports.run = async ({ event, api, Users }) => {
 		// Prepare message with bold username front
 		let msg = "";
 		if (type === "self") {
-			msg = `${boldName} left the group voluntarily.`;
+			msg = `${boldName} left the group`;
 		} else {
 			let kickerName = global.data.userName.get(author) || author;
 			try {
@@ -55,7 +55,7 @@ module.exports.run = async ({ event, api, Users }) => {
 				console.error(e);
 			}
 			const boldKicker = toBold(kickerName);
-			msg = `${boldName} was kicked by ${boldKicker}.`;
+			msg = `${boldName} was kicked`;
 		}
 
 		// Send message
