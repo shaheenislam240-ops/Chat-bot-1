@@ -40,7 +40,7 @@ module.exports.run = async function({ api, event, Users }) {
     hour12: true 
   });
 
-  const bgURL = "https://i.postimg.cc/Nj65sWg1/images-5.jpg";
+  const bgURL = "https://i.postimg.cc/fR1nPL4C/images-7.jpg";
   const avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
 
   const cacheDir = path.join(__dirname, "cache");
