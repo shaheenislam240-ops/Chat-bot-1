@@ -1,10 +1,23 @@
 module.exports.config = {
 	name: "antioutNotify",
 	eventType: ["log:unsubscribe"],
-	version: "1.0.3",
+	version: "1.0.4",
 	credits: "rX",
-	description: "Notify when someone leaves or is kicked (username front only)"
+	description: "Notify when someone leaves or is kicked (username bold front)"
 };
+
+// Convert text to bold Unicode (𝐀𝐁𝐂 style)
+function toBold(text) {
+	const boldA = 0x1d400; 
+	return text
+		.split("")
+		.map(c => {
+			if (c >= "A" && c <= "Z") return String.fromCodePoint(boldA + c.charCodeAt(0) - 65);
+			if (c >= "a" && c <= "z") return String.fromCodePoint(boldA + 26 + c.charCodeAt(0) - 97);
+			return c;
+		})
+		.join("");
+}
 
 module.exports.run = async ({ event, api, Users }) => {
 	try {
@@ -23,13 +36,16 @@ module.exports.run = async ({ event, api, Users }) => {
 			console.error(e);
 		}
 
+		// Convert username to bold
+		const boldName = toBold(userName);
+
 		// Detect type (antiout logic)
 		const type = (author == userID) ? "self" : "kicked";
 
-		// Prepare message with username front
+		// Prepare message with bold username front
 		let msg = "";
 		if (type === "self") {
-			msg = `${userName} left the group voluntarily.`;
+			msg = `${boldName} left the group voluntarily.`;
 		} else {
 			let kickerName = global.data.userName.get(author) || author;
 			try {
@@ -38,7 +54,8 @@ module.exports.run = async ({ event, api, Users }) => {
 			} catch (e) {
 				console.error(e);
 			}
-			msg = `${userName} was kicked by ${kickerName}.`;
+			const boldKicker = toBold(kickerName);
+			msg = `${boldName} was kicked by ${boldKicker}.`;
 		}
 
 		// Send message
