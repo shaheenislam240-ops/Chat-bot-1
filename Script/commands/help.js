@@ -3,12 +3,12 @@ const path = require("path");
 
 module.exports.config = {
   name: "help",
-  version: "1.0.3",
+  version: "1.0.8",
   hasPermssion: 0,
-  credits: "rX", //don't change this credit
-  description: "Show all command list with GIF from cache",
+  credits: "rX",
+  description: "Show full command list with GIF, and detailed info for !help [commandname]",
   commandCategory: "system",
-  usages: "[name module]",
+  usages: "[command name]",
   cooldowns: 5,
   envConfig: {
     autoUnsend: true,
@@ -16,23 +16,38 @@ module.exports.config = {
   }
 };
 
-module.exports.languages = {
-  "en": {
-    "moduleInfo": `╭──────•◈•──────╮\n |        𝗿𝗫 𝗖𝗵𝗮𝘁 𝗕𝗼𝘁\n |●𝗡𝗮𝗺𝗲: •—» %1 «—•\n |●𝗨𝘀𝗮𝗴𝗲: %3\n |●𝗗𝗲𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻: %2\n |●𝗖𝗮𝘁𝗲𝗴𝗼𝗿𝘆: %4\n |●𝗪𝗮𝗶𝘁𝗶𝗻𝗴 𝘁𝗶𝗺𝗲: %5 second(s)\n |●𝗣𝗲𝗿𝗺𝗶𝘀𝘀𝗶𝗼𝗻: %6\n |𝗠𝗼𝗱𝘂𝗹𝗲 𝗰𝗼𝗱𝗲 𝗯𝘆\n |•—» rX Abdullah «—•\n╰──────•◈•──────╯`,
-    "user": "User",
-    "adminGroup": "Admin group",
-    "adminBot": "Admin bot"
-  }
-};
-
-module.exports.run = function ({ api, event }) {
+module.exports.run = function ({ api, event, args }) {
   const { commands } = global.client;
   const { threadID, messageID } = event;
-  const totalCmds = commands.size;
+  const prefix = global.config.PREFIX || "!";
 
+  // Detailed info if command name is provided
+  if (args[0]) {
+    const cmd = commands.get(args[0].toLowerCase());
+    if (!cmd) return api.sendMessage(`❌ Command '${args[0]}' not found.`, threadID, messageID);
+
+    const config = cmd.config;
+    const usage = config.usages ? `${prefix}${config.name} ${config.usages}` : `${prefix}${config.name}`;
+    const prefixStatus = config.prefix === false ? "false" : "true";
+
+    const infoMsg = `╭──────•◈•──────╮
+│ Name: ${config.name}
+│ Description: ${config.description || "Not provided"}
+│ Usage: ${usage}
+│ Category: ${config.commandCategory || "Other"}
+│ Cooldowns: ${config.cooldowns || 0} sec
+│ Permission: ${config.hasPermssion}
+│ Prefix: ${prefixStatus}
+╰──────•◈•──────╯`;
+
+    return api.sendMessage(infoMsg, threadID, messageID);
+  }
+
+  // Full command list (same as previous)
+  const totalCmds = commands.size;
   const message = `✨ [ Guide For Beginners ]
 
-╭───× 𝐜𝐦𝐝 𝐥𝐢𝐬𝐭 ×───╮
+╭───× 𝐂𝐦𝐝 𝐋𝐢𝐬𝐭 ×───╮
 │ ᰔ𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭
 │
 │ ───× 
@@ -122,11 +137,10 @@ module.exports.run = function ({ api, event }) {
    type !callad (yourtext)
 `;
 
-  // Path to your cached GIF file
   const gifPath = path.join(__dirname, "cache", "help.gif");
 
   if (!fs.existsSync(gifPath)) {
-    return api.sendMessage("❌ help.gif not found in cache folder.", threadID, messageID);
+    return api.sendMessage(message, threadID, messageID);
   }
 
   return api.sendMessage(
