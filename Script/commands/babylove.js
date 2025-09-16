@@ -52,13 +52,13 @@ const triggers = [
     fileName: "mariasong.mp3"
   },
   {
-    keywords: ["i love you", "choose"],
+    keywords: ["choose"],
     audioUrl: "https://files.catbox.moe/hqw3my.mp3",
     reply: "🧃🐣",
     fileName: "iloveyou.mp3"
   },
   {
-    keywords: ["ukhe", "voice"],
+    keywords: ["gar"],
     audioUrl: "https://files.catbox.moe/07txpg.mp3",
     reply: "🎀  fuk u ukhe",
     fileName: "ukhe.mp3"
