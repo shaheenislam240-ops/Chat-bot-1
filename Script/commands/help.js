@@ -123,10 +123,10 @@ module.exports.run = function ({ api, event, args }) {
 │ ★clearcache ★cache
 │ ★files ★cmdinstall
 │
- | ───×
- | 𝗡𝗨𝗗𝗘 
- | ★getfix (uid) ★pixlist
- | ★pixup
+| ───×
+| 𝗡𝗨𝗗𝗘 
+| ★getfix (uid) ★pixlist
+| ★pixup
 ╰─────────────⧕
 ╭─『 RX  CHAT BOT 』
 ╰‣ Total commands: ${totalCmds}
