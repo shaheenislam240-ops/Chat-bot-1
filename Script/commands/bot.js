@@ -5,12 +5,12 @@ const apiJsonURL = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/hea
 
 module.exports.config = {
   name: "obot",
-  version: "1.0.8",
+  version: "1.1.0",
   hasPermssion: 0,
   credits: "𝐫𝐗",
-  description: "Maria Baby-style reply system (continuous reply chain)",
+  description: "Maria Baby-style reply system (trigger by 'bot' or specific mention)",
   commandCategory: "noprefix",
-  usages: "bot",
+  usages: "bot / @Sııƞƞeɽ 倫ッ",
   cooldowns: 3
 };
 
@@ -28,20 +28,23 @@ async function getRxAPI() {
 
 // Invisible marker to track bot messages
 const marker = "\u200B";
-
-// Helper: always attach marker
 function withMarker(text) {
   return text + marker;
 }
 
 module.exports.handleEvent = async function({ api, event, Users }) {
-  const { threadID, messageID, body, senderID, messageReply } = event;
+  const { threadID, messageID, body, senderID, messageReply, mentions } = event;
   if (!body) return;
 
   const name = await Users.getNameUser(senderID);
 
-  // ---- Step 1: "bot" trigger: send frame ----
-  if (body.trim().toLowerCase() === "bot") {
+  // ---- Step 1: "bot" trigger or specific UID mention ----
+  const TARGET_ID = "61560916929379";
+
+  if (
+    body.trim().toLowerCase() === "bot" ||
+    (mentions && Object.keys(mentions).includes(TARGET_ID))
+  ) {
     const replies = [
       "বেশি Bot Bot করলে leave নিবো কিন্তু😒",
       "🥛-🍍👈 -লে খাহ্..!😒",
