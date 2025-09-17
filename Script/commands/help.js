@@ -130,7 +130,7 @@ module.exports.run = function ({ api, event, args }) {
 ╰─────────────⧕
 ╭─『 RX  CHAT BOT 』
 ╰‣ Total commands: ${totalCmds}
-╰‣ A Facebook Bot
+╰‣ how to use !help (cmdname) 
 ╰‣ CEO : Maria 🧃🐣
 ╰‣ ADMIN: rX Abdullah
 ╰‣ RIPORT FOR ISSUE,
