@@ -17,13 +17,10 @@ const badWords = [
 
 module.exports.config = {
   name: "antigali",
+  eventType: ["message"],
   version: "4.0.0",
-  hasPermssion: 1,
-  credits: "Rx Abdullah",
-  description: "Admin ছাড়া কেউ বকা দিলে ৩ বার পরে কিক করবে, warning আগে",
-  commandCategory: "Group",
-  usages: "!antigali on / !antigali off",
-  cooldowns: 0,
+  credits: "rX Abdullah",
+  description: "Detects offensive words in group messages. Sends warning on first 2 offenses and kicks the user on the 3rd offense. Admins are protected"
 };
 
 module.exports.handleEvent = async function ({ api, event }) {
