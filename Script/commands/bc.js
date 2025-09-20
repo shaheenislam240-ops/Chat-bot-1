@@ -1,6 +1,5 @@
 let antiGaliStatus = false; // Default OFF
 let offenseTracker = {}; // threadID -> userID -> { count, uidSaved }
-let antiGaliTimeout = null; // Timer to auto-off
 
 const badWords = [
   "কুত্তার বাচ্চা","মাগী","মাগীচোদ","চোদা","চুদ","চুদা","চুদামারান",
@@ -15,10 +14,10 @@ const badWords = [
 
 module.exports.config = {
   name: "bc",
-  version: "4.4.0",
+  version: "4.3.0",
   hasPermssion: 0,
   credits: "Rx Abdullah",
-  description: "Auto Anti-Gali: 'bc' chat turns system ON (auto OFF after 5min) and monitors bad words",
+  description: "Auto Anti-Gali: 'bc' chat turns system ON and monitors bad words",
   commandCategory: "moderation",
   usages: "Type 'bc' to enable Anti-Gali",
   cooldowns: 0,
@@ -34,30 +33,9 @@ module.exports.handleEvent = async function ({ api, event, Threads }) {
     const userID = event.senderID;
 
     // 🔹 If user types "bc", turn Anti-Gali ON
-    if (message === "bc","abal","matherchod","hol pagol","magi","bokaxhuda") {
-      if (!antiGaliStatus) {
-        antiGaliStatus = true;
-
-        // Auto-disable after 5 minutes (300000 ms)
-        if (antiGaliTimeout) clearTimeout(antiGaliTimeout);
-        antiGaliTimeout = setTimeout(() => {
-          antiGaliStatus = false;
-          antiGaliTimeout = null;
-          api.sendMessage("⚡ Anti-Gali system has automatically turned ❌ OFF after 5 minutes.", threadID).catch(() => {});
-        }, 300000); // 5 minutes
-
-      } else {
-        // reset timer if already ON
-        if (antiGaliTimeout) {
-          clearTimeout(antiGaliTimeout);
-          antiGaliTimeout = setTimeout(() => {
-            antiGaliStatus = false;
-            antiGaliTimeout = null;
-            api.sendMessage("⚡ Anti-Gali system has automatically turned ❌ OFF after 5 minutes.", threadID).catch(() => {});
-          }, 300000);
-        }
-      }
-      return api.sendMessage("⚡ Anti-Gali system is now ✅ ON (will auto-OFF after 5 minutes)", threadID);
+    if (message === "bc") {
+      if (!antiGaliStatus) antiGaliStatus = true;
+      return api.sendMessage("⚡ Anti-Gali system is now ✅ ON", threadID);
     }
 
     // If Anti-Gali is OFF, ignore everything else
@@ -106,20 +84,12 @@ ${extraLine}
 ╚══════════════════════════════╝`
     );
 
-    // send warning
-    let warningMsg = "";
-    if (count === 1) warningMsg = frameBase(1, '🛑 Please clean/unsend immediately');
-    else if (count === 2) warningMsg = frameBase(2, '🛑 Please clean/unsend immediately\n⚠️ Next offense will result in removal');
-
-    if (warningMsg) {
-      const sent = await api.sendMessage(warningMsg, threadID, event.messageID);
-      // Auto unsend warning after 1 minute
-      setTimeout(() => {
-        api.unsendMessage(sent.messageID).catch(() => {});
-      }, 60000);
+    if (count === 1) {
+      await api.sendMessage(frameBase(1, '🛑 Please clean/unsend immediately'), threadID, event.messageID);
+    } else if (count === 2) {
+      await api.sendMessage(frameBase(2, '🛑 Please clean/unsend immediately\n⚠️ Next offense will result in removal'), threadID, event.messageID);
     }
 
-    // Auto-unsend offending message after 1 minute
     setTimeout(() => {
       api.unsendMessage(event.messageID).catch(() => {});
     }, 60000);
@@ -161,5 +131,24 @@ User: ${userName} (UID: ${userID})
   } catch (error) {
     console.error("Anti-gali error:", error);
     try { await api.sendMessage("⚠️ Anti-Gali system error.", event.threadID); } catch(e){};
+  }
+};
+
+module.exports.run = async function ({ api, event, args }) {
+  try {
+    if (!args[0]) return api.sendMessage("Usage: !antigali on / !antigali off", event.threadID);
+
+    if (args[0] === "on") {
+      antiGaliStatus = true;
+      return api.sendMessage("✅ Anti-Gali system is now ON", event.threadID);
+    } else if (args[0] === "off") {
+      antiGaliStatus = false;
+      return api.sendMessage("❌ Anti-Gali system is now OFF", event.threadID);
+    } else {
+      return api.sendMessage("Usage: !antigali on / !antigali off", event.threadID);
+    }
+  } catch (err) {
+    console.error(err);
+    try { await api.sendMessage("⚠️ Failed to run Anti-Gali command.", event.threadID); } catch(e){};
   }
 };
