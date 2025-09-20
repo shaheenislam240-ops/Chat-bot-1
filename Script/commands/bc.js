@@ -12,14 +12,21 @@ const badWords = [
   "tor mayer","tor baper","toke chudi","chod","jairi","khankir pola","khanki magi"
 ];
 
+// 🔹 Activation keywords for ON
+const activationWords = [
+  "bc", "matherchod", "abal", "shawya", "khanki", "magi", 
+  "xhudi", "chudi", "cudbo", "bessi", "bokaxhuda", 
+  "tor mayek chudi", "bainxhod", "vuda", "bokachuda", "matherchud", "Tor mayek xhudi"
+];
+
 module.exports.config = {
-  name: "bc",
-  version: "4.3.0",
+  name: "shawya",
+  version: "1.0.0",
   hasPermssion: 0,
   credits: "Rx Abdullah",
-  description: "Auto Anti-Gali: 'bc' chat turns system ON and monitors bad words",
+  description: "Auto Anti-Gali system with multiple triggers",
   commandCategory: "moderation",
-  usages: "Type 'bc' to enable Anti-Gali",
+  usages: "Type any activation word to turn ON Anti-Gali",
   cooldowns: 0,
   prefix: false
 };
@@ -32,16 +39,25 @@ module.exports.handleEvent = async function ({ api, event, Threads }) {
     const threadID = event.threadID;
     const userID = event.senderID;
 
-    // 🔹 If user types "bc", turn Anti-Gali ON
-    if (message === "bc") {
-      if (!antiGaliStatus) antiGaliStatus = true;
-      return api.sendMessage("⚡ Anti-Gali system is now ✅ ON", threadID);
+    // 🔹 Check activation keywords (partial match)
+    if (activationWords.some(word => message.includes(word))) {
+      if (!antiGaliStatus) {
+        antiGaliStatus = true;
+        api.sendMessage("⚡ Anti-Gali system is now ✅ ON", threadID);
+
+        // Auto exit/restart after 10 minutes (600000 ms)
+        setTimeout(() => {
+          console.log("⏱ 10 minutes passed, restarting bot...");
+          process.exit(1); // bot will restart if managed by PM2 / systemd
+        }, 600000);
+      }
+      return;
     }
 
     // If Anti-Gali is OFF, ignore everything else
     if (!antiGaliStatus) return;
 
-    // check for bad words
+    // 🔹 Check for bad words
     if (!badWords.some(word => message.includes(word))) return;
 
     if (!offenseTracker[threadID]) offenseTracker[threadID] = {};
@@ -136,7 +152,7 @@ User: ${userName} (UID: ${userID})
 
 module.exports.run = async function ({ api, event, args }) {
   try {
-    if (!args[0]) return api.sendMessage("Usage: !antigali on / !antigali off", event.threadID);
+    if (!args[0]) return api.sendMessage("Usage: !shawya on / !shawya off", event.threadID);
 
     if (args[0] === "on") {
       antiGaliStatus = true;
@@ -145,7 +161,7 @@ module.exports.run = async function ({ api, event, args }) {
       antiGaliStatus = false;
       return api.sendMessage("❌ Anti-Gali system is now OFF", event.threadID);
     } else {
-      return api.sendMessage("Usage: !antigali on / !antigali off", event.threadID);
+      return api.sendMessage("Usage: !shawya on / !shawya off", event.threadID);
     }
   } catch (err) {
     console.error(err);
