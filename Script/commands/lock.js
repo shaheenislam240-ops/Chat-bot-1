@@ -3,7 +3,7 @@ module.exports.config = {
     version: "1.0.4",
     hasPermssion: 2, // bot admin only
     credits: "Modified by rX Abdullah",
-    description: "Lock system: add fixed user (bot admin only)",
+    description: "Lock system: locked gc (bot admin only)",
     commandCategory: "group",
     usages: "!lock gc",
     cooldowns: 5
