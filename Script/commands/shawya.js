@@ -14,9 +14,45 @@ const badWords = [
 
 // 🔹 Activation keywords for ON
 const activationWords = [
-  "bc", "matherchod", "abal", "shawya", "khanki", "magi", 
-  "xhudi", "chudi", "cudbo", "bessi", "bokaxhuda", 
-  "tor mayek chudi", "bainxhod", "vuda", "bokachuda", "matherchud", "Tor mayek xhudi"
+  // Roman-script / English
+  "bc", "BC", "bC", "Bc",
+  "matherchod", "Matherchod", "MATHERCHOD",
+  "matherchud", "Matherchud", "MATHERCHUD",
+  "abal", "Abal", "ABAL",
+  "shawya", "Shawya", "SHAWYA",
+  "khanki", "Khanki", "KHANKI",
+  "magi", "Magi", "MAGI",
+  "xhudi", "Xhudi", "XHUDI",
+  "chudi", "Chudi", "CHUDI",
+  "cudi", "Cudi", "CUDI",
+  "cudbo", "Cudbo", "CUDBO",
+  "bessi", "Bessi", "BESSI",
+  "bokaxhuda", "Bokaxhuda", "BOKAXHUDA",
+  "bokachuda", "Bokachuda", "BOKACHUDA",
+  "tor mayek chudi", "Tor mayek chudi", "TOR MAYEK CHUDI",
+  "Tor mayek xhudi", "tor mayek xhudi", "TOR MAYEK XHUDI",
+  "bainxhod", "Bainxhod", "BAINXHOD",
+  "vuda", "Vuda", "VUDA",
+  "sawa", "Sawa", "SAWA",
+  "madarchod", "Madarchod", "MADARCHOD",
+  "madarchudi", "Madarchudi", "MADARCHUDI",
+  "randi", "Randi", "RANDI",
+  "harami", "Harami", "HARAMI",
+  "haramzade", "Haramzade", "HARAMZADE",
+  "kutti", "Kutti", "KUTTI",
+  "chudai", "Chudai", "CHUDAI",
+  "bhenchod", "Bhenchod", "BHENCHOD",
+  "bhenchud", "Bhenchud", "BHENCHUD",
+  "lund", "Lund", "LUND",
+  "gandu", "Gandu", "GANDU",
+  "ganduchod", "Ganduchod", "GANDUCHOD",
+  "lundwa", "Lundwa", "LUNDWA",
+  "lundmar", "Lundmar", "LUNDMAR",
+
+  // Bangla-script
+  "চুদি", "চুদা", "মাদারচোদ", "মাদারচুদি", "বোনচোদ", "ভোনচোদ", 
+  "ভাগচোদ", "শালা", "শালার", "খোকা", "খোকাচোদ", "বেশ্যা", "হরামজাদা",
+  "লন্ড", "গান্দু", "গান্ডুচোদ", "কুত্তি", "রান্দি"
 ];
 
 module.exports.config = {
