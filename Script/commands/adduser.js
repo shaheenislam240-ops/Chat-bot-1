@@ -1,12 +1,12 @@
 module.exports.config = {
-	name: "adduser",
-	version: "2.4.4",
-	hasPermssion: 2,
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️ + Rx Edit",
-	description: "Add user to the group by link, id or reply",
-	commandCategory: "group",
-	usages: "[args | reply]",
-	cooldowns: 5
+  name: "adduser",
+  version: "2.5.0",
+  hasPermssion: 2,
+  credits: "rX",
+  description: "Add user to the group by link, id or reply",
+  commandCategory: "group",
+  usages: "[id/link] or reply with !adduser",
+  cooldowns: 5
 };
 
 async function getUID(url, api) {
@@ -14,51 +14,53 @@ async function getUID(url, api) {
 }
 
 module.exports.run = async function ({ api, event, args }) {
-	const { threadID, messageID, senderID } = event;
-	const botID = api.getCurrentUserID();
-	const out = msg => api.sendMessage(msg, threadID, messageID);
-	var { participantIDs, approvalMode, adminIDs } = await api.getThreadInfo(threadID);
-	var participantIDs = participantIDs.map(e => parseInt(e));
-	var admins = adminIDs.map(e => parseInt(e.id));
+  const { threadID, messageID, messageReply } = event;
+  const botID = api.getCurrentUserID();
+  const out = msg => api.sendMessage(msg, threadID, messageID);
 
-	// ✅ শুধু admin use করতে পারবে
-	if (!admins.includes(senderID) && senderID != botID) return out("❌ Only group admins or bot admin can use this command.");
+  var { participantIDs, approvalMode, adminIDs } = await api.getThreadInfo(threadID);
+  participantIDs = participantIDs.map(e => parseInt(e));
 
-	// ✅ case 1: reply দিয়ে add করা
-	if (event.type == "message_reply" && !args[0]) {
-		const uid = parseInt(event.messageReply.senderID);
-		if (participantIDs.includes(uid)) return out("This member is already in the group.");
-		else return adduser(uid, "Replied User");
-	}
+  // ✅ 1. Check reply
+  if (messageReply && !args[0]) {
+    const senderID = messageReply.senderID;
+    return adduser(senderID, "Facebook User");
+  }
 
-	// ✅ case 2: normal add by id/link
-	if (!args[0]) return out("Please enter an ID/link or reply to a message.");
-	if (!isNaN(args[0])) return adduser(args[0], undefined);
-	else {
-		try {
-			var [id, name, fail] = await getUID(args[0], api);
-			if (fail == true && id != null) return out(id);
-			else if (fail == true && id == null) return out("User ID not found.");
-			else {
-				await adduser(id, name || "Facebook user");
-			}
-		} catch (e) {
-			return out(`${e.name}: ${e.message}.`);
-		}
-	}
+  // ✅ 2. Check args
+  if (!args[0]) return out("Please enter an ID/link or reply a message to add user.");
 
-	async function adduser(id, name) {
-		id = parseInt(id);
-		if (participantIDs.includes(id)) return out(`${name ? name : "Member"} is already in the group.`);
-		else {
-			try {
-				await api.addUserToGroup(id, threadID);
-			}
-			catch {
-				return out(`Can't add ${name ? name : "user"} to group.`);
-			}
-			if (approvalMode === true && !admins.includes(botID)) return out(`Added ${name ? name : "member"} to the approved list !`);
-			else return out(`Added ${name ? name : "member"} to group !`);
-		}
-	}
+  if (!isNaN(args[0])) {
+    return adduser(args[0], undefined);
+  } else {
+    try {
+      var [id, name, fail] = await getUID(args[0], api);
+      if (fail == true && id != null) return out(id);
+      else if (fail == true && id == null) return out("User ID not found.");
+      else {
+        await adduser(id, name || "Facebook user");
+      }
+    } catch (e) {
+      return out(`${e.name}: ${e.message}.`);
+    }
+  }
+
+  // ✅ Add function
+  async function adduser(id, name) {
+    id = parseInt(id);
+    if (participantIDs.includes(id)) return out(`${name ? name : "Member"} is already in the group.`);
+    else {
+      var admins = adminIDs.map(e => parseInt(e.id));
+      try {
+        await api.addUserToGroup(id, threadID);
+      }
+      catch {
+        return out(`Can't add ${name ? name : "user"} to group.`);
+      }
+      if (approvalMode === true && !admins.includes(botID))
+        return out(`Added ${name ? name : "member"} to the approved list!`);
+      else
+        return out(`Added ${name ? name : "member"} to group!`);
+    }
+  }
 };
