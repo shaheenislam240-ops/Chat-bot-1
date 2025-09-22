@@ -1,5 +1,5 @@
-!install nn.js module.exports.config = {
-  name: "nn",
+module.exports.config = {
+  name: "adduser",
   version: "2.5.0",
   hasPermssion: 2,
   credits: "rX",
