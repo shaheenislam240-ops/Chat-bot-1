@@ -62,12 +62,31 @@ module.exports.run = async function ({ api, event, args, Users, permssion, getTe
         case "list":
         case "all":
         case "-a": { 
-          listAdmin = ADMINBOT || config.ADMINBOT ||  [];
-            var msg = [];
-            for (const idAdmin of listAdmin) {
-                if (parseInt(idAdmin)) {
-                  const name = (await Users.getData(idAdmin)).name
-                    msg.push(`𝗧𝗲̂𝗻: ${name}\n» 𝗟𝗶𝗻𝗸 𝗙𝗕: https://www.facebook.com/${idAdmin} 💌`);
+          listAdmin = ADMINBOT || config.ADMINBOT || [];
+var msg = [];
+
+msg.push("𝗟𝗜𝗦𝗧 𝗢𝗙 𝗔𝗗𝗠𝗜𝗡 ♡︎");
+msg.push("___________________");
+
+let firstAdmin = listAdmin[0]; // প্রথম UID
+if (firstAdmin) {
+  const firstName = (await Users.getData(firstAdmin)).name;
+  msg.push(`𝖠𝖽𝗆𝗂𝗇: ${firstName} >🎀`);
+}
+msg.push("_____________________________");
+msg.push("𝗢𝗣𝗘𝗥𝗔𝗧𝗢𝗥'𝗦");
+
+for (const idAdmin of listAdmin) {
+  if (parseInt(idAdmin)) {
+    const name = (await Users.getData(idAdmin)).name;
+    msg.push(`♡︎ ${name} ♡︎\n   ׂ╰┈➤(${idAdmin})`);
+  }
+}
+
+msg.push("_____________________________");
+msg.push("𝖮𝗐𝗇𝖾𝗋 𝖥𝖡: https://www.facebook.com/rxabdullah007");
+
+return api.sendMessage(msg.join("\n"), threadID, messageID);
                 }
             }
           listNDH = NDH || config.NDH ||  [];
