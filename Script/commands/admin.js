@@ -24,7 +24,7 @@ module.exports.languages = {
 
     },
     "en": {
-        "listAdmin": '[Admin] Admin list: \n\n%1',
+        "listAdmin": '𝗟𝗜𝗦𝗧 𝗢𝗙 𝗔𝗗𝗠𝗜𝗡 ♡︎\n___________________\n𝖠𝖽𝗆𝗂𝗻: ︎Rx Abdullah  >🎀\n_____________________________\n𝗢𝗣𝗢𝗥𝗘𝗧𝗢𝗥𝗦 \n\n%1',
         "notHavePermssion": '[Admin] You have no permission to use "%1"',
         "addedNewAdmin": '[Admin] Added %1 Admin :\n\n%2',
         "removedAdmin": '[Admin] Remove %1 Admin:\n\n%2'
@@ -62,27 +62,13 @@ module.exports.run = async function ({ api, event, args, Users, permssion, getTe
         case "list":
         case "all":
         case "-a": { 
-    listAdmin = ADMINBOT || config.ADMINBOT || [];
-    var msg = [];
-
-    for (const idAdmin of listAdmin) {
-        if (parseInt(idAdmin)) {
-            const name = (await Users.getData(idAdmin)).name || "null";
-            msg.push(` ♡︎ ${name} ♡︎\n   ׂ╰┈➤(${idAdmin})`);
-        }
-    }
-
-    return api.sendMessage(
-`𝗟𝗜𝗦𝗧 𝗢𝗙 𝗔𝗗𝗠𝗜𝗡 ♡︎
- ___________________
- 𝖠𝖽𝗆𝗂𝗻: ︎Rx Abdullah  >🎀
- _____________________________
- 𝗔𝗗𝗠𝗜𝗡'𝗦
-${msg.join("\n")}
- _____________________________
- 𝖮𝗐𝗇𝖾𝗋 𝖥𝖡: https://www.facebook.com/rxabdullah007`,
-threadID, messageID);
-}
+          listAdmin = ADMINBOT || config.ADMINBOT ||  [];
+            var msg = [];
+            for (const idAdmin of listAdmin) {
+                if (parseInt(idAdmin)) {
+                  const name = (await Users.getData(idAdmin)).name
+                    msg.push(`ᰔ ${name} ᰔ\n╰┈➤${idAdmin} 💌`);
+                }
             }
           listNDH = NDH || config.NDH ||  [];
             var msg1 = [];
