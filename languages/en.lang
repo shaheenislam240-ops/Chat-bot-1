@@ -61,7 +61,7 @@ users.needObject=Have to be an Object
 
 handleCommand.userBanned=𝐘𝐨𝐮 𝐰𝐚𝐬 𝐁𝐚𝐧𝐧𝐞𝐝 𝐟𝐫𝐨𝐦 𝐭𝐡𝐢𝐬 𝐛𝐨𝐱-!!🚫
 handleCommand.threadBanned=Group Has Been Banned..!⛔️\nPlease Contact Owner rX Abdullah  For Unban ⚠️
-handleCommand.commandNotExist=>🎀 n/n𝐓𝐡𝐢𝐬 𝐂𝐨𝐦𝐦𝐚𝐧𝐝 𝐢𝐬 𝐧𝐨𝐭 𝐯𝐚𝐥𝐢𝐝 𝐓𝐫𝐲 𝐭𝐡𝐢𝐬 ↣ ℅1 ↢
+handleCommand.commandNotExist=>🎀 \n𝐓𝐡𝐢𝐬 𝐂𝐨𝐦𝐦𝐚𝐧𝐝 𝐢𝐬 𝐧𝐨𝐭 𝐯𝐚𝐥𝐢𝐝, 𝐓𝐫𝐲 𝐭𝐡𝐢𝐬 ↣ %1 ↢
 handleCommand.commandUserBanned=You are unable to use command "%1"
 handleCommand.threadNotAllowNSFW=This Commnd Only for rX
 handleCommand.cantGetInfoThread=Can't get your thread's info, error: %1
