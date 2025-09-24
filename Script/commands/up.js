@@ -16,20 +16,34 @@ module.exports = {
     cooldowns: 5,
   },
 
-  run: async function ({ api, event }) {
-    try {
-      // Send progress bars
-      const progressBars = [
-        "█▒▒▒▒▒▒▒▒▒ 10%",
-        "████▒▒▒▒▒ 30%",
-        "█████▒▒▒▒ 50%",
-        "████████▒ 80%",
-        "██████████ 100%"
-      ];
-      for (const bar of progressBars) {
-        await api.sendMessage(bar, event.threadID);
-        await new Promise(resolve => setTimeout(resolve, 200));
-      }
+  run: async function({ api, event }) {
+  try {
+    // First message send
+    let msg = await api.sendMessage("⏳ Gathering system info...", event.threadID);
+
+    // Progress steps
+    const progressSteps = [
+      { label: "[█░░░░░░░░] 10%", delay: 500 },
+      { label: "[███░░░░░░] 30%", delay: 500 },
+      { label: "[█████░░░░] 50%", delay: 500 },
+      { label: "[███████░░] 70%", delay: 500 },
+      { label: "[█████████] 100%", delay: 500 }
+    ];
+
+    // Loop progress
+    for (const step of progressSteps) {
+      await new Promise(res => setTimeout(res, step.delay));
+      await api.editMessage(step.label, msg.messageID);
+    }
+
+    // Final message after complete
+    await new Promise(res => setTimeout(res, 500));
+    await api.editMessage("✅ System Info Loaded!", msg.messageID);
+
+  } catch (e) {
+    console.error(e);
+    api.sendMessage("❌ Failed to load system info.", event.threadID);
+  }
 
       // Format uptime
       const uptimeInSeconds = (new Date() - startTime) / 1000;
