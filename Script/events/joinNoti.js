@@ -116,7 +116,7 @@ const timeString = now.toLocaleTimeString("en-US", { hour12: true, timeZone: "As
 💬 ғᴇᴇʟ ғʀᴇᴇ ᴛᴏ ᴄʜᴀᴛ, ᴄᴏɴɴᴇᴄᴛ ᴀɴᴅ ʜᴀᴠᴇ ꜰᴜɴ ʜᴇʀᴇ!
 ᰔ Sııƞƞeɽ мΛяเα 倫ッ
 ━━━━━━━━━━━━━━━━
-📅 ${new Date().toLocaleTimeString("en-US", { hour12: true })} - ${new Date().toLocaleDateString("en-GB")} - ${new Date().toLocaleDateString("en-US", { weekday: "long" })}`,
+📅 ${new Date().toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" })} - ${new Date().toLocaleDateString("en-GB")} - ${new Date().toLocaleDateString("en-US", { weekday: "long" })}`,
   mentions: [
     { tag: `@${userName}`, id: userID }
   ],
