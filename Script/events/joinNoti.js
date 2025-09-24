@@ -5,7 +5,7 @@ const Canvas = require("canvas");
 
 module.exports.config = {
   name: "joinnoti",
-  version: "1.0.3",
+  version: "1.0.4",
   credits: "Maria (rX Modded) + Updated by rX Abdullah",
   description: "Welcome new member with profile pic and random background",
   eventType: ["log:subscribe"],
@@ -25,20 +25,12 @@ module.exports.run = async function({ api, event, Users }) {
   const userName = added.fullName;
 
   const threadInfo = await api.getThreadInfo(threadID);
-  const groupName = threadInfo.threadName;
   const memberCount = threadInfo.participantIDs.length;
 
-  const adderID = event.author;
-  const adderName = (await Users.getNameUser(adderID)) || "Unknown";
+  const cacheDir = path.join(__dirname, "cache");
+  fs.ensureDirSync(cacheDir);
 
-  const timeString = new Date().toLocaleString("en-US", { 
-    weekday: "long", 
-    hour: "2-digit", 
-    minute: "2-digit", 
-    hour12: true 
-  });
-
-  // Random background selection
+  // Background list
   const bgURLs = [
     "https://i.postimg.cc/904gjPHn/images-11.jpg",
     "https://i.postimg.cc/8k3nmYhQ/images-10.jpg",
@@ -47,21 +39,18 @@ module.exports.run = async function({ api, event, Users }) {
   ];
   const bgURL = bgURLs[Math.floor(Math.random() * bgURLs.length)];
 
+  // FB Avatar
   const avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
-
-  const cacheDir = path.join(__dirname, "cache");
-  fs.ensureDirSync(cacheDir);
 
   const bgPath = path.join(cacheDir, `bg_${userID}.jpg`);
   const avatarPath = path.join(cacheDir, `avt_${userID}.png`);
   const outPath = path.join(cacheDir, `welcome_${userID}.png`);
 
   try {
-    // Download random background
+    // Download images
     const bgImg = (await axios.get(bgURL, { responseType: "arraybuffer" })).data;
     fs.writeFileSync(bgPath, Buffer.from(bgImg));
 
-    // Download avatar
     const avatarImg = (await axios.get(avatarURL, { responseType: "arraybuffer" })).data;
     fs.writeFileSync(avatarPath, Buffer.from(avatarImg));
 
@@ -78,65 +67,66 @@ module.exports.run = async function({ api, event, Users }) {
 
     // White circular frame
     ctx.beginPath();
-    ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2 + 8, 0, Math.PI * 2, false);
+    ctx.arc(
+      avatarX + avatarSize / 2,
+      avatarY + avatarSize / 2,
+      avatarSize / 2 + 8,
+      0,
+      Math.PI * 2,
+      false
+    );
     ctx.fillStyle = "#ffffff";
     ctx.fill();
 
-    // Load avatar
+    // Avatar
     const avatar = await Canvas.loadImage(avatarPath);
     ctx.save();
     ctx.beginPath();
-    ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
+    ctx.arc(
+      avatarX + avatarSize / 2,
+      avatarY + avatarSize / 2,
+      avatarSize / 2,
+      0,
+      Math.PI * 2,
+      true
+    );
     ctx.closePath();
     ctx.clip();
     ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
     ctx.restore();
 
-    // Draw text lines
-    ctx.textAlign = "center";
-
-    ctx.font = "bold 36px Arial";
-    ctx.fillStyle = "#FFB6C1";
-    ctx.fillText(userName, canvas.width / 2, avatarY + avatarSize + 50);
-
-    ctx.font = "bold 30px Arial";
-    ctx.fillStyle = "#00FFFF";
-    ctx.fillText(groupName, canvas.width / 2, avatarY + avatarSize + 90);
-
-    ctx.font = "bold 28px Arial";
-    ctx.fillStyle = "#FFFF00";
-    ctx.fillText(`You are the ${memberCount}th member of this group`, canvas.width / 2, avatarY + avatarSize + 130);
-
     // Save final image
     const finalBuffer = canvas.toBuffer();
     fs.writeFileSync(outPath, finalBuffer);
-    //Time 
-    const now = new Date();
-    const timeString = now.toLocaleTimeString("en-US", { 
-  hour12: true, 
-  timeZone: "Asia/Dhaka" 
-  });
-   const dateString = now.toLocaleDateString("en-GB", { 
-  timeZone: "Asia/Dhaka" 
-  });
-   const dayString = now.toLocaleDateString("en-US", { 
-  weekday: "long", 
-  timeZone: "Asia/Dhaka" 
-  });
 
+    // Time formatting (Bangladesh Time)
+    const now = new Date();
+    const timeString = now.toLocaleTimeString("en-US", {
+      hour12: true,
+      timeZone: "Asia/Dhaka"
+    });
+    const dateString = now.toLocaleDateString("en-GB", {
+      timeZone: "Asia/Dhaka"
+    });
+    const dayString = now.toLocaleDateString("en-US", {
+      weekday: "long",
+      timeZone: "Asia/Dhaka"
+    });
+
+    // Final welcome message
     const message = {
-  body: `‎🌸 ʜᴇʟʟᴏ @${userName}
+      body: `‎🌸 ʜᴇʟʟᴏ ${userName}
 🎀 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ᴏᴜʀ ɢʀᴏᴜᴘ — ${groupName}
 📌 ʏᴏᴜ'ʀᴇ ᴛʜᴇ ${memberCount} ᴍᴇᴍʙᴇʀ ᴏɴ ᴛʜɪꜱ ɢʀᴏᴜᴘ!
 💬 ғᴇᴇʟ ғʀᴇᴇ ᴛᴏ ᴄʜᴀᴛ, ᴄᴏɴɴᴇᴄᴛ ᴀɴᴅ ʜᴀᴠᴇ ꜰᴜɴ ʜᴇʀᴇ!
 ᰔ Sııƞƞeɽ мΛяเα 倫ッ
 ━━━━━━━━━━━━━━━━
-📅 ${new Date().toLocaleTimeString("en-US", { hour12: true })} - ${new Date().toLocaleDateString("en-GB")} - ${new Date().toLocaleDateString("en-US", { weekday: "long" })}`,
-  mentions: [
-    { tag: `@${userName}`, id: userID }
-  ],
-  attachment: fs.createReadStream(outPath)
-};
+📅 ${timeString} - ${dateString} - ${dayString}`,
+      mentions: [
+        { tag: `@${userName}`, id: userID }
+      ],
+      attachment: fs.createReadStream(outPath)
+    };
 
     api.sendMessage(message, threadID, () => {
       fs.unlinkSync(bgPath);
