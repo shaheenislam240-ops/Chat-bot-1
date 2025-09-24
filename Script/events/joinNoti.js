@@ -110,6 +110,19 @@ module.exports.run = async function({ api, event, Users }) {
     // Save final image
     const finalBuffer = canvas.toBuffer();
     fs.writeFileSync(outPath, finalBuffer);
+    //Time 
+    const now = new Date();
+    const timeString = now.toLocaleTimeString("en-US", { 
+  hour12: true, 
+  timeZone: "Asia/Dhaka" 
+  });
+   const dateString = now.toLocaleDateString("en-GB", { 
+  timeZone: "Asia/Dhaka" 
+  });
+   const dayString = now.toLocaleDateString("en-US", { 
+  weekday: "long", 
+  timeZone: "Asia/Dhaka" 
+  });
 
     const message = {
   body: `‎🌸 ʜᴇʟʟᴏ @${userName}
