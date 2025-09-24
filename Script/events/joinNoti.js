@@ -31,12 +31,7 @@ const memberCount = threadInfo.participantIDs.length;
 const adderID = event.author;
 const adderName = (await Users.getNameUser(adderID)) || "Unknown";
 
-const timeString = new Date().toLocaleString("en-US", {
-weekday: "long",
-hour: "2-digit",
-minute: "2-digit",
-hour12: true
-});
+  //rX Abdullah//
 
 // Random background selection
 const bgURLs = [
