@@ -112,19 +112,18 @@ module.exports.run = async function({ api, event, Users }) {
     fs.writeFileSync(outPath, finalBuffer);
 
     const message = {
-      body: `[ 𝗪𝗘𝗟𝗖𝗢𝗠𝗘 🎉 ]\n` +
-            `・𝗡𝗮𝗺𝗲     : @${userName}\n` +
-            `・𝗚𝗿𝗼𝘂𝗽     : ${groupName}\n` +
-            `・𝗧𝗶𝗺𝗲     : ${timeString}\n` +
-            `・𝗔𝗱𝗱𝗲𝗱 𝗕𝘆 : @${adderName}\n` +
-            `___________________________\n` +
-            `___________________________`,
-      mentions: [
-        { tag: `@${userName}`, id: userID },
-        { tag: `@${adderName}`, id: adderID }
-      ],
-      attachment: fs.createReadStream(outPath)
-    };
+  body: `‎🌸 ʜᴇʟʟᴏ @${userName}
+🎀 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ᴏᴜʀ ɢʀᴏᴜᴘ — ${groupName}
+📌 ʏᴏᴜ'ʀᴇ ᴛʜᴇ ${memberCount} ᴍᴇᴍʙᴇʀ ᴏɴ ᴛʜɪꜱ ɢʀᴏᴜᴘ!
+💬 ғᴇᴇʟ ғʀᴇᴇ ᴛᴏ ᴄʜᴀᴛ, ᴄᴏɴɴᴇᴄᴛ ᴀɴᴅ ʜᴀᴠᴇ ꜰᴜɴ ʜᴇʀᴇ!
+ᰔ Sııƞƞeɽ мΛяเα 倫ッ
+━━━━━━━━━━━━━━━━
+📅 ${new Date().toLocaleTimeString("en-US", { hour12: true })} - ${new Date().toLocaleDateString("en-GB")} - ${new Date().toLocaleDateString("en-US", { weekday: "long" })}`,
+  mentions: [
+    { tag: `@${userName}`, id: userID }
+  ],
+  attachment: fs.createReadStream(outPath)
+};
 
     api.sendMessage(message, threadID, () => {
       fs.unlinkSync(bgPath);
