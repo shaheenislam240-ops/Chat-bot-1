@@ -2,9 +2,9 @@ const axios = require("axios");
 
 module.exports.config = {
   name: "quiz",
-  version: "2.3.2",
+  version: "2.3.3",
   hasPermssion: 0,
-  credits: "RUBISH API",
+  credits: "RUBISH API + Mention Update by rX",
   description: "Bangla Quiz with Coins System (Free to Play)",
   usePrefix: false,
   commandCategory: "Game",
@@ -76,7 +76,7 @@ Reply with your answer (A/B/C/D). ⏰ 20s`;
   }
 };
 
-module.exports.handleReply = async function ({ api, event, handleReply, Currencies }) {
+module.exports.handleReply = async function ({ api, event, handleReply, Currencies, Users }) {
   const { senderID, messageID, threadID, body } = event;
   const { increaseMoney } = Currencies;
 
@@ -90,18 +90,28 @@ module.exports.handleReply = async function ({ api, event, handleReply, Currenci
   clearTimeout(handleReply.timeout);
 
   try {
+    const name = await Users.getNameUser(senderID);
+    const mentionObj = [{ id: senderID, tag: name }];
+
     if (userAnswer === handleReply.answer) {
       await api.unsendMessage(handleReply.messageID);
       await increaseMoney(senderID, 500);
       const total = (await Currencies.getData(senderID)).money;
+
       return api.sendMessage(
-        `✅ Correct!\n💰 You've earned 500 Coins\n🏦 Balance: ${total} Coins`,
+        {
+          body: `✅ ${name}, Correct!\n💰 You've earned 500 Coins\n🏦 Balance: ${total} Coins`,
+          mentions: mentionObj
+        },
         threadID,
         messageID
       );
     } else {
       return api.sendMessage(
-        `❌ Wrong answer!\n✅ Correct answer: ${handleReply.answer}\n⚡ No Coins deducted`,
+        {
+          body: `❌ ${name}, Wrong answer!\n✅ Correct answer: ${handleReply.answer}\n⚡ No Coins deducted`,
+          mentions: mentionObj
+        },
         threadID,
         messageID
       );
