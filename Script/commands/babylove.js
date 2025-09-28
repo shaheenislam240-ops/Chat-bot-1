@@ -22,6 +22,12 @@ const triggers = [
     fileName: "ghumabo.mp3"
   },
   {
+    keywords: ["tata"],
+    audioUrl: "https://files.catbox.moe/6xbjbb.mp3",
+    reply: "jaki 🐥",
+    fileName: "jaki.mp3"
+  },
+  {
     keywords: ["ringtone"],
     audioUrl: "https://files.catbox.moe/ga798u.mp3",
     reply: "💖ay lo. Baby!",
