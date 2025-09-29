@@ -22,8 +22,8 @@ const triggers = [
     fileName: "ghumabo.mp3"
   },
   {
-    keywords: ["tata"],
-    audioUrl: "https://files.catbox.moe/6xbjbb.mp3",
+    keywords: ["🤨🤨", "🙄🙄"],
+    audioUrl: "https://files.catbox.moe/vgzkeu.mp3",
     reply: "jaki 🐥",
     fileName: "jaki.mp3"
   },
@@ -52,7 +52,7 @@ const triggers = [
     fileName: "explain.mp3"
   },
   {
-    keywords: ["maria gan", "maria vabi gan"],
+    keywords: ["mari gan", "mari vabi gan"],
     audioUrl: "https://files.catbox.moe/vw58fi.mp3",
     reply: "",
     fileName: "mariasong.mp3"
