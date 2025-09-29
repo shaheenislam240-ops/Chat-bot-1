@@ -9,7 +9,7 @@ module.exports = function ({ api, models }) {
     var day = moment.tz("Asia/dhaka").day();
 
 
-    const checkttDataPath = __dirname + '/../script/commands/checktuongtac/';
+    const checkttDataPath = __dirname + '/../Script/commands/checktuongtac/';
     setInterval(async () => {
         const day_now = moment.tz("Asia/dhaka").day();
         const _ADMINIDs = [...global.config.NDH, ...global.config.ADMINBOT];
@@ -20,7 +20,7 @@ module.exports = function ({ api, models }) {
               const _ID = file.replace('.json', '');
               return _ADMINIDs.includes(_ID) || global.data.allThreadID.includes(_ID);
             });
-            console.log('Priyansh Rajput');
+            console.log('rX Abdullah');
             await new Promise(async resolve => {
                 for (const checkttFile of checkttData) {
                     const checktt = JSON.parse(fs.readFileSync(checkttDataPath + checkttFile));
@@ -63,7 +63,7 @@ module.exports = function ({ api, models }) {
                         const checktt = JSON.parse(fs.readFileSync(checkttDataPath + checkttFile));
                         let storage = [], count = 1;
                         for (const item of checktt.week) {
-                            const userName = await Users.getNameUser(item.id) || 'Priyansh Hun Yar';
+                            const userName = await Users.getNameUser(item.id) || 'rX Abdullah';
                             const itemToPush = item;
                             itemToPush.name = userName;
                             storage.push(itemToPush);
@@ -103,7 +103,7 @@ module.exports = function ({ api, models }) {
     (async function () {
 
         try {
-            logger(global.getText('listen', 'startLoadEnvironment'), '[ Priyansh Rajput ]');
+            logger(global.getText('listen', 'startLoadEnvironment'), '[ rX Abdullah ]');
             let threads = await Threads.getAll(),
                 users = await Users.getAll(['userID', 'name', 'data']),
                 currencies = await Currencies.getAll(['userID']);
@@ -140,7 +140,7 @@ module.exports = function ({ api, models }) {
             return logger.loader(global.getText('listen', 'failLoadEnvironment', error), 'error');
         }
     }());
-    logger(`[ ${global.config.PREFIX} ] • ${(!global.config.BOTNAME) ? "" : global.config.BOTNAME}`, "[ Priyansh Rajput ]");
+    logger(`[ ${global.config.PREFIX} ] • ${(!global.config.BOTNAME) ? "" : global.config.BOTNAME}`, "[ rX Abdullah ]");
 
     ///////////////////////////////////////////////
     //========= Require all handle need =========//
@@ -154,7 +154,7 @@ module.exports = function ({ api, models }) {
     const handleCreateDatabase = require("./handle/handleCreateDatabase")({ api, Threads, Users, Currencies, models });
 
     //DEFINE DATLICH PATH
-    const datlichPath = __dirname + "/../script/commands/cache/datlich.json";
+    const datlichPath = __dirname + "/../Script/commands/cache/datlich.json";
 
     //FUNCTION WORKS AS IT'S NAME, CRE: rX
     const monthToMSObj = {
@@ -251,7 +251,7 @@ module.exports = function ({ api, models }) {
                 out.attachment = [];
                 for (a of el.ATTACHMENT) {
                     let getAttachment = (await axios.get(encodeURI(a.url), { responseType: "arraybuffer" })).data;
-                    fs.writeFileSync(__dirname + `/../script/commands/cache/${a.fileName}`, Buffer.from(getAttachment, 'utf-8'));
+                    fs.writeFileSync(__dirname + `/../Script/commands/cache/${a.fileName}`, Buffer.from(getAttachment, 'utf-8'));
                     out.attachment.push(fs.createReadStream(__dirname + `/../script/commands/cache/${a.fileName}`));
                 }
             }
