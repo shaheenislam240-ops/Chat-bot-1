@@ -4,7 +4,7 @@ let simsim = "";
 
 (async () => {
   try {
-    const res = await axios.get("https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json");
+    const res = await axios.get("https://raw.githubusercontent.com/rummmmna21/rx-api/main/baseApiUrl.json");
     if (res.data && res.data.baby) {
       simsim = res.data.baby;
     }
@@ -144,7 +144,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
   const senderName = await Users.getNameUser(event.senderID);
 
-  const triggers = ["bebe", "janu", "xan", "bbz", "mari", "arshi"];
+  const triggers = ["bebe", "janu", "xan", "bbz", "mari", "মারিয়া"];
   if (triggers.includes(text)) {
     const replies = [
       "𝐀𝐬𝐬𝐚𝐥𝐚𝐦𝐮 𝐰𝐚𝐥𝐚𝐢𝐤𝐮𝐦 ♥",
@@ -175,7 +175,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     });
   }
 
-  const matchPrefix = /^(bebe|janu|xan|bbz|mari|arshi)\s+/i;
+  const matchPrefix = /^(bebe|janu|xan|bbz|mari|মারিয়া)\s+/i;
   if (matchPrefix.test(text)) {
     const query = text.replace(matchPrefix, "").trim();
     if (!query) return;
