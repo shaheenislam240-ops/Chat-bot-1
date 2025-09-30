@@ -1,7 +1,7 @@
 const axios = require("axios");
 
-// GitHub raw JSON URL যেখানে mentionapi key আছে
-const GITHUB_API_URL = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json";
+// rX Api Authur rX Abdullah
+const GITHUB_API_URL = "https://raw.githubusercontent.com/rummmmna21/rx-api/main/baseApiUrl.json";
 
 let mentionApiUrl = "";
 
