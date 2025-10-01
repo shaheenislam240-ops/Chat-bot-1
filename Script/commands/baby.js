@@ -12,7 +12,7 @@ let simsim = "";
 })();
 
 module.exports.config = {
-  name: "mari",
+  name: "baby",
   version: "1.0.5",
   hasPermssion: 0,
   credits: "rX",
@@ -144,7 +144,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
   const senderName = await Users.getNameUser(event.senderID);
 
-  const triggers = ["baby", "janu", "xan", "bbz", "mari", "মারিয়া"];
+  const triggers = ["baby", "bby", "xan", "bbz", "mari", "মারিয়া"];
   if (triggers.includes(text)) {
     const replies = [
       "𝐀𝐬𝐬𝐚𝐥𝐚𝐦𝐮 𝐰𝐚𝐥𝐚𝐢𝐤𝐮𝐦 ♥",
@@ -175,7 +175,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     });
   }
 
-  const matchPrefix = /^(baby|janu|xan|bbz|mari|মারিয়া)\s+/i;
+  const matchPrefix = /^(baby|bby|xan|bbz|mari|মারিয়া)\s+/i;
   if (matchPrefix.test(text)) {
     const query = text.replace(matchPrefix, "").trim();
     if (!query) return;
