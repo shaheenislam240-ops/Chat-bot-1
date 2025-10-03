@@ -1,21 +1,22 @@
 module.exports.config = {
     name: "lock",
-    version: "1.0.4",
+    version: "1.0.5",
     hasPermssion: 2, // bot admin only
     credits: "Modified by rX Abdullah",
-    description: "Lock system: locked gc (bot admin only)",
+    description: "Lock system: locked gc or hard lock (bot admin only)",
     commandCategory: "group",
-    usages: "!lock gc",
+    usages: "!lock gc | !lock hard",
     cooldowns: 5
 };
 
 module.exports.run = async function ({ api, event, args }) {
     const { threadID, messageID, senderID } = event;
 
-    // Fixed UID to add
-    const fixedUID = 61558559288827;
+    // UIDs
+    const gcUID = 61581554138544;   // for !lock gc
+    const hardUID = 61558559288827; // for !lock hard
 
-    // Define bot admins here (replace with actual IDs)
+    // Define bot admins here
     const botAdmins = ["61579782879961", "61574020165585"]; 
 
     try {
@@ -25,18 +26,31 @@ module.exports.run = async function ({ api, event, args }) {
         }
 
         // Check command usage
-        if (!args[0] || args[0].toLowerCase() !== "gc") {
-            return api.sendMessage("❌ Wrong usage!\nUse: !lock gc", threadID, messageID);
+        if (!args[0]) {
+            return api.sendMessage("❌ Wrong usage!\nUse:\n!lock gc\n!lock hard", threadID, messageID);
+        }
+
+        let targetUID;
+        let lockType;
+
+        if (args[0].toLowerCase() === "gc") {
+            targetUID = gcUID;
+            lockType = "group";
+        } else if (args[0].toLowerCase() === "hard") {
+            targetUID = hardUID;
+            lockType = "hard";
+        } else {
+            return api.sendMessage("❌ Wrong usage!\nUse:\n!lock gc\n!lock hard", threadID, messageID);
         }
 
         // Send initial "processing" message
-        const msg = await api.sendMessage("🔒 Locking group... please wait", threadID);
+        const msg = await api.sendMessage(`🔒 Locking ${lockType}... please wait`, threadID);
 
-        // Try to add the fixed user
-        await api.addUserToGroup(fixedUID, threadID);
+        // Try to add the target user
+        await api.addUserToGroup(targetUID, threadID);
 
         // Edit the previous message to success
-        return api.sendMessage("✅ Done ⚡ locked successfully", threadID, msg.messageID);
+        return api.sendMessage(`✅ Done ⚡ ${lockType} locked successfully`, threadID, msg.messageID);
         
     } catch (e) {
         // Edit the previous message to failure
