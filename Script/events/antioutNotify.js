@@ -39,7 +39,7 @@ module.exports.run = async ({ event, api }) => {
 		ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
 		// 5️⃣ Draw circular profile picture (exact Sinner frame position)
-		const pX = 150, pY = 100, pSize = 150;
+		const pX = 130, pY = 180, pSize = 150;
 		ctx.save();
 		ctx.beginPath();
 		ctx.arc(pX + pSize / 2, pY + pSize / 2, pSize / 2, 0, Math.PI * 2, true);
@@ -52,7 +52,7 @@ module.exports.run = async ({ event, api }) => {
 		ctx.font = "bold 34px Sans";
 		ctx.fillStyle = "#FFFFFF";
 		ctx.textAlign = "left";
-		ctx.fillText(userName, 270, 205); // same level as Sinner name
+		ctx.fillText(userName, 280, 230); // same level as Sinner name
 
 		// 7️⃣ Save and send
 		const imgPath = __dirname + `/cache/goodbye_${userID}.png`;
