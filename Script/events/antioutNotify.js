@@ -39,7 +39,7 @@ module.exports.run = async ({ event, api }) => {
 		ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
 		// 5️⃣ Draw circular profile picture (moved more to the right)
-		const pX = 230;  // moved from 160 → 250
+		const pX = 220;  // moved from 160 → 230
 		const pY = 150;  // same vertical position
 		const pSize = 150;
 		ctx.save();
@@ -54,7 +54,7 @@ module.exports.run = async ({ event, api }) => {
 		ctx.font = "bold 36px Sans";
 		ctx.fillStyle = "#FFFFFF";
 		ctx.textAlign = "left";
-		ctx.fillText(userName, 420, 390); // was 290 → now 420 * 160-220
+		ctx.fillText(userName, 420, 290); // was 290 → now 420 * 160-220
 
 		// 7️⃣ Save and send
 		const imgPath = __dirname + `/cache/goodbye_${userID}.png`;
