@@ -40,8 +40,8 @@ module.exports.run = async ({ event, api }) => {
 
 		// 5️⃣ Draw circular profile picture (moved more to the right)
 		const pX = 195;  // moved from 160 → 220
-		const pY = 150;  // same vertical position
-		const pSize = 150;
+		const pY = 155;  // same vertical position
+		const pSize = 160;
 		ctx.save();
 		ctx.beginPath();
 		ctx.arc(pX + pSize / 2, pY + pSize / 2, pSize / 2, 0, Math.PI * 2, true);
