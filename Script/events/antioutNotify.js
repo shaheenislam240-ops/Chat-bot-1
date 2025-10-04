@@ -5,7 +5,7 @@ const Canvas = require("canvas");
 module.exports.config = {
 	name: "antioutNotify",
 	eventType: ["log:unsubscribe"],
-	version: "2.1.0",
+	version: "2.1.1",
 	credits: "rX Abdullah",
 	description: "Send goodbye image with name replacing frame text"
 };
@@ -38,8 +38,10 @@ module.exports.run = async ({ event, api }) => {
 
 		ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
-		// 5️⃣ Draw circular profile picture (exact Sinner frame position)
-		const pX = 160, pY = 190, pSize = 150;
+		// 5️⃣ Draw circular profile picture (moved more to the right)
+		const pX = 250;  // moved from 160 → 250
+		const pY = 190;  // same vertical position
+		const pSize = 150;
 		ctx.save();
 		ctx.beginPath();
 		ctx.arc(pX + pSize / 2, pY + pSize / 2, pSize / 2, 0, Math.PI * 2, true);
@@ -48,11 +50,11 @@ module.exports.run = async ({ event, api }) => {
 		ctx.drawImage(avatar, pX, pY, pSize, pSize);
 		ctx.restore();
 
-		// 6️⃣ Add user name where “Sinner 倫ツ” was
-		ctx.font = "bold 34px Sans";
+		// 6️⃣ Add user name (shifted further right)
+		ctx.font = "bold 36px Sans";
 		ctx.fillStyle = "#FFFFFF";
 		ctx.textAlign = "left";
-		ctx.fillText(userName, 290, 160); // same level as Sinner name
+		ctx.fillText(userName, 420, 160); // was 290 → now 420
 
 		// 7️⃣ Save and send
 		const imgPath = __dirname + `/cache/goodbye_${userID}.png`;
