@@ -1,67 +1,71 @@
+const fs = require("fs-extra");
+const axios = require("axios");
+const Canvas = require("canvas");
+
 module.exports.config = {
 	name: "antioutNotify",
 	eventType: ["log:unsubscribe"],
-	version: "1.0.4",
-	credits: "rX",
-	description: "Notify when someone leaves or is kicked (username bold front)"
+	version: "2.0.0",
+	credits: "rX Abdullah",
+	description: "Send custom goodbye image when someone leaves or is kicked"
 };
 
-// Convert text to bold Unicode (𝐀𝐁𝐂 style)
-function toBold(text) {
-	const boldA = 0x1d400; 
-	return text
-		.split("")
-		.map(c => {
-			if (c >= "A" && c <= "Z") return String.fromCodePoint(boldA + c.charCodeAt(0) - 65);
-			if (c >= "a" && c <= "z") return String.fromCodePoint(boldA + 26 + c.charCodeAt(0) - 97);
-			return c;
-		})
-		.join("");
-}
+module.exports.run = async ({ event, api }) => {
+	const userID = event.logMessageData.leftParticipantFbId;
+	const author = event.author;
+	const threadID = event.threadID;
 
-module.exports.run = async ({ event, api, Users }) => {
+	if (userID == api.getCurrentUserID()) return; // Ignore bot
+
 	try {
-		const userID = event.logMessageData.leftParticipantFbId;
-		const { author, threadID } = event;
+		// === 1️⃣ Get user info ===
+		const resUser = await api.getUserInfo(userID);
+		const userName = resUser[userID]?.name || "Unknown User";
 
-		// Ignore bot itself
-		if (userID == api.getCurrentUserID()) return;
+		// === 2️⃣ Download profile picture from Graph API ===
+		const profilePicURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+		const profileBuffer = (await axios.get(profilePicURL, { responseType: "arraybuffer" })).data;
 
-		// Fetch user name
-		let userName = global.data.userName.get(userID) || "Someone";
-		try {
-			const userInfo = await api.getUserInfo(userID);
-			userName = userInfo[userID].name || userName;
-		} catch (e) {
-			console.error(e);
-		}
+		// === 3️⃣ Download frame ===
+		const frameURL = "https://i.postimg.cc/BQ5bdybC/retouch-2025100422414510.jpg";
+		const frameBuffer = (await axios.get(frameURL, { responseType: "arraybuffer" })).data;
 
-		// Convert username to bold
-		const boldName = toBold(userName);
+		// === 4️⃣ Create canvas ===
+		const base = await Canvas.loadImage(frameBuffer);
+		const avatar = await Canvas.loadImage(profileBuffer);
+		const canvas = Canvas.createCanvas(base.width, base.height);
+		const ctx = canvas.getContext("2d");
 
-		// Detect type (antiout logic)
-		const type = (author == userID) ? "self" : "kicked";
+		// Draw frame background
+		ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
-		// Prepare message with bold username front
-		let msg = "";
-		if (type === "self") {
-			msg = `${boldName} left the group`;
-		} else {
-			let kickerName = global.data.userName.get(author) || author;
-			try {
-				const kickerInfo = await api.getUserInfo(author);
-				kickerName = kickerInfo[author].name || kickerName;
-			} catch (e) {
-				console.error(e);
-			}
-			const boldKicker = toBold(kickerName);
-			msg = `${boldName} was kicked`;
-		}
+		// === 5️⃣ Draw circular profile image ===
+		const pX = 90, pY = 110, pSize = 150; // adjust to fit circle
+		ctx.save();
+		ctx.beginPath();
+		ctx.arc(pX + pSize / 2, pY + pSize / 2, pSize / 2, 0, Math.PI * 2, true);
+		ctx.closePath();
+		ctx.clip();
+		ctx.drawImage(avatar, pX, pY, pSize, pSize);
+		ctx.restore();
 
-		// Send message
-		api.sendMessage(msg, threadID);
+		// === 6️⃣ Add name text ===
+		ctx.font = "bold 32px Sans";
+		ctx.fillStyle = "#00A8FF"; // light blue (matches Goodbye text)
+		ctx.textAlign = "left";
+		ctx.fillText(userName, 270, 160); // right of profile picture
 
-	} catch (err) {
-		console.error(err);
+		// === 7️⃣ Save and send ===
+		const imgPath = __dirname + `/cache/goodbye_${userID}.png`;
+		fs.writeFileSync(imgPath, canvas.toBuffer());
+
+		api.sendMessage({
+			body: `Goodbye, ${userName}! 👋`,
+			attachment: fs.createReadStream(imgPath)
+		}, threadID, () => fs.unlinkSync(imgPath));
+
+	} catch (e) {
+		console.error(e);
+		api.sendMessage("❌ Error creating goodbye frame.", event.threadID);
 	}
 };
