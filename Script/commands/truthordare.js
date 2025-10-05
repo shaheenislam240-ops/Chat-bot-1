@@ -16,7 +16,7 @@ module.exports.run = async function({ api, event, args, Users }) {
   const name = await Users.getNameUser(senderID);
 
   // 👇 তোমার Render API URL
-  const baseAPI = "https://true-false-api-9cq3.onrender.com";
+  const baseAPI = "https://true-false-api-9cq3.onrender.com/truthdare";
 
   // ইউজার input truth/dare বা random
   const typeInput = args[0]?.toLowerCase();
