@@ -2,10 +2,10 @@ const axios = require("axios");
 
 module.exports.config = {
   name: "truthordare",
-  version: "2.1.0",
+  version: "2.2.0",
   hasPermssion: 0,
   credits: "rX Abdullah + ChatGPT",
-  description: "Play truth or dare using questions from your Render API (debug-ready)",
+  description: "Play truth or dare using questions from your Render API and SimSimi for replies",
   commandCategory: "fun",
   usages: "[optional: truth/dare]",
   cooldowns: 5,
@@ -15,10 +15,10 @@ module.exports.run = async function({ api, event, args, Users }) {
   const { threadID, messageID, senderID } = event;
   const name = await Users.getNameUser(senderID);
 
-  // 👇 তোমার Render API URL
+  // ✅ Render API URL for Truth or Dare
   const baseAPI = "https://true-false-api-9cq3.onrender.com/truthdare";
 
-  // ইউজার input truth/dare বা random
+  // Determine type: truth or dare
   const typeInput = args[0]?.toLowerCase();
   const type = typeInput === "truth" || typeInput === "dare"
     ? typeInput
@@ -26,7 +26,7 @@ module.exports.run = async function({ api, event, args, Users }) {
       ? "truth"
       : "dare";
 
-  // Countdown
+  // Countdown messages
   const countdown = [
     { text: "⏳ 3...", delay: 1000 },
     { text: "⏳ 2...", delay: 2000 },
@@ -34,13 +34,14 @@ module.exports.run = async function({ api, event, args, Users }) {
     { text: "🎉 Ready!", delay: 4000 }
   ];
 
+  // Send countdown
   for (const step of countdown) {
     setTimeout(() => api.sendMessage(step.text, threadID), step.delay);
   }
 
+  // After countdown, fetch question
   setTimeout(async () => {
     try {
-      // ✅ Axios call with timeout
       const res = await axios.get(`${baseAPI}/${type}`, { timeout: 10000 });
       console.log("DEBUG: API response:", res.data);
 
@@ -51,8 +52,9 @@ module.exports.run = async function({ api, event, args, Users }) {
         `${question}\n\n💬 Reply to this message with your ${type === "truth" ? "answer" : "proof"}.`;
 
       api.sendMessage(msg, threadID, (err, info) => {
-        if(err) console.error("DEBUG: sendMessage error:", err);
+        if (err) console.error("DEBUG: sendMessage error:", err);
 
+        // Save handleReply for user's response
         global.client.handleReply.push({
           name: module.exports.config.name,
           messageID: info.messageID,
@@ -69,49 +71,31 @@ module.exports.run = async function({ api, event, args, Users }) {
   }, 5000);
 };
 
+// ✅ Handle user reply using SimSimi API
 module.exports.handleReply = async function({ api, event, handleReply }) {
   const { threadID, messageID, senderID, body } = event;
 
   if (senderID !== handleReply.author)
     return api.sendMessage("🚫 Only the selected player can reply to this!", threadID, messageID);
 
-  const answer = body.toLowerCase();
-  let type = "", quoteEN = "";
+  let simsimiReply = "";
 
-  const positiveWords = ["yes", "done", "complete", "হ্যাঁ", "ok", "sure", "হ্যা", "finished", "done it"];
-  const negativeWords = ["no", "never", "না", "nope", "can't", "cannot"];
+  try {
+    // Call SimSimi API
+    const res = await axios.get("https://rx-simisimi-api-tllc.onrender.com", {
+      params: { text: body },
+      timeout: 10000
+    });
 
-  if (positiveWords.some(w => answer.includes(w))) {
-    type = "good";
-    const q = [
-      "Nice! You’re honest and brave!",
-      "Good job! You completed your dare!",
-      "That’s the spirit 👏"
-    ];
-    quoteEN = q[Math.floor(Math.random() * q.length)];
-  } else if (negativeWords.some(w => answer.includes(w))) {
-    type = "bad";
-    const q = [
-      "Ohh, maybe next time 😅",
-      "You skipped it? That’s okay!",
-      "Not brave enough today, huh?"
-    ];
-    quoteEN = q[Math.floor(Math.random() * q.length)];
-  } else {
-    type = "neutral";
-    quoteEN = "Hmm, interesting reply 😄";
+    simsimiReply = res.data?.response || "🤖 SimSimi didn’t answer this time!";
+  } catch (err) {
+    console.error("DEBUG: SimSimi API error:", err.message);
+    simsimiReply = "⚠️ Failed to fetch reply from SimSimi.";
   }
 
-  const title =
-    type === "good"
-      ? "✅ 𝐆𝐎𝐎𝐃 𝐀𝐍𝐒𝐖𝐄𝐑"
-      : type === "bad"
-      ? "❌ 𝐁𝐀𝐃 𝐀𝐍𝐒𝐖𝐄𝐑"
-      : "ℹ️ 𝐀𝐍𝐒𝐖𝐄𝐑 𝐑𝐄𝐂𝐄𝐈𝐕𝐄𝐃";
-
-  const msg = `${title}\n` +
+  const msg = `ℹ️ 𝐀𝐍𝐒𝐖𝐄𝐑 𝐑𝐄𝐂𝐄𝐈𝐕𝐄𝐃\n` +
     `➤ ${handleReply.authorName}\n` +
-    `💬 "${quoteEN}"\n` +
+    `💬 "${simsimiReply}"\n` +
     `💬 Your reply: "${body}"`;
 
   return api.sendMessage(msg, threadID, messageID);
