@@ -2,7 +2,7 @@ const fs = require("fs-extra");
 const { Buffer } = require("buffer");
 
 // --- Credit Lock ---
-const _c = "clggWCBBYmR1bGxhaA==";
+const _c = "clggWCBBYmR1bGxhaA==";  //don't change my cradite it's rX project
 function decodeMsg(encoded) {
   return Buffer.from(encoded, "base64").toString("utf8");
 }
@@ -20,7 +20,7 @@ const configPath = __dirname + "/actionConfig.json";
 const defaultConfig = {
   enabled: false,
   targetGroupId: "1122285573200707",
-  bannedWords: ["fuck", "randi", "madarchod", "chuda", "asshole"]
+  bannedWords: ["matherxhod", "bokaxhuda", "madarchod", "chuda", "xhudi", "sawya", "bessa", "khanki", "tor mayek", "mgi", "abal", "চুদি", "মাগি", "খানকি", "মাদারচোদ"]
 };
 
 if (!fs.existsSync(configPath)) fs.writeJsonSync(configPath, defaultConfig, { spaces: 2 });
@@ -30,7 +30,7 @@ const saveConfig = data => fs.writeJsonSync(configPath, data, { spaces: 2 });
 module.exports.config = {
   name: "actionGuard",
   version: "2.1",
-  credits: decodeMsg(_c),
+  credits: decodeMsg(_c),  //rX Abdullah don't change my cradite 
   hasPermission: 0,
   cooldowns: 5,
   commandCategory: "System",
