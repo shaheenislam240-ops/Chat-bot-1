@@ -1,5 +1,5 @@
 module.exports.config = {
-  name: "redit",
+  name: "reedit",
   version: "1.0.6",
   hasPermssion: 0,
   credits: "rX",
