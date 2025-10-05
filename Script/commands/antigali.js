@@ -1,13 +1,13 @@
-let antiGaliStatus = false; // Default Off now
+let antiGaliStatus = true; // Default Off now
 let offenseTracker = {}; // threadID -> userID -> { count, uidSaved }
 
 const badWords = [
   "কুত্তার বাচ্চা","মাগী","মাগীচোদ","চোদা","চুদ","চুদা","চুদামারান",
   "চুদির","চুত","চুদি","চুতমারানি","চুদের বাচ্চা","shawya","বালের","বালের ছেলে","বালছাল",
   "বালছাল কথা","মাগীর ছেলে","রান্ডি","রান্দি","রান্দির ছেলে","বেশ্যা","বেশ্যাপনা",
-  "Khanki","mgi","তোকে চুদি","তুই চুদ","fuck","f***","fck","fuk","fuk","fking","fing","fucking",
+  "Khanki","mgi","তোকে চুদি","তুই চুদ","fuck","f***","fck","mc","bc","xhudas","abal","fucking",
   "motherfucker","guyar","mfer","motherfuer","mthrfckr","putki","abdullak chudi","abdullak xudi","jawra","bot chudi","bastard",
-  "asshole","a$$hole","a*hole","dick","fu***k","cock","prick","pussy","Mariak cudi","cunt","fag","faggot","retard",
+  "bessa","hijra","a*hole","dick","fu***k","cock","prick","pussy","Mariak cudi","cunt","fag","faggot","retard",
   "magi","magir","magirchele","land","randir","randirchele","chuda","chud","chudir","chut","chudi","chutmarani",
   "tor mayer","tor baper","toke chudi","chod","jairi","khankir pola","khanki magi"
 ];
