@@ -16,7 +16,7 @@ module.exports.run = async function({ api, event, args, Users }) {
   const name = await Users.getNameUser(senderID);
 
   // 👇 তোমার Render API URL বসাও এখানে
-  const baseAPI = "https://your-render-api.onrender.com/truthdare";
+  const baseAPI = "https://true-false-api-9cq3.onrender.com";
 
   // যদি ইউজার truth/dare টাইপ করে, সেটা ধরো — না হলে random
   const typeInput = args[0]?.toLowerCase();
