@@ -39,7 +39,7 @@ module.exports.run = async ({ event, api }) => {
 		ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
 		// 5️⃣ Draw circular profile picture (moved more to the right)
-		const pX = 193;  // moved from 160 → 220
+		const pX = 191;  // moved from 160 → 220
 		const pY = 150;  // same vertical position
 		const pSize = 160;
 		ctx.save();
