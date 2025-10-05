@@ -1,4 +1,4 @@
-let antiGaliStatus = true; // Default Off now
+let antiGaliStatus = false; // Default Off now
 let offenseTracker = {}; // threadID -> userID -> { count, uidSaved }
 
 const badWords = [
