@@ -4,7 +4,7 @@ module.exports.config = {
   name: "truthordare",
   version: "2.3.0",
   hasPermssion: 0,
-  credits: "rX Abdullah + ChatGPT",
+  credits: "rX Abdullah",
   description: "Play truth or dare using questions from Render API and SimSimi for replies (no countdown)",
   commandCategory: "fun",
   usages: "[optional: truth/dare]",
@@ -76,8 +76,8 @@ module.exports.handleReply = async function({ api, event, handleReply, Users }) 
 
     const msg = `ℹ️ 𝐀𝐍𝐒𝐖𝐄𝐑 𝐑𝐄𝐂𝐄𝐈𝐕𝐄𝐃\n` +
       `➤ ${handleReply.authorName}\n` +
-      `💬 "${finalReply}"\n` +
-      `💬 Your reply: "${body}"`;
+      `💬 "Your reply: "${body}"\n` +
+      `💬 ${finalReply}"`;
 
     return api.sendMessage(msg, threadID, messageID);
 
