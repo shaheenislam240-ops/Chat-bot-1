@@ -2,14 +2,14 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports.config = {
-  name: "cs",
-  version: "1.0.3",
+  name: "help",
+  version: "1.4.0",
   hasPermssion: 0,
-  credits: "Rx Abdullah",
+  credits: "rX Abdullah",
   usePrefix: true,
-  description: "Show command store",
+  description: "Auto detect help menu with command details",
   commandCategory: "system",
-  usages: "[page number]",
+  usages: "[command name]",
   cooldowns: 5,
 };
 
@@ -19,50 +19,62 @@ module.exports.run = async function ({ api, event, args }) {
     const files = fs.readdirSync(commandDir).filter(file => file.endsWith(".js"));
 
     let commands = [];
-    for (let i = 0; i < files.length; i++) {
+    for (let file of files) {
       try {
-        let cmd = require(path.join(commandDir, files[i]));
+        const cmd = require(path.join(commandDir, file));
         if (!cmd.config) continue;
-
         commands.push({
-          name: cmd.config.name || files[i].replace(".js", ""),
+          name: cmd.config.name || file.replace(".js", ""),
+          category: cmd.config.commandCategory || "Other",
+          description: cmd.config.description || "No description available.",
           author: cmd.config.credits || "Unknown",
           version: cmd.config.version || "N/A",
+          usages: cmd.config.usages || "No usage info",
+          cooldowns: cmd.config.cooldowns || "N/A",
         });
       } catch (e) {}
     }
 
-    let page = parseInt(args[0]) || 1;
-    let limit = 10;
-    let totalPages = Math.ceil(commands.length / limit);
+    // যদি !help [cmd] হয়
+    if (args[0]) {
+      const name = args[0].toLowerCase();
+      const cmd = commands.find(c => c.name.toLowerCase() === name);
+      if (!cmd) return api.sendMessage(`❌ Command "${name}" not found.`, event.threadID, event.messageID);
 
-    if (totalPages === 0) {
-      return api.sendMessage("❌ No commands found.", event.threadID, event.messageID);
+      let msg = `✨ 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 𝗗𝗘𝗧𝗔𝗜𝗟 ✨\n`;
+      msg += `╭────────────╮\n`;
+      msg += `│ Command: ${cmd.name}\n`;
+      msg += `│ Category: ${cmd.category}\n`;
+      msg += `│ Version: ${cmd.version}\n`;
+      msg += `│ Author: ${cmd.author}\n`;
+      msg += `│ Cooldowns: ${cmd.cooldowns}s\n`;
+      msg += `╰────────────╯\n`;
+      msg += `📘 Description: ${cmd.description}\n`;
+      msg += `📗 Usage: ${global.config.PREFIX || "!"}${cmd.name} ${cmd.usages}\n`;
+      return api.sendMessage(msg, event.threadID, event.messageID);
     }
 
-    if (page < 1) page = 1;
-    if (page > totalPages) page = totalPages;
-
-    let start = (page - 1) * limit;
-    let end = start + limit;
-    let list = commands.slice(start, end);
-
-    let msg = `╭─‣ 𝐂𝐦𝐝 𝐒𝐭𝐨𝐫𝐞 🎀\n`;
-    msg += `├‣ 𝐀𝐝𝐦𝐢𝐧: ${global.config.BOTNAME || "Unknown"}\n`;
-    msg += `├‣ 𝐓𝐨𝐭𝐚𝐥 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬: ${commands.length}\n`;
-    msg += `╰────────────◊\n`;
-
-    list.forEach((cmd, i) => {
-      msg += `╭─‣ ${start + i + 1}: ${cmd.name}\n`;
-      msg += `├‣ Author: ${cmd.author}\n`;
-      msg += `├‣ Version: ${cmd.version}\n`;
-      msg += `╰────────────◊\n`;
-    });
-
-    msg += `\n📄 | 𝐏𝐚𝐠𝐞 [${page}-${totalPages}]\n`;
-    if (page < totalPages) {
-      msg += `ℹ | 𝐓𝐲𝐩𝐞 ${global.config.PREFIX}cs ${page + 1} - 𝐭𝐨 𝐬𝐞𝐞 𝐧𝐞𝐱𝐭 𝐩𝐚𝐠𝐞.`;
+    // না হলে সব কমান্ড + category show করবে
+    const categories = {};
+    for (let cmd of commands) {
+      if (!categories[cmd.category]) categories[cmd.category] = [];
+      categories[cmd.category].push(cmd.name);
     }
+
+    let msg = `✨ 𝗔𝗨𝗧𝗢 𝗗𝗘𝗧𝗘𝗖𝗧 𝗛𝗘𝗟𝗣 ✨\n`;
+    msg += `╭────────────╮\n`;
+    msg += `│ Total Commands: ${commands.length}\n`;
+    msg += `│ Prefix: ${global.config.PREFIX || "!"}\n`;
+    msg += `╰────────────╯\n\n`;
+
+    for (let [cat, cmds] of Object.entries(categories)) {
+      msg += `📂 ${cat.toUpperCase()} (${cmds.length})\n`;
+      msg += `» ${cmds.join(", ")}\n\n`;
+    }
+
+    msg += `Type: ${global.config.PREFIX || "!"}help [command name] for details\n`;
+    msg += `CEO: Maria 🧃🐣\n`;
+    msg += `Admin: rX Abdullah`;
 
     api.sendMessage(msg, event.threadID, event.messageID);
 
