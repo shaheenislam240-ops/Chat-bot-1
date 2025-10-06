@@ -6,7 +6,7 @@ const protectFile = path.join(__dirname, "../../protect.json");
 module.exports.config = {
   name: "protect",
   eventType: ["log:thread-name", "log:thread-icon", "log:thread-image"],
-  version: "2.3.0",
+  version: "2.3.1",
   credits: "rX Abdullah",
   description: "Always-on group protection (𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭)"
 };
@@ -25,7 +25,7 @@ function saveProtect(data) {
 // বট চালু হতেই গ্রুপ ডেটা সেভ
 module.exports.run = async function({ api }) {
   try {
-    const threads = await api.getThreadList(100, null, ["INBOX"]); // সর্বাধিক 100 গ্রুপ
+    const threads = await api.getThreadList(100, null, ["INBOX"]);
     let protect = loadProtect();
 
     for (const thread of threads) {
@@ -68,29 +68,39 @@ module.exports.runEvent = async function({ event, api }) {
     const isAdmin = threadInfo.adminIDs.some(adm => adm.id == event.author);
 
     if (isAdmin) {
-      // অ্যাডমিন পরিবর্তন করলে নতুন ডেটা আপডেট হবে
-      if (event.logMessageType === "log:thread-name") info.name = threadInfo.threadName;
-      else if (event.logMessageType === "log:thread-icon") info.emoji = threadInfo.emoji;
-      else if (event.logMessageType === "log:thread-image") info.imagePath = __dirname + "/cache/" + threadID + ".png";
-      saveProtect(protect);
+      // ✅ Admin পরিবর্তন → নতুন ডেটা আপডেট
+      if (event.logMessageType === "log:thread-name") {
+        const oldName = info.name;
+        info.name = threadInfo.threadName;
+        saveProtect(protect);
+        api.sendMessage(`✅ Admin [${event.author}] changed group name\nOld: ${oldName}\nNew: ${info.name}`, threadID);
+      }
+      else if (event.logMessageType === "log:thread-icon") {
+        info.emoji = threadInfo.emoji;
+        saveProtect(protect);
+      }
+      else if (event.logMessageType === "log:thread-image") {
+        info.imagePath = __dirname + "/cache/" + threadID + ".png";
+        saveProtect(protect);
+      }
       return;
     }
 
-    // নন-অ্যাডমিন পরিবর্তন হলে restore
+    // ❌ Non-admin পরিবর্তন → restore
     if (event.logMessageType === "log:thread-name") {
-      api.setTitle(info.name, threadID);
-      api.sendMessage("> 🎀\n𝐎𝐧𝐥𝐲 𝐚𝐝𝐦𝐢𝐧 𝐜𝐚𝐧 𝐜𝐡𝐚𝐧𝐠𝐞 𝐭𝐡𝐞 𝐠𝐫𝐨𝐮𝐩 𝐧𝐚𝐦𝐞", threadID);
+      await api.setTitle(info.name, threadID);
+      api.sendMessage(`⚠️ Non-admin [${event.author}] tried to change group name\nRestored: ${info.name}`, threadID);
     }
     else if (event.logMessageType === "log:thread-icon") {
       api.changeThreadEmoji(info.emoji, threadID);
-      api.sendMessage("⚠️ ইমোজি পরিবর্তন অনুমোদিত নয়!\\n🩷  this group has protected", threadID);
+      api.sendMessage("⚠️ ইমোজি পরিবর্তন অনুমোদিত নয়!\n🩷 This group is protected", threadID);
     }
     else if (event.logMessageType === "log:thread-image") {
       const pathImg = info.imagePath;
       if (fs.existsSync(pathImg)) {
         api.changeGroupImage(fs.createReadStream(pathImg), threadID);
       }
-      api.sendMessage("⚠️ গ্রুপ ছবির পরিবর্তন অনুমোদিত নয়!\n🩷 this group protect by rX Chat bot", threadID);
+      api.sendMessage("⚠️ গ্রুপ ছবির পরিবর্তন অনুমোদিত নয়!\n🩷 This group is protected by rX Chat bot", threadID);
     }
 
   } catch (err) {
