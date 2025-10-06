@@ -1,75 +1,81 @@
 const fs = require("fs");
-const axios = require("axios");
-const protectFile = __dirname + "/cache/protect.json";
+const path = require("path");
+
+const protectFile = path.join(__dirname, "../../protect.json");
 
 module.exports.config = {
   name: "protect",
-  eventType: ["log:thread-name", "log:thread-icon", "change_thread_image"],
-  version: "1.0.0",
+  eventType: ["log:thread-name", "log:thread-icon", "log:thread-image"],
+  version: "2.0.0",
   credits: "rX Abdullah",
-  description: "Protect GC name, emoji, and image",
+  description: "Always-on group protection (Maria Community)"
 };
 
-module.exports.run = async ({ api, event, args }) => {
-  if (!fs.existsSync(protectFile)) fs.writeFileSync(protectFile, JSON.stringify({}, null, 2));
-  const data = JSON.parse(fs.readFileSync(protectFile));
-  const threadID = event.threadID;
-  const type = args[0]?.toLowerCase();
+// যখন গ্রুপে কোনো কিছু পরিবর্তন হয়, তখনই রান করবে
+module.exports.runEvent = async function ({ event, api }) {
+  try {
+    if (!fs.existsSync(protectFile)) fs.writeFileSync(protectFile, JSON.stringify({}, null, 4));
+    let protect = JSON.parse(fs.readFileSync(protectFile));
+    const threadID = event.threadID;
 
-  if (type === "on") {
-    const info = await api.getThreadInfo(threadID);
-    data[threadID] = {
-      name: info.threadName || "",
-      emoji: info.emoji || "",
-      image: info.imageSrc || "",
-      enabled: true,
-    };
-    fs.writeFileSync(protectFile, JSON.stringify(data, null, 2));
-    return api.sendMessage("🛡 Protection enabled for this group.", threadID, event.messageID);
-  } else if (type === "off") {
-    if (data[threadID]) delete data[threadID];
-    fs.writeFileSync(protectFile, JSON.stringify(data, null, 2));
-    return api.sendMessage("❌ Protection disabled for this group.", threadID, event.messageID);
-  } else {
-    return api.sendMessage("📘 Usage: !protect on/off", threadID, event.messageID);
+    // গ্রুপ ডেটা না থাকলে, এখনই সেভ করে রাখবে
+    if (!protect[threadID]) {
+      const info = await api.getThreadInfo(threadID);
+      protect[threadID] = {
+        name: info.threadName || "Unknown Group",
+        emoji: info.emoji || "💬",
+        imagePath: __dirname + "/cache/" + threadID + ".png"
+      };
+      fs.writeFileSync(protectFile, JSON.stringify(protect, null, 4));
+      return;
+    }
+
+    const info = protect[threadID];
+
+    // 🔒 নাম পরিবর্তন
+    if (event.logMessageType === "log:thread-name") {
+      api.setTitle(info.name, threadID);
+      api.sendMessage("⚠️ গ্রুপের নাম পরিবর্তন করা যাবে না!\n🩷 Maria Community সিকিউর মোডে আছে।", threadID);
+    }
+
+    // 🔒 ইমোজি পরিবর্তন
+    else if (event.logMessageType === "log:thread-icon") {
+      api.changeThreadEmoji(info.emoji, threadID);
+      api.sendMessage("⚠️ ইমোজি পরিবর্তন অনুমোদিত নয়!\n🩷 Maria Community সিকিউর মোডে আছে।", threadID);
+    }
+
+    // 🔒 গ্রুপ ছবি পরিবর্তন
+    else if (event.logMessageType === "log:thread-image") {
+      const pathImg = info.imagePath;
+      if (fs.existsSync(pathImg)) {
+        api.changeGroupImage(fs.createReadStream(pathImg), threadID);
+      }
+      api.sendMessage("⚠️ গ্রুপ ছবির পরিবর্তন অনুমোদিত নয়!\n🩷 Maria Community সিকিউর মোডে আছে।", threadID);
+    }
+
+  } catch (err) {
+    console.error("[Maria Protect Error]", err);
   }
 };
 
-module.exports.runEvent = async ({ api, event }) => {
-  const { threadID, logMessageType } = event;
-  if (!fs.existsSync(protectFile)) return;
-  const data = JSON.parse(fs.readFileSync(protectFile));
-  if (!data[threadID] || !data[threadID].enabled) return;
-
-  const saved = data[threadID];
-  const info = await api.getThreadInfo(threadID);
-  const botID = api.getCurrentUserID();
-  const isAdmin = info.adminIDs.some(a => a.id == botID);
-  if (!isAdmin) return;
-
+// প্রথমবার ম্যানুয়ালি চালিয়ে সেভ করতে পারো
+module.exports.run = async function ({ api, event }) {
   try {
-    if (logMessageType === "log:thread-name" && info.threadName !== saved.name) {
-      await api.setTitle(saved.name, threadID);
-      return api.sendMessage("🔒 Group name restored.", threadID);
-    }
+    if (!fs.existsSync(protectFile)) fs.writeFileSync(protectFile, JSON.stringify({}, null, 4));
+    const threadID = event.threadID;
+    const info = await api.getThreadInfo(threadID);
 
-    if (logMessageType === "log:thread-icon" && info.emoji !== saved.emoji) {
-      await api.changeThreadEmoji(saved.emoji, threadID);
-      return api.sendMessage("🔒 Group emoji restored.", threadID);
-    }
+    const protect = JSON.parse(fs.readFileSync(protectFile));
+    protect[threadID] = {
+      name: info.threadName || "Unknown Group",
+      emoji: info.emoji || "💬",
+      imagePath: __dirname + "/cache/" + threadID + ".png"
+    };
 
-    if (logMessageType === "change_thread_image") {
-      const url = info.imageSrc;
-      if (saved.image && url !== saved.image) {
-        const imgData = (await axios.get(saved.image, { responseType: "arraybuffer" })).data;
-        const path = __dirname + "/cache/tmp.jpg";
-        fs.writeFileSync(path, Buffer.from(imgData, "binary"));
-        await api.changeGroupImage(fs.createReadStream(path), threadID);
-        fs.unlinkSync(path);
-        return api.sendMessage("🔒 Group photo restored.", threadID);
-      }
-    }
+    fs.writeFileSync(protectFile, JSON.stringify(protect, null, 4));
+
+    api.sendMessage("🛡️ Maria Community Protection সক্রিয় এবং সর্বদা অন থাকবে 🔒", threadID);
   } catch (err) {
-    return api.sendMessage("⚠️ Error restoring group data.", threadID);
+    console.error(err);
   }
 };
