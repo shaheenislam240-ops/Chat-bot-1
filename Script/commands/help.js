@@ -3,83 +3,82 @@ const path = require("path");
 
 module.exports.config = {
   name: "help",
-  version: "2.5.0",
+  version: "1.4.0",
   hasPermssion: 0,
   credits: "rX Abdullah",
-  description: "Auto-detect command categories and show all command list dynamically",
+  usePrefix: true,
+  description: "Auto detect help menu with command details",
   commandCategory: "system",
   usages: "[command name]",
-  cooldowns: 5
+  cooldowns: 5,
 };
 
-module.exports.run = async ({ api, event, args }) => {
-  const { threadID, messageID } = event;
-  const prefix = global.config.PREFIX || "!";
-  const { commands } = global.client;
+module.exports.run = async function ({ api, event, args }) {
+  try {
+    const commandDir = __dirname;
+    const files = fs.readdirSync(commandDir).filter(file => file.endsWith(".js"));
 
-  // ✅ If user wants help for specific command
-  if (args[0]) {
-    const cmd = commands.get(args[0].toLowerCase());
-    if (!cmd)
-      return api.sendMessage(`❌ Command '${args[0]}' not found.`, threadID, messageID);
-
-    const c = cmd.config;
-    const usage = c.usages ? `${prefix}${c.name} ${c.usages}` : `${prefix}${c.name}`;
-    const info = `╭──────•◈•──────╮
-│ Name: ${c.name}
-│ Description: ${c.description || "No description"}
-│ Usage: ${usage}
-│ Category: ${c.commandCategory || "Other"}
-│ Cooldown: ${c.cooldowns || 0}s
-│ Permission: ${c.hasPermssion || 0}
-╰──────•◈•──────╯`;
-    return api.sendMessage(info, threadID, messageID);
-  }
-
-  // ✅ Auto-detect all command categories
-  const commandDir = path.join(__dirname, ".."); // assuming this file is inside modules/commands/
-  const categoryMap = {};
-
-  const files = fs.readdirSync(commandDir).filter(file => file.endsWith(".js"));
-  for (const file of files) {
-    try {
-      const cmd = require(path.join(commandDir, file));
-      const cat = cmd.config.commandCategory || "Other";
-      if (!categoryMap[cat]) categoryMap[cat] = [];
-      categoryMap[cat].push(cmd.config.name);
-    } catch (err) {
-      console.log(`⚠️ Failed to load ${file}:`, err.message);
+    let commands = [];
+    for (let file of files) {
+      try {
+        const cmd = require(path.join(commandDir, file));
+        if (!cmd.config) continue;
+        commands.push({
+          name: cmd.config.name || file.replace(".js", ""),
+          category: cmd.config.commandCategory || "Other",
+          description: cmd.config.description || "No description available.",
+          author: cmd.config.credits || "Unknown",
+          version: cmd.config.version || "N/A",
+          usages: cmd.config.usages || "No usage info",
+          cooldowns: cmd.config.cooldowns || "N/A",
+        });
+      } catch (e) {}
     }
-  }
 
-  // ✅ Create dynamic formatted message
-  let msg = `✨ 𝗔𝗨𝗧𝗢 𝗗𝗘𝗧𝗘𝗖𝗧 𝗛𝗘𝗟𝗣 ✨
-╭────────────╮
-│ Total Commands: ${Object.values(categoryMap).flat().length}
-│ Prefix: ${prefix}
-╰────────────╯\n`;
+    // যদি !help [cmd] হয়
+    if (args[0]) {
+      const name = args[0].toLowerCase();
+      const cmd = commands.find(c => c.name.toLowerCase() === name);
+      if (!cmd) return api.sendMessage(`❌ Command "${name}" not found.`, event.threadID, event.messageID);
 
-  for (const cat of Object.keys(categoryMap).sort()) {
-    const cmds = categoryMap[cat]
-      .sort((a, b) => a.localeCompare(b))
-      .map(name => `★${name}`)
-      .join("  ");
-    msg += `\n╭─── ${cat.toUpperCase()} ───╮\n│ ${cmds}\n╰────────────⧕\n`;
-  }
+      let msg = `✨ 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 𝗗𝗘𝗧𝗔𝗜𝗟 ✨\n`;
+      msg += `╭────────────╮\n`;
+      msg += `│ Command: ${cmd.name}\n`;
+      msg += `│ Category: ${cmd.category}\n`;
+      msg += `│ Version: ${cmd.version}\n`;
+      msg += `│ Author: ${cmd.author}\n`;
+      msg += `│ Cooldowns: ${cmd.cooldowns}s\n`;
+      msg += `╰────────────╯\n`;
+      msg += `📘 Description: ${cmd.description}\n`;
+      msg += `📗 Usage: ${global.config.PREFIX || "!"}${cmd.name} ${cmd.usages}\n`;
+      return api.sendMessage(msg, event.threadID, event.messageID);
+    }
 
-  msg += `\nType: ${prefix}help [command name] for details
-CEO: Maria 🧃🐣
-Admin: rX Abdullah`;
+    // না হলে সব কমান্ড + category show করবে
+    const categories = {};
+    for (let cmd of commands) {
+      if (!categories[cmd.category]) categories[cmd.category] = [];
+      categories[cmd.category].push(cmd.name);
+    }
 
-  // ✅ Optional GIF (if available)
-  const gifPath = path.join(__dirname, "cache", "help.gif");
-  if (fs.existsSync(gifPath)) {
-    return api.sendMessage(
-      { body: msg, attachment: fs.createReadStream(gifPath) },
-      threadID,
-      messageID
-    );
-  } else {
-    return api.sendMessage(msg, threadID, messageID);
+    let msg = `✨ 𝗔𝗨𝗧𝗢 𝗗𝗘𝗧𝗘𝗖𝗧 𝗛𝗘𝗟𝗣 ✨\n`;
+    msg += `╭────────────╮\n`;
+    msg += `│ Total Commands: ${commands.length}\n`;
+    msg += `│ Prefix: ${global.config.PREFIX || "!"}\n`;
+    msg += `╰────────────╯\n\n`;
+
+    for (let [cat, cmds] of Object.entries(categories)) {
+      msg += `📂 ${cat.toUpperCase()} (${cmds.length})\n`;
+      msg += `» ${cmds.join(", ")}\n\n`;
+    }
+
+    msg += `Type: ${global.config.PREFIX || "!"}help [command name] for details\n`;
+    msg += `CEO: Maria 🧃🐣\n`;
+    msg += `Admin: rX Abdullah`;
+
+    api.sendMessage(msg, event.threadID, event.messageID);
+
+  } catch (err) {
+    api.sendMessage("❌ Error: " + err.message, event.threadID, event.messageID);
   }
 };
