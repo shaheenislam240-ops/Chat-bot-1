@@ -1,41 +1,44 @@
-const axios = require("axios");
-const baseApiUrl = async () => {
-  const base = await axios.get(
-    `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`,
-  );
-  return base.data.api;
-};
-
 module.exports.config = {
-  name: "ss",
-  version: "1.0",
-  credits: "Dipto",
-  hasPermssion:0,
-  usePrefix: true,
-  prefix: true,
-  description: "Take a screenshot of a website",
-  commandCategory: "utility",
-  category: "utility",
-  usages: "screenshot [URL]" ,
-  coolDowns: 5,
+	name: "ss",
+	version: "1.0.0",
+	hasPermssion: 0,
+	credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭",
+	description: "Screenshot một trang web nào đó (NOT ALLOW NSFW PAGE)",
+	commandCategory: "other",
+	usages: "[url site]",
+	cooldowns: 5,
+	dependencies: {
+        "fs-extra": "",
+        "path": "",
+        "url": ""
+    }
 };
-module.exports.run = async function ({ api, event, args }) {
-  const url = args.join(" ");
-  if (!url) {
-    return api.sendMessage("Please provide a URL.", event.threadID);
-  }
-  try {
-    const res = await axios.get(`${await baseApiUrl()}/ss?url=${url}`, {
-      responseType: "stream",
-    });
 
-    api.sendMessage(
-      { body: "Screenshot Saved <😽", attachment: res.data },
-      event.threadID,
-      event.messageID,
-    );
-  } catch (error) {
-    console.error("Error taking screenshot:", error);
-    api.sendMessage("Failed to take a screenshot.", event.threadID);
-  }
-};
+module.exports.onLoad = async () => {
+    const { existsSync } = global.nodemodule["fs-extra"];
+    const { resolve } = global.nodemodule["path"];
+
+    const path = resolve(__dirname, "cache", "pornlist.txt");
+
+    if (!existsSync(path)) return await global.utils.downloadFile("https://raw.githubusercontent.com/blocklistproject/Lists/master/porn.txt", path);
+    else return;
+}
+
+module.exports.run = async ({ event, api, args, }) => {
+    const { readFileSync, createReadStream, unlinkSync } = global.nodemodule["fs-extra"];
+    const url = global.nodemodule["url"];
+
+    if (!global.moduleData.pornList) global.moduleData.pornList = readFileSync(__dirname + "/cache/pornlist.txt", "utf-8").split('\n').filter(site => site && !site.startsWith('#')).map(site => site.replace(/^(0.0.0.0 )/, ''));
+    const urlParsed = url.parse(args[0]);
+
+    if (global.moduleData.pornList.some(pornURL => urlParsed.host == pornURL)) return api.sendMessage("The site you entered is not secure!!(NSFW PAGE)", event.threadID, event.messageID);
+
+    try {
+        const path = __dirname + `/cache/${event.threadID}-${event.senderID}s.png`;
+        await global.utils.downloadFile(`https://image.thum.io/get/width/1920/crop/400/fullpage/noanimate/${args[0]}`, path);
+        api.sendMessage({ attachment: createReadStream(path) }, event.threadID, () => unlinkSync(path));
+    }
+    catch {
+        return api.sendMessage("This url could not be found, the format is incorrect ?", event.threadID, event.messageID);
+    }
+}
