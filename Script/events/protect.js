@@ -79,11 +79,11 @@ module.exports.runEvent = async function({ event, api }) {
     // নন-অ্যাডমিন পরিবর্তন হলে restore
     if (event.logMessageType === "log:thread-name") {
       api.setTitle(info.name, threadID);
-      api.sendMessage("❌ আপনি অনুমোদিত নয় পরিবর্তন করতে", threadID);
+      api.sendMessage("> 🎀\n𝐎𝐧𝐥𝐲 𝐚𝐝𝐦𝐢𝐧 𝐜𝐚𝐧 𝐜𝐡𝐚𝐧𝐠𝐞 𝐭𝐡𝐞 𝐠𝐫𝐨𝐮𝐩 𝐧𝐚𝐦𝐞", threadID);
     }
     else if (event.logMessageType === "log:thread-icon") {
       api.changeThreadEmoji(info.emoji, threadID);
-      api.sendMessage("⚠️ ইমোজি পরিবর্তন অনুমোদিত নয়!\n🩷 Maria Community সিকিউর মোডে আছে।", threadID);
+      api.sendMessage("⚠️ ইমোজি পরিবর্তন অনুমোদিত নয়!\\n🩷  this group has protected", threadID);
     }
     else if (event.logMessageType === "log:thread-image") {
       const pathImg = info.imagePath;
