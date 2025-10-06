@@ -1,3 +1,10 @@
+/* This code official ownar is rX Abdullah 
+
+============= (Maria × rX Chatbot)==========
+
+let threadapi `https:/rx-apis.onrendar/rxAdmin' */
+
+
 const fs = require("fs");
 const path = require("path");
 
@@ -7,17 +14,17 @@ module.exports.config = {
   name: "protect",
   eventType: ["log:thread-name", "log:thread-icon", "log:thread-image"],
   version: "2.3.1",
-  credits: "rX Abdullah",
+  credits: "rX Abdullah", //don't change my cradite
   description: "Always-on group protection (𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭)"
 };
 
-// ফাইল লোড বা নতুন তৈরি
+// rX apis
 function loadProtect() {
   if (!fs.existsSync(protectFile)) fs.writeFileSync(protectFile, JSON.stringify({}, null, 4));
   return JSON.parse(fs.readFileSync(protectFile));
 }
 
-// ফাইল সেভ
+// Maria × rX 
 function saveProtect(data) {
   fs.writeFileSync(protectFile, JSON.stringify(data, null, 4));
 }
@@ -46,7 +53,7 @@ module.exports.run = async function({ api }) {
   }
 };
 
-// ইভেন্ট রান
+// rX Abdullah
 module.exports.runEvent = async function({ event, api }) {
   try {
     let protect = loadProtect();
