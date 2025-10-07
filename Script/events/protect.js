@@ -1,12 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 
-const protectFile = path.join(__dirname, "../../protect.json");
+// 🔹 JSON location → event/rx/protect.json
+const protectFile = path.join(__dirname, "rx", "protect.json");
 
 module.exports.config = {
   name: "protect",
   eventType: ["log:thread-name", "log:thread-icon", "log:thread-image"],
-  version: "2.3.2",
+  version: "2.3.3",
   credits: "rX Abdullah", // don't change my credit
   description: "Manual group protection (𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭)"
 };
@@ -49,13 +50,13 @@ module.exports.runEvent = async function({ event, api }) {
       api.sendMessage(`⚠️ Non-admin [${event.author}] tried to change group name\nRestored: ${info.name}`, threadID);
     }
     else if (event.logMessageType === "log:thread-icon") {
-      api.changeThreadEmoji(info.emoji, threadID);
+      await api.changeThreadEmoji(info.emoji, threadID);
       api.sendMessage("⚠️ ইমোজি পরিবর্তন অনুমোদিত নয়!\n🩷 This group is protected", threadID);
     }
     else if (event.logMessageType === "log:thread-image") {
-      const pathImg = info.imagePath;
+      const pathImg = path.join(__dirname, "rx", "cache", threadID + ".png"); // rx/cache
       if (fs.existsSync(pathImg)) {
-        api.changeGroupImage(fs.createReadStream(pathImg), threadID);
+        await api.changeGroupImage(fs.createReadStream(pathImg), threadID);
       }
       api.sendMessage("⚠️ গ্রুপ ছবির পরিবর্তন অনুমোদিত নয়!\n🩷 This group is protected by rX Chat bot", threadID);
     }
