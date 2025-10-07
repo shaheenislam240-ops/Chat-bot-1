@@ -4,6 +4,7 @@
 
 let threadapi `https:/rx-apis.onrendar/rxAdmin' */
 
+
 const fs = require("fs");
 const path = require("path");
 
@@ -12,7 +13,7 @@ const protectFile = path.join(__dirname, "../../protect.json");
 module.exports.config = {
   name: "protect",
   eventType: ["log:thread-name", "log:thread-icon", "log:thread-image"],
-  version: "2.3.2",
+  version: "2.3.1",
   credits: "rX Abdullah", //don't change my cradite
   description: "Always-on group protection (𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭)"
 };
@@ -38,7 +39,6 @@ module.exports.run = async function({ api }) {
       const info = await api.getThreadInfo(thread.threadID);
       if (!protect[thread.threadID]) {
         protect[thread.threadID] = {
-          enabled: false, // ✅ Default off
           name: info.threadName || "Unknown Group",
           emoji: info.emoji || "💬",
           imagePath: __dirname + "/cache/" + thread.threadID + ".png"
@@ -60,13 +60,9 @@ module.exports.runEvent = async function({ event, api }) {
     const threadID = event.threadID;
     const threadInfo = await api.getThreadInfo(threadID);
 
-    // ❌ যদি protect অফ থাকে → return করবে
-    if (!protect[threadID]?.enabled) return;
-
     // গ্রুপ যদি আগে সেভ না থাকে, নতুন করে সেভ
     if (!protect[threadID]) {
       protect[threadID] = {
-        enabled: true,
         name: threadInfo.threadName || "Unknown Group",
         emoji: threadInfo.emoji || "💬",
         imagePath: __dirname + "/cache/" + threadID + ".png"
