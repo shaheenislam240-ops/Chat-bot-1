@@ -1,116 +1,78 @@
-/* This code official ownar is rX Abdullah 
-
-============= (Maria × rX Chatbot)==========
-
-let threadapi `https:/rx-apis.onrendar/rxAdmin' */
-
-
+// events/protectEvent.js
 const fs = require("fs");
 const path = require("path");
 
 const protectFile = path.join(__dirname, "../../protect.json");
 
-module.exports.config = {
-  name: "protect",
-  eventType: ["log:thread-name", "log:thread-icon", "log:thread-image"],
-  version: "2.3.1",
-  credits: "rX Abdullah", //don't change my cradite
-  description: "Always-on group protection (𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗 𝐂𝐡𝐚𝐭𝐛𝐨𝐭)"
-};
-
-// rX apis
 function loadProtect() {
   if (!fs.existsSync(protectFile)) fs.writeFileSync(protectFile, JSON.stringify({}, null, 4));
   return JSON.parse(fs.readFileSync(protectFile));
 }
-
-// Maria × rX 
 function saveProtect(data) {
   fs.writeFileSync(protectFile, JSON.stringify(data, null, 4));
 }
 
-// বট চালু হতেই গ্রুপ ডেটা সেভ
-module.exports.run = async function({ api }) {
-  try {
-    const threads = await api.getThreadList(100, null, ["INBOX"]);
-    let protect = loadProtect();
-
-    for (const thread of threads) {
-      const info = await api.getThreadInfo(thread.threadID);
-      if (!protect[thread.threadID]) {
-        protect[thread.threadID] = {
-          name: info.threadName || "Unknown Group",
-          emoji: info.emoji || "💬",
-          imagePath: __dirname + "/cache/" + thread.threadID + ".png"
-        };
-      }
-    }
-
-    saveProtect(protect);
-    console.log("🛡️ Group protect data initialized.");
-  } catch (err) {
-    console.error("[Maria Protect Init Error]", err);
-  }
+module.exports.config = {
+  name: "protectEvent",
+  eventType: ["log:thread-name", "log:thread-icon", "log:thread-image"],
+  version: "1.0.0",
+  credits: "rX Abdullah",
+  description: "Auto restore name, emoji, photo if non-admin changes (Maria × rX)"
 };
 
-// rX Abdullah
-module.exports.runEvent = async function({ event, api }) {
+module.exports.run = async function ({ event, api }) {
   try {
     let protect = loadProtect();
     const threadID = event.threadID;
     const threadInfo = await api.getThreadInfo(threadID);
 
-    // গ্রুপ যদি আগে সেভ না থাকে, নতুন করে সেভ
+    // যদি group data না থাকে → add default
     if (!protect[threadID]) {
       protect[threadID] = {
-        name: threadInfo.threadName || "Unknown Group",
+        name: threadInfo.threadName || "Unknown",
         emoji: threadInfo.emoji || "💬",
-        imagePath: __dirname + "/cache/" + threadID + ".png"
+        imagePath: __dirname + "/cache/" + threadID + ".png",
+        enable: false
       };
       saveProtect(protect);
       return;
     }
 
     const info = protect[threadID];
+    if (info.enable !== true) return; // 🔴 protect বন্ধ থাকলে কিছুই করবে না
+
     const isAdmin = threadInfo.adminIDs.some(adm => adm.id == event.author);
 
+    // ✅ admin change করলে update নেবে
     if (isAdmin) {
-      // ✅ Admin পরিবর্তন → নতুন ডেটা আপডেট
       if (event.logMessageType === "log:thread-name") {
-        const oldName = info.name;
         info.name = threadInfo.threadName;
         saveProtect(protect);
-        api.sendMessage(`✅ Admin [${event.author}] changed group name\nOld: ${oldName}\nNew: ${info.name}`, threadID);
-      }
-      else if (event.logMessageType === "log:thread-icon") {
+      } else if (event.logMessageType === "log:thread-icon") {
         info.emoji = threadInfo.emoji;
         saveProtect(protect);
-      }
-      else if (event.logMessageType === "log:thread-image") {
+      } else if (event.logMessageType === "log:thread-image") {
         info.imagePath = __dirname + "/cache/" + threadID + ".png";
         saveProtect(protect);
       }
       return;
     }
 
-    // ❌ Non-admin পরিবর্তন → restore
+    // ❌ Non-admin change → restore
     if (event.logMessageType === "log:thread-name") {
       await api.setTitle(info.name, threadID);
-      api.sendMessage(`⚠️ Non-admin [${event.author}] tried to change group name\nRestored: ${info.name}`, threadID);
-    }
-    else if (event.logMessageType === "log:thread-icon") {
+      api.sendMessage("< 🧃\n𝐘𝐨𝐮 𝐡𝐚𝐯𝐞 𝐧𝐨 𝐩𝐞𝐫𝐦𝐢𝐬𝐬𝐢𝐨𝐧 𝐭𝐨 𝐜𝐡𝐚𝐧𝐠𝐞 (𝐏𝐫𝐨𝐭𝐞𝐜𝐭𝐞𝐝 𝐛𝐲 𝐫𝐗).", threadID);
+    } else if (event.logMessageType === "log:thread-icon") {
       api.changeThreadEmoji(info.emoji, threadID);
-      api.sendMessage("⚠️ ইমোজি পরিবর্তন অনুমোদিত নয়!\n🩷 This group is protected", threadID);
-    }
-    else if (event.logMessageType === "log:thread-image") {
-      const pathImg = info.imagePath;
-      if (fs.existsSync(pathImg)) {
-        api.changeGroupImage(fs.createReadStream(pathImg), threadID);
+      api.sendMessage("⚠️ Emoji change not allowed (Protected by rX).", threadID);
+    } else if (event.logMessageType === "log:thread-image") {
+      const img = info.imagePath;
+      if (fs.existsSync(img)) {
+        api.changeGroupImage(fs.createReadStream(img), threadID);
       }
-      api.sendMessage("⚠️ গ্রুপ ছবির পরিবর্তন অনুমোদিত নয়!\n🩷 This group is protected by rX Chat bot", threadID);
+      api.sendMessage("⚠️ Photo change not allowed (Protected by rX).", threadID);
     }
-
-  } catch (err) {
-    console.error("[Maria Protect Error]", err);
+  } catch (e) {
+    console.error("[protectEvent Error]", e);
   }
 };
