@@ -1,14 +1,14 @@
 const fs = require("fs");
 const path = require("path");
 
-const protectFile = path.join(__dirname, "rx", "protect.json"); // protect.json
+const protectFile = path.join(__dirname, "rx", "protect.json"); // তোমার JSON path
 
 module.exports.config = {
   name: "protect",
   eventType: ["log:thread-name"], // শুধু নাম
-  version: "2.6.0",
+  version: "1.0.0",
   credits: "rX Abdullah",
-  description: "Only group name protection"
+  description: "Only restore group name if non-admin changes it"
 };
 
 // 🔒 Load JSON
@@ -29,7 +29,7 @@ module.exports.runEvent = async function({ event, api }) {
     const info = protect[threadID];
     const threadInfo = await api.getThreadInfo(threadID);
 
-    // চেক করো author admin কি না
+    // চেক করো author অ্যাডমিন কি না
     const isAdmin = threadInfo.adminIDs.some(adm => adm.id == event.author);
     if (isAdmin) return; // অ্যাডমিন হলে কিছু হবে না
 
@@ -37,7 +37,7 @@ module.exports.runEvent = async function({ event, api }) {
     if (event.logMessageType === "log:thread-name") {
       await api.setTitle(info.name, threadID);
       await api.sendMessage(
-        `⚠️ Non-admin [${event.author}] tried to change the group name.\nRestored: ${info.name}`,
+        `⚠️ Non-admin [${event.author}] tried to change group name.\nRestored: ${info.name}`,
         threadID
       );
     }
