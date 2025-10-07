@@ -63,7 +63,7 @@ module.exports.runEvent = async function({ event, api }) {
     // ❌ Non-admin → restore if custom value exists
     if (event.logMessageType === "log:thread-name" && info.name) {
       await api.setTitle(info.name, threadID);
-      await api.sendMessage(`< 🎀\n𝐘𝐨𝐮 𝐡𝐚𝐯𝐞 𝐧𝐨 𝐩𝐞𝐫𝐦𝐢𝐬𝐬𝐢𝐨𝐧 𝐭𝐨 𝐜𝐡𝐚𝐧𝐠𝐞 𝐭𝐡𝐞 𝐧𝐚𝐦𝐞 𝐫𝐞𝐬𝐭𝐨𝐫𝐞 ${info.name}`, threadID);
+      await api.sendMessage(`⚠️ Non-admin [${event.author}] tried to change group name\nRestored: ${info.name}`, threadID);
     } 
     else if (event.logMessageType === "log:thread-icon" && info.emoji) {
       await api.changeThreadEmoji(info.emoji, threadID);
