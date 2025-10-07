@@ -1,53 +1,50 @@
-// commands/protect.js
 const fs = require("fs");
 const path = require("path");
-
 const protectFile = path.join(__dirname, "../../protect.json");
 
 function loadProtect() {
   if (!fs.existsSync(protectFile)) fs.writeFileSync(protectFile, JSON.stringify({}, null, 4));
   return JSON.parse(fs.readFileSync(protectFile));
 }
+
 function saveProtect(data) {
   fs.writeFileSync(protectFile, JSON.stringify(data, null, 4));
 }
 
 module.exports.config = {
   name: "protect",
-  version: "1.0.1",
+  version: "1.0.2",
   hasPermssion: 1,
   credits: "rX Abdullah",
-  description: "Turn ON/OFF the protect system",
-  usages: "[on/off]",
-  commandCategory: "system"
+  description: "Toggle protect system (on/off)",
+  usePrefix: true,
+  commandCategory: "system",
+  usages: "protect on/off",
+  cooldowns: 2
 };
 
-module.exports.run = async function ({ api, event, args }) {
+module.exports.run = async function({ api, event, args }) {
   const threadID = event.threadID;
-  let protect = loadProtect();
+  const protect = loadProtect();
 
-  if (!protect[threadID]) {
-    protect[threadID] = { enable: false };
+  if (!protect[threadID]) protect[threadID] = { enabled: false };
+  const status = args[0];
+
+  if (!status) {
+    return api.sendMessage(`🛡️ Protect status: ${protect[threadID].enabled ? "ON ✅" : "OFF ❌"}\nUse: protect on / protect off`, threadID);
   }
 
-  // কোনো argument না দিলে বর্তমান স্ট্যাটাস দেখাবে
-  if (!args[0]) {
-    const status = protect[threadID].enable ? "🟢 ON" : "🔴 OFF";
-    return api.sendMessage(`⚙️ Protect status: ${status}`, threadID);
-  }
-
-  const input = args[0].toLowerCase();
-  if (input === "on") {
-    protect[threadID].enable = true;
+  if (status === "on") {
+    protect[threadID].enabled = true;
     saveProtect(protect);
-    return api.sendMessage("✅ Group protection system is now ON.", threadID);
-  }
-
-  if (input === "off") {
-    protect[threadID].enable = false;
+    api.sendMessage("🛡️ Group protect system turned ON ✅", threadID);
+  } 
+  else if (status === "off") {
+    protect[threadID].enabled = false;
     saveProtect(protect);
-    return api.sendMessage("❌ Group protection system is now OFF.", threadID);
+    api.sendMessage("⚠️ Group protect system turned OFF ❌", threadID);
+  } 
+  else {
+    api.sendMessage("❗ Invalid option! Use: protect on / protect off", threadID);
   }
-
-  return api.sendMessage("❓ Usage: !protect [on/off]", threadID);
 };
