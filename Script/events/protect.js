@@ -4,14 +4,11 @@
 
 let threadapi `https:/rx-apis.onrendar/rxAdmin' */
 
+
 const fs = require("fs");
 const path = require("path");
 
 const protectFile = path.join(__dirname, "../../protect.json");
-const cacheDir = path.join(__dirname, "cache");
-
-// ensure cache dir exists
-if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
 
 module.exports.config = {
   name: "protect",
@@ -44,13 +41,8 @@ module.exports.run = async function({ api }) {
         protect[thread.threadID] = {
           name: info.threadName || "Unknown Group",
           emoji: info.emoji || "💬",
-          imagePath: path.join(cacheDir, `${thread.threadID}.png`),
-          enable: false // default off — command file will toggle this
+          imagePath: __dirname + "/cache/" + thread.threadID + ".png"
         };
-      } else {
-        // ensure imagePath exists for older entries
-        if (!protect[thread.threadID].imagePath) protect[thread.threadID].imagePath = path.join(cacheDir, `${thread.threadID}.png`);
-        if (typeof protect[thread.threadID].enable === "undefined") protect[thread.threadID].enable = false;
       }
     }
 
@@ -68,13 +60,12 @@ module.exports.runEvent = async function({ event, api }) {
     const threadID = event.threadID;
     const threadInfo = await api.getThreadInfo(threadID);
 
-    // গ্রুপ যদি আগে সেভ না থাকে, নতুন করে সেভ (default enable:false)
+    // গ্রুপ যদি আগে সেভ না থাকে, নতুন করে সেভ
     if (!protect[threadID]) {
       protect[threadID] = {
         name: threadInfo.threadName || "Unknown Group",
         emoji: threadInfo.emoji || "💬",
-        imagePath: path.join(cacheDir, `${threadID}.png`),
-        enable: false
+        imagePath: __dirname + "/cache/" + threadID + ".png"
       };
       saveProtect(protect);
       return;
@@ -83,8 +74,8 @@ module.exports.runEvent = async function({ event, api }) {
     const info = protect[threadID];
     const isAdmin = threadInfo.adminIDs.some(adm => adm.id == event.author);
 
-    // Admin change → always update stored data (so admin can set new baseline)
     if (isAdmin) {
+      // ✅ Admin পরিবর্তন → নতুন ডেটা আপডেট
       if (event.logMessageType === "log:thread-name") {
         const oldName = info.name;
         info.name = threadInfo.threadName;
@@ -96,16 +87,13 @@ module.exports.runEvent = async function({ event, api }) {
         saveProtect(protect);
       }
       else if (event.logMessageType === "log:thread-image") {
-        info.imagePath = path.join(cacheDir, `${threadID}.png`);
+        info.imagePath = __dirname + "/cache/" + threadID + ".png";
         saveProtect(protect);
       }
       return;
     }
 
-    // যদি protect অন না থাকে → non-admin পরিবর্তনে কিছুই করবে না
-    if (info.enable !== true) return;
-
-    // ❌ Non-admin পরিবর্তন → restore (কেবল যখন enable === true)
+    // ❌ Non-admin পরিবর্তন → restore
     if (event.logMessageType === "log:thread-name") {
       await api.setTitle(info.name, threadID);
       api.sendMessage(`⚠️ Non-admin [${event.author}] tried to change group name\nRestored: ${info.name}`, threadID);
