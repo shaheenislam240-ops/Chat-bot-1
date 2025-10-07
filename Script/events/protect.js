@@ -29,6 +29,8 @@ function saveProtect(data) {
   fs.writeFileSync(protectFile, JSON.stringify(data, null, 4));
 }
 
+if (data.protect !== true) return;
+
 // বট চালু হতেই গ্রুপ ডেটা সেভ
 module.exports.run = async function({ api }) {
   try {
