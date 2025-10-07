@@ -1,10 +1,3 @@
-/* This code official ownar is rX Abdullah 
-
-============= (Maria × rX Chatbot)==========
-
-let threadapi `https:/rx-apis.onrendar/rxAdmin' */
-
-
 const fs = require("fs");
 const path = require("path");
 
