@@ -1,10 +1,11 @@
 /* Official owner: rX Abdullah */
 const axios = require("axios");
 const fs = require("fs");
-const path = require("path");
 
 const baseApiUrl = async () => {
-  const res = await axios.get("https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json");
+  const res = await axios.get(
+    "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json"
+  );
   return res.data.api; // key name is "api"
 };
 
@@ -24,10 +25,11 @@ module.exports = {
     let action = args[0]?.toLowerCase() || '-v';
 
     if (!['-v','video','mp4','-a','audio','mp3','-i','info'].includes(action)) {
-      args.unshift('-v'); 
+      args.unshift('-v');
       action = '-v';
     }
 
+    // YouTube URL check
     const checkurl = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})(?:\S+)?$/;
     const urlYtb = args[1] ? checkurl.test(args[1]) : false;
 
@@ -36,10 +38,13 @@ module.exports = {
       try {
         const videoID = args[1].match(checkurl)[1];
         const pathName = `ytb_${format}_${videoID}.${format}`;
-        const { data: { title, downloadLink, quality } } = await axios.get(`${await baseApiUrl()}/ytDl3?link=${videoID}&format=${format}&quality=3`);
+
+        const { data: { title, downloadLink, quality } } = await axios.get(
+          `${await baseApiUrl()}/ytDl3?link=${videoID}&format=${format}&quality=3`
+        );
 
         await api.sendMessage({
-          body: `• Title: ${title}\n• Quality: ${quality}`,
+          body: `• Title: ${title}\n• Quality: ${quality}\n💖 Credit: rX Abdullah`,
           attachment: await downloadFile(downloadLink, pathName)
         }, threadID, () => fs.unlinkSync(pathName), messageID);
 
@@ -50,13 +55,16 @@ module.exports = {
       }
     }
 
-    // keyword search
+    // Keyword search
     args.shift();
     const keyWord = args.join(" ");
     if (!keyWord) return api.sendMessage("❌ Please provide a search keyword.", threadID, messageID);
 
     try {
-      const searchResult = (await axios.get(`${await baseApiUrl()}/ytFullSearch?songName=${encodeURIComponent(keyWord)}`)).data.slice(0,10);
+      const searchResult = (await axios.get(
+        `${await baseApiUrl()}/ytFullSearch?songName=${encodeURIComponent(keyWord)}`
+      )).data.slice(0,10);
+
       if (!searchResult.length) return api.sendMessage(`⭕ No results for: ${keyWord}`, threadID, messageID);
 
       let msg = "";
@@ -105,10 +113,12 @@ module.exports = {
       const format = ['-v','video','mp4'].includes(action) ? 'mp4' : 'mp3';
       try {
         const pathName = `ytb_${format}_${videoID}.${format}`;
-        const { data: { title, downloadLink, quality } } = await axios.get(`${await baseApiUrl()}/ytDl3?link=${videoID}&format=${format}&quality=3`);
+        const { data: { title, downloadLink, quality } } = await axios.get(
+          `${await baseApiUrl()}/ytDl3?link=${videoID}&format=${format}&quality=3`
+        );
 
         await api.sendMessage({
-          body: `• Title: ${title}\n• Quality: ${quality}`,
+          body: `• Title: ${title}\n• Quality: ${quality}\n💖 Credit: rX Abdullah`,
           attachment: await downloadFile(downloadLink, pathName)
         }, threadID, () => fs.unlinkSync(pathName), messageID);
 
@@ -122,7 +132,7 @@ module.exports = {
       try {
         const { data } = await axios.get(`${await baseApiUrl()}/ytfullinfo?videoID=${videoID}`);
         await api.sendMessage({
-          body: `✨ Title: ${data.title}\n⏳ Duration: ${(data.duration/60).toFixed(2)} mins\n📺 Resolution: ${data.resolution}\n👀 Views: ${data.view_count}\n👍 Likes: ${data.like_count}\n💬 Comments: ${data.comment_count}\n📂 Category: ${data.categories[0]}\n📢 Channel: ${data.channel}\n🔗 Video URL: ${data.webpage_url}`,
+          body: `✨ Title: ${data.title}\n⏳ Duration: ${(data.duration/60).toFixed(2)} mins\n📺 Resolution: ${data.resolution}\n👀 Views: ${data.view_count}\n👍 Likes: ${data.like_count}\n💬 Comments: ${data.comment_count}\n📂 Category: ${data.categories[0]}\n📢 Channel: ${data.channel}\n🔗 Video URL: ${data.webpage_url}\n💖 Credit: rX Abdullah`,
           attachment: await streamImage(data.thumbnail, 'info_thumb.jpg')
         }, threadID, messageID);
       } catch(e){
@@ -133,6 +143,7 @@ module.exports = {
   }
 };
 
+// Utility functions
 async function downloadFile(url, pathName){
   const res = await axios.get(url, { responseType: "arraybuffer" });
   fs.writeFileSync(pathName, Buffer.from(res.data));
