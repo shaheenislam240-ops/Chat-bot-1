@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 
-const apiJsonURL = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json";
+const apiJsonURL = "https://raw.githubusercontent.com/rxmaria761/rx-api/refs/heads/main/baseApiUrl.json";
 
 module.exports.config = {
   name: "maria",
