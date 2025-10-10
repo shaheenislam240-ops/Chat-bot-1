@@ -12,7 +12,7 @@ module.exports.config = {
   name: "song",
   version: "2.3.0",
   aliases: ["music", "play"],
-  credits: "rX Abdullah & dipto",
+  credits: "𝐫𝐗", //special thanks to dipto ===api from dipto===
   countDown: 5,
   hasPermssion: 0,
   description: "Download audio from YouTube (auto first result)",
@@ -26,7 +26,7 @@ module.exports.run = async ({ api, args, event }) => {
   if (!args[0])
     return api.sendMessage("🎵 Please provide a song name or YouTube link.", event.threadID, event.messageID);
 
-  const searchingMsg = await api.sendMessage("🔍 Searching for your song...", event.threadID);
+  const searchingMsg = await api.sendMessage("🔍 𝐒𝐞𝐚𝐫𝐜𝐡𝐢𝐧𝐠...", event.threadID);
   await api.setMessageReaction("🔍", searchingMsg.messageID); // React search
 
   try {
