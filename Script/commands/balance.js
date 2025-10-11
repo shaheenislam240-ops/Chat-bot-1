@@ -1,5 +1,5 @@
 module.exports.config = {
-	name: "coin",
+	name: "bal",
 	version: "1.0.2",
 	hasPermssion: 0,
 	credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭",
@@ -15,8 +15,8 @@ module.exports.languages = {
 		"sotiennguoikhac": "Số tiền của %1 hiện đang có là: %2$"
 	},
 	"en": {
-		"sotienbanthan": "Your current balance: %1$",
-		"sotiennguoikhac": "%1's current balance: %2$."
+		"sotienbanthan": "𝐛𝐚𝐛𝐲 𝐲𝐨𝐮𝐫 𝐛𝐚𝐥𝐚𝐧𝐜𝐞 𝐢𝐬: %1$",
+		"sotiennguoikhac": "%1's 𝐜𝐮𝐫𝐫𝐞𝐧𝐭 𝐛𝐚𝐥𝐚𝐧𝐜𝐞: %2$."
 	}
 }
 
