@@ -26,7 +26,7 @@ module.exports.run = async ({ api, args, event }) => {
   if (!args[0])
     return api.sendMessage("🎵 Please provide a song name or YouTube link.", event.threadID, event.messageID);
 
-  const searchingMsg = await api.sendMessage("🎀 <\n 𝐒𝐞𝐚𝐫𝐜𝐡𝐢𝐧𝐠 𝐩𝐥𝐞𝐚𝐬𝐞 𝐰𝐚𝐢𝐭...", event.threadID);
+  const searchingMsg = await api.sendMessage("> 🎀\n 𝐒𝐞𝐚𝐫𝐜𝐡𝐢𝐧𝐠 𝐩𝐥𝐞𝐚𝐬𝐞 𝐰𝐚𝐢𝐭...", event.threadID);
   await api.setMessageReaction("🔍", searchingMsg.messageID); // React search
 
   try {
