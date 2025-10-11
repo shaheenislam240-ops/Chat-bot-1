@@ -17,10 +17,10 @@ module.exports.languages ={
 		"confirmChange": "Bạn có chắc bạn muốn đổi prefix của nhóm thành: %1"
 	},
 	"en": {
-		"successChange": "Changed prefix into: %1",
-		"missingInput": "Prefix have not to be blank",
-		"resetPrefix": "Reset prefix to: %1",
-		"confirmChange": "Are you sure that you want to change prefix into: %1"
+		"successChange": "> 🎀\n𝐂𝐡𝐚𝐧𝐠𝐞𝐝 𝐩𝐫𝐞𝐟𝐢𝐱 𝐢𝐧𝐭𝐨: %1",
+		"missingInput": "> 🎀\n𝐏𝐫𝐞𝐟𝐢𝐱 𝐡𝐚𝐯𝐞 𝐧𝐨𝐭 𝐭𝐨 𝐛𝐞 𝐛𝐥𝐚𝐧𝐤",
+		"resetPrefix": "> 🎀\n 𝐏𝐫𝐞𝐟𝐢𝐱 𝐭𝐨: %1",
+		"confirmChange": "> 🎀\n𝐀𝐫𝐞 𝐲𝐨𝐮 𝐬𝐮𝐫𝐞 𝐭𝐡𝐚𝐭 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐜𝐡𝐚𝐧𝐠𝐞 𝐩𝐫𝐞𝐟𝐢𝐱 𝐢𝐧𝐭𝐨: %1"
 	}
 }
 
