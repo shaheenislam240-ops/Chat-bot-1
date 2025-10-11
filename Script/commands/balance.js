@@ -15,7 +15,7 @@ module.exports.languages = {
 		"sotiennguoikhac": "Số tiền của %1 hiện đang có là: %2$"
 	},
 	"en": {
-		"sotienbanthan": "🎀 <\n𝐲𝐨𝐮𝐫 𝐛𝐚𝐥𝐚𝐧𝐜𝐞 𝐢𝐬: %1$",
+		"sotienbanthan": "> 🎀\n𝐲𝐨𝐮𝐫 𝐛𝐚𝐥𝐚𝐧𝐜𝐞 𝐢𝐬: %1$",
 		"sotiennguoikhac": "%1's 𝐜𝐮𝐫𝐫𝐞𝐧𝐭 𝐛𝐚𝐥𝐚𝐧𝐜𝐞: %2$."
 	}
 }
