@@ -91,12 +91,12 @@ module.exports.handleEvent = async function ({ api, event }) {
         api.sendMessage({ body: `⚠️ ${name} আগে থেকেই টার্গেট গ্রুপে আছে।`, mentions: mention }, threadID);
       } else {
         await api.addUserToGroup(senderID, cfg.targetGroupId);
-        api.sendMessage({ body: `⚠️ ${name} গালি দিয়েছে। Action নেওয়া হয়েছে।`, mentions: mention }, threadID);
+        api.sendMessage({ body: `🎀 <\n ${name} 𝐀𝐝𝐝𝐞𝐝 𝐜𝐡𝐚𝐜𝐤 𝐢𝐧𝐛𝐨𝐱 𝐨𝐫 𝐦𝐞𝐬𝐬𝐚𝐠𝐞 𝐫𝐢𝐪𝐞𝐬𝐭।।, mentions: mention }, threadID);
         api.sendMessage({ body: `⚠️ ${name} গালি দেওয়ার জন্য এই গ্রুপে যুক্ত করা হয়েছে।`, mentions: mention }, cfg.targetGroupId);
       }
     } catch (err) {
       api.sendMessage(
-        { body: `⚠️ ${name} কে টার্গেট গ্রুপে অ্যাড করতে ব্যর্থ। আগে বটকে ইনবক্সে মেসেজ দিন।`, mentions: mention },
+        { body: `🎀 <\n ${name} 𝐮𝐟𝐟𝐬 𝐩𝐚𝐫𝐥𝐚𝐦 𝐧𝐚`, mentions: mention },
         threadID
       );
     }
