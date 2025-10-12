@@ -106,7 +106,7 @@
     },
     "help": {
         "autoUnsend": true,
-        "delayUnsend": 120
+        "delayUnsend": 30
     },
     "pokemon": {
         "APIKEY": ""
@@ -228,13 +228,13 @@
     "god": {
         "enable": true
     },
-    "help2": {
-        "autoUnsend": true,
-        "delayUnsend": 300
-    },
-    "helpall": {
+    "antigali": {
         "autoUnsend": true,
         "delayUnsend": 20
+    },
+    "song": {
+        "autoUnsend": true,
+        "delayUnsend": 300
     },
     "vip": {
         "cooldownTime": 1200000
