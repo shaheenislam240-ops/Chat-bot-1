@@ -1,39 +1,40 @@
+const request = require("request");
+const fs = require("fs");
+const axios = require("axios");
+
 module.exports.config = {
-	name: "kick",
-	version: "1.0.1", 
-	hasPermssion: 1,
-	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
-  description: "the person you need to remove from the group by tag",
-	commandCategory: "System", 
-	usages: "[tag]", 
-	cooldowns: 0,
+  name: "kick",
+  version: "1.0.0",
+  hasPermssion: 0,
+  credits: "Kaneki",
+  description: "Kick the tagged friend",
+  commandCategory: "game",
+  usages: "[tag]",
+  cooldowns: 5,
 };
 
-module.exports.languages = {
-	"vi": {
-		"error": "Đã có lỗi xảy ra, vui lòng thử lại sau",
-		"needPermssion": "Cần quyền quản trị viên nhóm\nVui lòng thêm và thử lại!",
-		"missingTag": "Bạn phải tag người cần kick"
-	},
-	"en": {
-		"error": "Error! An error occurred. Please try again later!",
-		"needPermssion": "Need group admin\nPlease add and try again!",
-		"missingTag": "You need tag some person to kick"
-	}
-}
+module.exports.run = async({ api, event, Threads, global }) => {
+  const links = [    
+    "https://i.postimg.cc/65TSxJYD/2ce5a017f6556ff103bce87b273b89b7.gif",
+    "https://i.postimg.cc/65SP9jPT/Anime-083428-6224795.gif",
+    "https://i.postimg.cc/RFXP2XfS/jXOwoHx.gif",
+    "https://i.postimg.cc/jSPMRsNk/tumblr-nyc5ygy2a-Z1uz35lto1-540.gif",
+  ];
 
-module.exports.run = async function({ api, event, getText, Threads }) {
-	var mention = Object.keys(event.mentions);
-	try {
-		let dataThread = (await Threads.getData(event.threadID)).threadInfo;
-		if (!dataThread.adminIDs.some(item => item.id == api.getCurrentUserID())) return api.sendMessage(getText("needPermssion"), event.threadID, event.messageID);
-		if(!mention[0]) return api.sendMessage("You have to tag the need to kick",event.threadID);
-		if (dataThread.adminIDs.some(item => item.id == event.senderID)) {
-			for (const o in mention) {
-				setTimeout(() => {
-					api.removeUserFromGroup(mention[o],event.threadID) 
-				},3000)
-			}
-		}
-	} catch { return api.sendMessage(getText("error"),event.threadID) }
-}
+  const mentions = Object.keys(event.mentions);
+  if (!mentions.length) return api.sendMessage("Please tag someone!", event.threadID, event.messageID);
+
+  const taggedName = event.mentions[mentions[0]].replace("@", "");
+
+  const callback = () => {
+    api.sendMessage({
+      body: `${taggedName}, you just got kicked! 😆`,
+      mentions: [{ tag: taggedName, id: mentions[0] }],
+      attachment: fs.createReadStream(__dirname + "/cache/kick.gif")
+    }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/kick.gif"));
+  };
+
+  return request(encodeURI(links[Math.floor(Math.random() * links.length)]))
+    .pipe(fs.createWriteStream(__dirname + "/cache/kick.gif"))
+    .on("close", () => callback());
+};
