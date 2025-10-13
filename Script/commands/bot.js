@@ -5,10 +5,10 @@ const apiJsonURL = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/hea
 
 module.exports.config = {
   name: "obot",
-  version: "1.1.0",
+  version: "1.2.0",
   hasPermssion: 0,
   credits: "𝐫𝐗",
-  description: "Maria Baby-style reply system (trigger by 'bot' or specific mention)",
+  description: "Maria Baby-style reply system with typing effect",
   commandCategory: "noprefix",
   usages: "bot / @Sııƞƞeɽ 倫ッ",
   cooldowns: 3
@@ -66,6 +66,15 @@ module.exports.handleEvent = async function({ api, event, Users }) {
 
 ╰──────•◈•──────╯`;
 
+    // rX × Maria rani
+    try {
+      await api.sendTypingIndicatorV2(true, threadID);
+      await new Promise(r => setTimeout(r, 5000));
+      await api.sendTypingIndicatorV2(false, threadID);
+    } catch (err) {
+      console.log("⚠️ Typing indicator not supported:", err.message);
+    }
+
     return api.sendMessage(withMarker(message), threadID, messageID);
   }
 
@@ -80,6 +89,15 @@ module.exports.handleEvent = async function({ api, event, Users }) {
 
     const rxAPI = await getRxAPI();
     if (!rxAPI) return api.sendMessage("❌ Failed to load RX API.", threadID, messageID);
+
+    // ✨ rX Abdullah
+    try {
+      await api.sendTypingIndicatorV2(true, threadID);
+      await new Promise(r => setTimeout(r, 2000));
+      await api.sendTypingIndicatorV2(false, threadID);
+    } catch (err) {
+      console.log("⚠️ Typing indicator not supported:", err.message);
+    }
 
     try {
       const res = await axios.get(
