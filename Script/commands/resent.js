@@ -73,9 +73,9 @@ module.exports.languages = {
         successText: "resend thành công"
     },
     en: {
-        on: "『ON』",
-        off: "『OFF』",
-        successText: "resend success!"
+        on: "> 🎀\n𝐎𝐍",
+        off: "> 🎀\n𝐎𝐅𝐅",
+        successText: "𝐫𝐞𝐬𝐞𝐧𝐭 𝐬𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥𝐥𝐲!"
     }
 };
 
