@@ -116,14 +116,13 @@ module.exports.run = async function ({ api, event, args, Users }) {
   }
 };
 
-// ✅ handleReply with 2-second typing before reply
 module.exports.handleReply = async function ({ api, event, Users }) {
   const senderName = await Users.getNameUser(event.senderID);
   const text = event.body?.toLowerCase();
   if (!text || !simsim) return;
 
   try {
-    // Typing effect (2 seconds)
+    // rX Abdullah 
     try {
       await api.sendTypingIndicatorV2(true, event.threadID);
       await new Promise(r => setTimeout(r, 2000));
@@ -148,7 +147,6 @@ module.exports.handleReply = async function ({ api, event, Users }) {
   }
 };
 
-// ✅ handleEvent with 5-second typing for trigger words
 module.exports.handleEvent = async function ({ api, event, Users }) {
   const text = event.body?.toLowerCase().trim();
   if (!text || !simsim) return;
@@ -200,7 +198,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     const query = text.replace(matchPrefix, "").trim();
     if (!query) return;
 
-    // ✅ 5-second typing effect before AI reply
+    // rX Abdullah × Maria rani
     try {
       await api.sendTypingIndicatorV2(true, event.threadID);
       await new Promise(r => setTimeout(r, 5000));
