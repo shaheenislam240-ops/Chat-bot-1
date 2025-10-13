@@ -13,10 +13,10 @@ let simsim = "";
 
 module.exports.config = {
   name: "baby",
-  version: "1.0.5",
+  version: "1.0.7",
   hasPermssion: 0,
   credits: "rX",
-  description: "AI Chatbot with Teach & List support",
+  description: "AI Chatbot with Teach & List support + Typing effect", //Better then all simsimi
   commandCategory: "chat",
   usages: "[query]",
   cooldowns: 0,
@@ -116,12 +116,22 @@ module.exports.run = async function ({ api, event, args, Users }) {
   }
 };
 
+// ✅ handleReply with 2-second typing before reply
 module.exports.handleReply = async function ({ api, event, Users }) {
   const senderName = await Users.getNameUser(event.senderID);
   const text = event.body?.toLowerCase();
   if (!text || !simsim) return;
 
   try {
+    // Typing effect (2 seconds)
+    try {
+      await api.sendTypingIndicatorV2(true, event.threadID);
+      await new Promise(r => setTimeout(r, 2000));
+      await api.sendTypingIndicatorV2(false, event.threadID);
+    } catch (err) {
+      console.log("⚠️ Typing indicator not supported:", err.message);
+    }
+
     const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(text)}&senderName=${encodeURIComponent(senderName)}`);
     return api.sendMessage(res.data.response, event.threadID, (err, info) => {
       if (!err) {
@@ -138,18 +148,19 @@ module.exports.handleReply = async function ({ api, event, Users }) {
   }
 };
 
+// ✅ handleEvent with 5-second typing for trigger words
 module.exports.handleEvent = async function ({ api, event, Users }) {
   const text = event.body?.toLowerCase().trim();
   if (!text || !simsim) return;
 
   const senderName = await Users.getNameUser(event.senderID);
-
   const triggers = ["baby", "bby", "xan", "bbz", "mari", "মারিয়া"];
+
   if (triggers.includes(text)) {
     const replies = [
       "𝐀𝐬𝐬𝐚𝐥𝐚𝐦𝐮 𝐰𝐚𝐥𝐚𝐢𝐤𝐮𝐦 ♥",
       "বলেন sir__😌",
-      "𝐁𝐨𝐥𝐨 𝐣𝐚𝐧 𝐤𝐢 𝐤𝐨𝐫𝐭𝐞 𝐩𝐚𝐧𝐧𝐦 𝐭𝐦𝐫 𝐣𝐨𝐧𝐧𝐨 🐸",
+      "𝐁𝐨𝐥𝐨 𝐣𝐚𝐧 𝐤𝐢 𝐤𝐨𝐫𝐭𝐞 𝐩𝐚𝐫𝐢 𝐭𝐨𝐦𝐫 𝐣𝐨𝐧𝐧𝐨 🐸",
       "𝐋𝐞𝐛𝐮 𝐤𝐡𝐚𝐰 𝐝𝐚𝐤𝐭𝐞 𝐝𝐚𝐤𝐭𝐞 𝐭𝐨 𝐡𝐚𝐩𝐚𝐲 𝐠𝐞𝐬𝐨",
       "𝐆𝐚𝐧𝐣𝐚 𝐤𝐡𝐚 𝐦𝐚𝐧𝐮𝐬𝐡 𝐡𝐨 🍁",
       "𝐋𝐞𝐦𝐨𝐧 𝐭𝐮𝐬 🍋",
@@ -160,9 +171,18 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
       "আম গাছে আম নাই ঢিল কেন মারো, তোমার সাথে প্রেম নাই বেবি কেন ডাকো 😒🐸",
       "কি হলো, মিস টিস করচ্ছো নাকি 🤣",
       "𝐓𝐫𝐮𝐬𝐭 𝐦𝐞 𝐢𝐚𝐦 𝐦𝐚𝐫𝐢𝐚 🧃",
-      "𝐇ᴇʏ 𝐗ᴀɴ 𝐈’ᴍ 𝐌ᴀʀɪᴀ 𝐁ᴀʙʏ✨"
+      "𝐇ᴇʏ 𝐗ᴀɴ 𝐈’ᴍ 𝐌ᴀ𝐫ɪ𝐚 𝐁ᴀ𝐛𝐲✨"
     ];
     const reply = replies[Math.floor(Math.random() * replies.length)];
+
+    try {
+      await api.sendTypingIndicatorV2(true, event.threadID);
+      await new Promise(r => setTimeout(r, 5000)); // 5 seconds typing
+      await api.sendTypingIndicatorV2(false, event.threadID);
+    } catch (err) {
+      console.log("⚠️ Typing indicator not supported:", err.message);
+    }
+
     return api.sendMessage(reply, event.threadID, (err, info) => {
       if (!err) {
         global.client.handleReply.push({
@@ -179,6 +199,15 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
   if (matchPrefix.test(text)) {
     const query = text.replace(matchPrefix, "").trim();
     if (!query) return;
+
+    // ✅ 5-second typing effect before AI reply
+    try {
+      await api.sendTypingIndicatorV2(true, event.threadID);
+      await new Promise(r => setTimeout(r, 5000));
+      await api.sendTypingIndicatorV2(false, event.threadID);
+    } catch (err) {
+      console.log("⚠️ Typing indicator not supported:", err.message);
+    }
 
     try {
       const res = await axios.get(`${simsim}/simsimi?text=${encodeURIComponent(query)}&senderName=${encodeURIComponent(senderName)}`);
@@ -197,6 +226,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
     }
   }
 
+  // ✅ Auto-teach on reply messages
   if (event.type === "message_reply") {
     try {
       const setting = await axios.get(`${simsim}/setting`);
