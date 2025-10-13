@@ -19,10 +19,10 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
     const adminbot = require('./../../config.json');
 //// admin -pa /////
     if(!global.data.allThreadID.includes(threadID) && !ADMINBOT.includes(senderID) && adminbot.adminPaOnly == true)
-    return api.sendMessage("MODE » Only admins can use bots in their own inbox", threadID, messageID)
+    return api.sendMessage("> 🎀\n» 𝐎𝐧𝐥𝐲 𝐚𝐝𝐦𝐢𝐧𝐬 𝐜𝐚𝐧 𝐮𝐬𝐞 𝐛𝐨𝐭𝐬 𝐢𝐧 𝐭𝐡𝐞𝐢𝐫 𝐨𝐰𝐧 𝐢𝐧𝐛𝐨𝐱", threadID, messageID)
     ////end 
     if (!ADMINBOT.includes(senderID) && adminbot.adminOnly == true) {
-      if (!ADMINBOT.includes(senderID) && adminbot.adminOnly == true) return api.sendMessage('MODE » Only admins can use bots', threadID, messageID)
+      if (!ADMINBOT.includes(senderID) && adminbot.adminOnly == true) return api.sendMessage('> 🎀\n𝐔𝐟𝐟𝐬, 𝐎𝐧𝐥𝐲 𝐀𝐝𝐦𝐢𝐧𝐬 𝐜𝐚𝐧 𝐮𝐬𝐞 𝐭𝐡𝐞 𝐛𝐨𝐭', threadID, messageID)
     }
     if (!NDH.includes(senderID) && !ADMINBOT.includes(senderID) && adminbot.ndhOnly == true) {
       if (!NDH.includes(senderID) && !ADMINBOT.includes(senderID) && adminbot.ndhOnly == true) return api.sendMessage('MODE » Only bot support can use bots', threadID, messageID)
