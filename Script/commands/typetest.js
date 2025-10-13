@@ -26,7 +26,7 @@ module.exports.run = async function({ api, event, ctx }) {
         await ctx.sendTypingIndicatorV2(0, event.threadID);
 
         // ✅ মেসেজ পাঠাও
-        await api.sendMessage("হ্যালো! 10 সেকেন্ড typing দেখালাম 😎", event.threadID);
+        await api.sendMessage("> 🎀\n𝐇𝐞𝐲 𝐛𝐚𝐛𝐲.. ", event.threadID);
 
     } catch (err) {
         console.error("typetest error:", err);
