@@ -21,21 +21,6 @@ module.exports.run = async function({ api, event, Users }) {
   const added = logMessageData.addedParticipants?.[0];
   if (!added) return;
 
-  const botID = api.getCurrentUserID();
-
- // 🔹 Bot add check
-if (added.userFbId == botID) {
-  // Bot nijer name set korbe global config er BOTNAME diye
-  const botName = global.config.BOTNAME || "Bot"; // BOTNAME না থাকলে default "Bot"
-  await api.changeNickname(botName, threadID, botID).catch(() => {});
-
-  return api.sendMessage(
-    `> 🎀\n 𝐓𝐡𝐚𝐧𝐤𝐬 𝐟𝐨𝐫 𝐚𝐝𝐝𝐢𝐧𝐠 𝐦𝐞! 𝐓𝐲𝐩𝐞 !𝐡𝐞𝐥𝐩 𝐭𝐨 𝐬𝐞𝐞 𝐞𝐡𝐚𝐭 𝐈 𝐜𝐚𝐧 𝐝𝐨.`,
-    threadID
-  );
-}
-
-  // 🔹 New user welcome
   const userID = added.userFbId;
   const userName = added.fullName;
 
@@ -47,6 +32,9 @@ if (added.userFbId == botID) {
   const adderName = (await Users.getNameUser(adderID)) || "Unknown";
 
   const now = new Date();
+const dateString = now.toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka" }); // DD/MM/YYYY
+const timeString = now.toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" }); // HH:MM AM/PM
+
 
   // Random background selection
   const bgURLs = [
@@ -122,18 +110,18 @@ if (added.userFbId == botID) {
     fs.writeFileSync(outPath, finalBuffer);
 
     const message = {
-      body: `‎🌸 ʜᴇʟʟᴏ @${userName}
+  body: `‎🌸 ʜᴇʟʟᴏ @${userName}
 🎀 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ᴏᴜʀ ɢʀᴏᴜᴘ — ${groupName}
 📌 ʏᴏᴜ'ʀᴇ ᴛʜᴇ ${memberCount} ᴍᴇᴍʙᴇʀ ᴏɴ ᴛʜɪꜱ ɢʀᴏᴜᴘ!
 💬 ғᴇᴇʟ ғʀᴇᴇ ᴛᴏ ᴄʜᴀᴛ, ᴄᴏɴɴᴇᴄᴛ ᴀɴᴅ ʜᴀᴠᴇ ꜰᴜɴ ʜᴇʀᴇ!
 ᰔ Sııƞƞeɽ мΛяเα 倫ッ
 ━━━━━━━━━━━━━━━━
-📅 ${now.toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" })} - ${now.toLocaleDateString("en-GB")} - ${now.toLocaleDateString("en-US", { weekday: "long" })}`,
-      mentions: [
-        { tag: `@${userName}`, id: userID }
-      ],
-      attachment: fs.createReadStream(outPath)
-    };
+📅 ${new Date().toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" })} - ${new Date().toLocaleDateString("en-GB")} - ${new Date().toLocaleDateString("en-US", { weekday: "long" })}`,
+  mentions: [
+    { tag: `@${userName}`, id: userID }
+  ],
+  attachment: fs.createReadStream(outPath)
+};
 
     api.sendMessage(message, threadID, () => {
       fs.unlinkSync(bgPath);
