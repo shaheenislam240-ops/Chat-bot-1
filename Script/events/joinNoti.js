@@ -24,14 +24,18 @@ module.exports.run = async function({ api, event, Users }) {
   const botID = api.getCurrentUserID();
 
   // 🔹 Bot add check
-if (added.userFbId == botID) {
-  // শুধু ধন্যবাদ পাঠাবে, গ্রুপের নাম পরিবর্তন করবে না
-  return api.sendMessage(
-    `Thanks for adding me! Type !help to see what I can do.`,
-    threadID
-  );
-}
+  if (added.userFbId == botID) {
+    // Bot nijer name set korbe module config er name diye
+    const botName = module.exports.config.name;
+    await api.changeNickname(botName, threadID, botID).catch(() => {});
 
+    return api.sendMessage(
+      `Thanks for adding me! Type !help to see what I can do.`,
+      threadID
+    );
+  }
+
+  // 🔹 New user welcome
   const userID = added.userFbId;
   const userName = added.fullName;
 
@@ -43,8 +47,6 @@ if (added.userFbId == botID) {
   const adderName = (await Users.getNameUser(adderID)) || "Unknown";
 
   const now = new Date();
-  const dateString = now.toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka" }); // DD/MM/YYYY
-  const timeString = now.toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" }); // HH:MM AM/PM
 
   // Random background selection
   const bgURLs = [
@@ -126,7 +128,7 @@ if (added.userFbId == botID) {
 💬 ғᴇᴇʟ ғʀᴇᴇ ᴛᴏ ᴄʜᴀᴛ, ᴄᴏɴɴᴇᴄᴛ ᴀɴᴅ ʜᴀᴠᴇ ꜰᴜɴ ʜᴇʀᴇ!
 ᰔ Sııƞƞeɽ мΛяเα 倫ッ
 ━━━━━━━━━━━━━━━━
-📅 ${new Date().toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" })} - ${new Date().toLocaleDateString("en-GB")} - ${new Date().toLocaleDateString("en-US", { weekday: "long" })}`,
+📅 ${now.toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" })} - ${now.toLocaleDateString("en-GB")} - ${now.toLocaleDateString("en-US", { weekday: "long" })}`,
       mentions: [
         { tag: `@${userName}`, id: userID }
       ],
