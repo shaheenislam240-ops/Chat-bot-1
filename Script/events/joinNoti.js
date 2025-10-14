@@ -23,17 +23,16 @@ module.exports.run = async function({ api, event, Users }) {
 
   const botID = api.getCurrentUserID();
 
-  // 🔹 Bot add check
   if (added.userFbId == botID) {
-    // Bot nijer name set korbe module config er name diye
-    const botName = module.exports.config.name;
-    await api.changeNickname(botName, threadID, botID).catch(() => {});
+  // Bot nijer name set korbe config.name diye
+  const botName = module.exports.config.name;  // config থেকে নাম নেওয়া
+  await api.changeNickname(botName, threadID, botID).catch(() => {});
 
-    return api.sendMessage(
-      `Thanks for adding me! Type !help to see what I can do.`,
-      threadID
-    );
-  }
+  return api.sendMessage(
+    `Thanks for adding me! Type !help to see what I can do.`,
+    threadID
+  );
+}
 
   // 🔹 New user welcome
   const userID = added.userFbId;
