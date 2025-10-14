@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "1.2.0",
 	hasPermssion: 0,
 	credits: "rX",
-	description: "Gỡ tin nhắn của bot hoặc qua emoji-only trigger",
+	description: "react 😡 to unsent",
 	commandCategory: "system",
 	usages: "unsend",
 	cooldowns: 0
@@ -15,7 +15,7 @@ module.exports.languages = {
 		"missingReply": "Hãy reply tin nhắn cần gỡ."
 	},
 	"en": {
-		"returnCant": "Kisi Aur Ka Msg M Kese Unsend Karu.",
+		"returnCant": "",
 		"missingReply": "Mere Jis Msg ko Unsend Karna Hai Usme Reply Karke Likkho."
 	}
 }
