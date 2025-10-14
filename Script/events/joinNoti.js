@@ -21,6 +21,17 @@ module.exports.run = async function({ api, event, Users }) {
   const added = logMessageData.addedParticipants?.[0];
   if (!added) return;
 
+  const botID = api.getCurrentUserID();
+
+  // 🔹 Bot add check
+if (added.userFbId == botID) {
+  // শুধু ধন্যবাদ পাঠাবে, গ্রুপের নাম পরিবর্তন করবে না
+  return api.sendMessage(
+    `Thanks for adding me! Type !help to see what I can do.`,
+    threadID
+  );
+}
+
   const userID = added.userFbId;
   const userName = added.fullName;
 
@@ -32,9 +43,8 @@ module.exports.run = async function({ api, event, Users }) {
   const adderName = (await Users.getNameUser(adderID)) || "Unknown";
 
   const now = new Date();
-const dateString = now.toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka" }); // DD/MM/YYYY
-const timeString = now.toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" }); // HH:MM AM/PM
-
+  const dateString = now.toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka" }); // DD/MM/YYYY
+  const timeString = now.toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" }); // HH:MM AM/PM
 
   // Random background selection
   const bgURLs = [
@@ -110,18 +120,18 @@ const timeString = now.toLocaleTimeString("en-US", { hour12: true, timeZone: "As
     fs.writeFileSync(outPath, finalBuffer);
 
     const message = {
-  body: `‎🌸 ʜᴇʟʟᴏ @${userName}
+      body: `‎🌸 ʜᴇʟʟᴏ @${userName}
 🎀 ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ᴏᴜʀ ɢʀᴏᴜᴘ — ${groupName}
 📌 ʏᴏᴜ'ʀᴇ ᴛʜᴇ ${memberCount} ᴍᴇᴍʙᴇʀ ᴏɴ ᴛʜɪꜱ ɢʀᴏᴜᴘ!
 💬 ғᴇᴇʟ ғʀᴇᴇ ᴛᴏ ᴄʜᴀᴛ, ᴄᴏɴɴᴇᴄᴛ ᴀɴᴅ ʜᴀᴠᴇ ꜰᴜɴ ʜᴇʀᴇ!
 ᰔ Sııƞƞeɽ мΛяเα 倫ッ
 ━━━━━━━━━━━━━━━━
 📅 ${new Date().toLocaleTimeString("en-US", { hour12: true, timeZone: "Asia/Dhaka" })} - ${new Date().toLocaleDateString("en-GB")} - ${new Date().toLocaleDateString("en-US", { weekday: "long" })}`,
-  mentions: [
-    { tag: `@${userName}`, id: userID }
-  ],
-  attachment: fs.createReadStream(outPath)
-};
+      mentions: [
+        { tag: `@${userName}`, id: userID }
+      ],
+      attachment: fs.createReadStream(outPath)
+    };
 
     api.sendMessage(message, threadID, () => {
       fs.unlinkSync(bgPath);
