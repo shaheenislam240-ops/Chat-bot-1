@@ -23,13 +23,14 @@ module.exports.run = async function({ api, event, Users }) {
 
   const botID = api.getCurrentUserID();
 
-  if (added.userFbId == botID) {
-  // Bot nijer name set korbe config.name diye
-  const botName = module.exports.config.name;  // config থেকে নাম নেওয়া
+ // 🔹 Bot add check
+if (added.userFbId == botID) {
+  // Bot nijer name set korbe global config er BOTNAME diye
+  const botName = global.config.BOTNAME || "Bot"; // BOTNAME না থাকলে default "Bot"
   await api.changeNickname(botName, threadID, botID).catch(() => {});
 
   return api.sendMessage(
-    `Thanks for adding me! Type !help to see what I can do.`,
+    `> 🎀\n 𝐓𝐡𝐚𝐧𝐤𝐬 𝐟𝐨𝐫 𝐚𝐝𝐝𝐢𝐧𝐠 𝐦𝐞! 𝐓𝐲𝐩𝐞 !𝐡𝐞𝐥𝐩 𝐭𝐨 𝐬𝐞𝐞 𝐞𝐡𝐚𝐭 𝐈 𝐜𝐚𝐧 𝐝𝐨.`,
     threadID
   );
 }
