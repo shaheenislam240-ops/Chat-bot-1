@@ -8,7 +8,7 @@ module.exports.config = {
     credits: "Rx Abdullah",
     description: "Manage VIP mode & VIP users",
     commandCategory: "Admin",
-    usages: "[on|off|add|remove|list] <userID>",
+    usages: "[on|off|add|remove|list] <userID or reply>",
     cooldowns: 5
 };
 
@@ -34,9 +34,12 @@ module.exports.run = async function ({ api, event, args }) {
     // ===== End helpers =====
 
     const subCommand = args[0]?.toLowerCase();
-    const targetID = args[1];
 
-    if (!subCommand) return api.sendMessage("Usage: vip [on|off|add|remove|list] <userID>", event.threadID);
+    // Check for reply message if add/remove
+    let targetID = args[1];
+    if (!targetID && event.messageReply) targetID = event.messageReply.senderID;
+
+    if (!subCommand) return api.sendMessage("Usage: vip [on|off|add|remove|list] <userID or reply>", event.threadID);
 
     let vipList = loadVIP();
     let vipMode = loadVIPMode();
@@ -51,14 +54,14 @@ module.exports.run = async function ({ api, event, args }) {
             return api.sendMessage("✅ VIP mode is now OFF. Everyone can use commands.", event.threadID);
 
         case "add":
-            if (!targetID) return api.sendMessage("❌ Please provide a userID to add.", event.threadID);
+            if (!targetID) return api.sendMessage("❌ Please provide a userID or reply to add.", event.threadID);
             if (vipList.includes(targetID)) return api.sendMessage("❌ User is already VIP.", event.threadID);
             vipList.push(targetID);
             saveVIP(vipList);
             return api.sendMessage(`✅ Added ${targetID} to VIP list.`, event.threadID);
 
         case "remove":
-            if (!targetID) return api.sendMessage("❌ Please provide a userID to remove.", event.threadID);
+            if (!targetID) return api.sendMessage("❌ Please provide a userID or reply to remove.", event.threadID);
             if (!vipList.includes(targetID)) return api.sendMessage("❌ User is not in VIP list.", event.threadID);
             vipList = vipList.filter(id => id !== targetID);
             saveVIP(vipList);
@@ -69,6 +72,6 @@ module.exports.run = async function ({ api, event, args }) {
             return api.sendMessage(`📋 VIP Users:\n${vipList.join("\n")}`, event.threadID);
 
         default:
-            return api.sendMessage("Unknown subcommand. Usage: vip [on|off|add|remove|list] <userID>", event.threadID);
+            return api.sendMessage("Unknown subcommand. Usage: vip [on|off|add|remove|list] <userID or reply>", event.threadID);
     }
 };
