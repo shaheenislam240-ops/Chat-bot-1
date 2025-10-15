@@ -122,12 +122,16 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
     else if (!ADMINBOT.includes(senderID) && !NDH.includes(senderID) && find) permssion = 1;
 
     // ===== VIP Mode Check =====
-    const vipList = loadVIP();
-    const vipMode = loadVIPMode();
-    if(vipMode && !vipList.includes(senderID)) {
-        return api.sendMessage("❌ VIP mode is ON. Only VIP members can use commands.", threadID, messageID);
-    }
-    // ===== End VIP Mode Check =====
+const vipList = loadVIP();
+const vipMode = loadVIPMode();
+
+// Bot admin check first
+if (!ADMINBOT.includes(senderID)) {
+  if(vipMode && !vipList.includes(senderID)) {
+      return api.sendMessage("> ❌\n𝐎𝐧𝐥𝐲 𝐕𝐈𝐏 𝐮𝐬𝐞𝐫 𝐜𝐚𝐧 𝐮𝐬𝐞 𝐜𝐨𝐦𝐦𝐚𝐧𝐝", threadID, messageID);
+  }
+}
+// ===== End VIP Mode Check =====
 
     if (command.config.hasPermssion > permssion) return api.sendMessage(global.getText("handleCommand", "permssionNotEnough", command.config.name), event.threadID, event.messageID);
      
