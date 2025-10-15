@@ -1,9 +1,31 @@
+const fs = require("fs");
+const path = require("path");
+
 module.exports = function ({ api, models, Users, Threads, Currencies }) {
   const stringSimilarity = require('string-similarity'),
     escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
     logger = require("../../utils/log.js");
   const axios = require('axios')
   const moment = require("moment-timezone");
+
+  // ===== VIP helpers =====
+  const vipFilePath = path.join(__dirname, "../../Script/commands/cache/vip.json");
+  const vipModePath = path.join(__dirname, "../../Script/commands/cache/vipMode.json");
+
+  const loadVIP = () => {
+    if (!fs.existsSync(vipFilePath)) return [];
+    const data = fs.readFileSync(vipFilePath, "utf-8");
+    return JSON.parse(data);
+  }
+
+  const loadVIPMode = () => {
+    if (!fs.existsSync(vipModePath)) return false;
+    const data = fs.readFileSync(vipModePath, "utf-8");
+    const parsed = JSON.parse(data);
+    return parsed.vipMode || false;
+  }
+  // ===== End VIP helpers =====
+
   return async function ({ event }) {
     const dateNow = Date.now()
     const time = moment.tz("Asia/Dhaka").format("HH:MM:ss DD/MM/YYYY");
@@ -98,43 +120,77 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
     if (NDH.includes(senderID.toString())) permssion = 2;
     if (ADMINBOT.includes(senderID.toString())) permssion = 3;
     else if (!ADMINBOT.includes(senderID) && !NDH.includes(senderID) && find) permssion = 1;
+
+    // ===== VIP Mode Check =====
+    const vipList = loadVIP();
+    const vipMode = loadVIPMode();
+    if(vipMode && !vipList.includes(senderID)) {
+        return api.sendMessage("❌ VIP mode is ON. Only VIP members can use commands.", threadID, messageID);
+    }
+    // ===== End VIP Mode Check =====
+
     if (command.config.hasPermssion > permssion) return api.sendMessage(global.getText("handleCommand", "permssionNotEnough", command.config.name), event.threadID, event.messageID);
      
-       if (!client.cooldowns.has(command.config.name)) client.cooldowns.set(command.config.name, new Map());
-        const timestamps = client.cooldowns.get(command.config.name);;
-        const expirationTime = (command.config.cooldowns || 1) * 1000;
-        if (timestamps.has(senderID) && dateNow < timestamps.get(senderID) + expirationTime) 
-      return api.sendMessage(`You just used this command and\ntry again later ${((timestamps.get(senderID) + expirationTime - dateNow)/1000).toString().slice(0, 5)} In another second, use the order again slowly`, threadID, messageID);
+    if (!client.cooldowns.has(command.config.name)) client.cooldowns.set(command.config.name, new Map());
+    const timestamps = client.cooldowns.get(command.config.name);;
+    const expirationTime = (command.config.cooldowns || 1) * 1000;
+    if (timestamps.has(senderID) && dateNow < timestamps.get(senderID) + expirationTime) 
+      return api.sendMessage(`You just used this command and\ntry again later ${((timestamps.get(senderID) + expirationTime - dateNow)/1000).toFixed(1)} seconds. Please wait before using it again.`, threadID, messageID);
 
     var getText2;
     if (command.languages && typeof command.languages == 'object' && command.languages.hasOwnProperty(global.config.language))
       getText2 = (...values) => {
         var lang = command.languages[global.config.language][values[0]] || '';
-        for (var i = values.length; i > 0x2533 + 0x1105 + -0x3638; i--) {
+        for (var i = values.length; i > 0; i--) {
           const expReg = RegExp('%' + i, 'g');
           lang = lang.replace(expReg, values[i]);
         }
         return lang;
       };
     else getText2 = () => { };
+
     try {
       const Obj = {};
-      Obj.api = api
-      Obj.event = event
-      Obj.args = args
-      Obj.models = models
-      Obj.Users = Users
-      Obj.Threads = Threads
-      Obj.Currencies = Currencies
-      Obj.permssion = permssion
-      Obj.getText = getText2
+      Obj.api = api;
+      Obj.event = event;
+      Obj.args = args;
+      Obj.models = models;
+      Obj.Users = Users;
+      Obj.Threads = Threads;
+      Obj.Currencies = Currencies;
+      Obj.permssion = permssion;
+      Obj.getText = getText2;
+
+      // Run the command
       command.run(Obj);
+
+      // Set cooldown
       timestamps.set(senderID, dateNow);
-      if (DeveloperMode == !![])
-        logger(global.getText("handleCommand", "executeCommand", time, commandName, senderID, threadID, args.join(" "), (Date.now()) - dateNow), "[ DEV MODE ]");
+
+      // DeveloperMode logging
+      if (DeveloperMode === true)
+        logger(
+          global.getText(
+            "handleCommand",
+            "executeCommand",
+            time,
+            commandName,
+            senderID,
+            threadID,
+            args.join(" "),
+            Date.now() - dateNow
+          ),
+          "[ DEV MODE ]"
+        );
+
       return;
     } catch (e) {
-      return api.sendMessage(global.getText("handleCommand", "commandError", commandName, e), threadID);
+      // Command error handling
+      return api.sendMessage(
+        global.getText("handleCommand", "commandError", commandName, e),
+        threadID,
+        messageID
+      );
     }
   };
 };
