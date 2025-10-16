@@ -16,7 +16,7 @@ module.exports.config = {
   version: "1.0.7",
   hasPermssion: 0,
   credits: "rX",
-  description: "AI Chatbot with Teach & List support + Typing effect", //Better then all simsimi
+  description: "AI auto teach with Teach & List  support + Typing effect", //Better then all simsimi
   commandCategory: "chat",
   usages: "[query]",
   cooldowns: 0,
