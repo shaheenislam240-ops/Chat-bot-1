@@ -48,13 +48,20 @@ module.exports.run = async function({ api, event }) {
 			return api.sendMessage("❌ info.gif ফাইল cache ফোল্ডারে পাওয়া যায়নি!", event.threadID);
 		}
 
-		// send gif
+		// send gif + 10 sec unsend
 		await api.sendMessage(
 			{
 				body: message,
 				attachment: fs.createReadStream(cacheFile)
 			},
-			event.threadID
+			event.threadID,
+			(err, info) => {
+				if (!err) {
+					setTimeout(() => {
+						api.unsendMessage(info.messageID);
+					}, 10000); // 10 sec পরে auto unsend
+				}
+			}
 		);
 
 	} catch (error) {
