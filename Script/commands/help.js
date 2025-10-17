@@ -89,7 +89,7 @@ module.exports.run = async function ({ api, event, args }) {
       if (!err) {
         setTimeout(() => {
           api.unsendMessage(info.messageID);
-        }, 10000); // auto unsend after 10 sec
+        }, 15000); // auto unsend after 15 sec
       }
     }, event.messageID);
 
