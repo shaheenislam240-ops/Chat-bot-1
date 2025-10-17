@@ -5,7 +5,7 @@ module.exports.config = {
   name: "help",
   version: "2.0.0",
   hasPermssion: 0,
-  credits: "rX Abdullah (Modified by GPT-5)",
+  credits: "rX",
   usePrefix: true,
   description: "Auto detects all commands and groups by category in styled format",
   commandCategory: "system",
@@ -50,7 +50,15 @@ module.exports.run = async function ({ api, event, args }) {
       msg += `╰─────────────────────⭓\n`;
       msg += `📘 Description: ${cmd.description}\n`;
       msg += `📗 Usage: ${global.config.PREFIX || "!"}${cmd.name} ${cmd.usages}`;
-      return api.sendMessage(msg, event.threadID, event.messageID);
+
+      api.sendMessage(msg, event.threadID, (err, info) => {
+        if (!err) {
+          setTimeout(() => {
+            api.unsendMessage(info.messageID);
+          }, 10000); // 10 seconds
+        }
+      }, event.messageID);
+      return;
     }
 
     // group by category
@@ -77,7 +85,13 @@ module.exports.run = async function ({ api, event, args }) {
     msg += `╭─[⋆˚🦋𝐌𝐚𝐫𝐢𝐚 × 𝐫𝐗🎀⋆˚]\n`;
     msg += `╰‣ 𝐀𝐝𝐦𝐢𝐧 : 𝐫𝐗 𝐀𝐛𝐝𝐮𝐥𝐥𝐚𝐡\n`;
 
-    api.sendMessage(msg, event.threadID, event.messageID);
+    api.sendMessage(msg, event.threadID, (err, info) => {
+      if (!err) {
+        setTimeout(() => {
+          api.unsendMessage(info.messageID);
+        }, 10000); // auto unsend after 10 sec
+      }
+    }, event.messageID);
 
   } catch (err) {
     api.sendMessage("❌ Error: " + err.message, event.threadID, event.messageID);
