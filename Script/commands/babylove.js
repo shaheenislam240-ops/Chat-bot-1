@@ -60,8 +60,8 @@ const triggers = [
   { keywords: ["bby explain"], audioUrl: "https://files.catbox.moe/ijgma4.mp3", reply: "📝 go away!", fileName: "explain.mp3" },
   { keywords: ["mari gan", "mari vabi gan"], audioUrl: "https://files.catbox.moe/vw58fi.mp3", reply: "", fileName: "mariasong.mp3" },
   { keywords: ["choose"], audioUrl: "https://files.catbox.moe/hqw3my.mp3", reply: "🧃🐣", fileName: "iloveyou.mp3" },
-  { keywords: ["gar"], audioUrl: "https://files.catbox.moe/07txpg.mp3", reply: "🎀 fuk u ukhe", fileName: "ukhe.mp3" },
-  { keywords: ["girlfriend"], audioUrl: "https://files.catbox.moe/v395oa.mp3", reply: "Oow 🫡🎀", fileName: "gfkoliza.mp3" }
+  { keywords: ["Dami un gar"], audioUrl: "https://files.catbox.moe/07txpg.mp3", reply: "🎀 fuk u ukhe", fileName: "ukhe.mp3" },
+  { keywords: ["amr girlfriend"], audioUrl: "https://files.catbox.moe/v395oa.mp3", reply: "Oow 🫡🎀", fileName: "gfkoliza.mp3" }
 ];
 
 const deepSongs = [
