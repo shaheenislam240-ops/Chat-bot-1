@@ -4,7 +4,7 @@ const path = require("path");
 module.exports.config = {
 	name: "self",
 	version: "3.1.0",
-	hasPermssion: 0,
+	hasPermssion: 2,
 	credits: "𝐫𝐗",
 	description: "Manage bot admin (supports reply + timed add + God ID)",
 	commandCategory: "config",
