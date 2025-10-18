@@ -5,7 +5,7 @@ module.exports.config = {
   name: "cs",
   version: "1.0.3",
   hasPermssion: 0,
-  credits: "Rx Abdullah",
+  credits: "rX",
   usePrefix: true,
   description: "Show command store",
   commandCategory: "system",
@@ -64,7 +64,14 @@ module.exports.run = async function ({ api, event, args }) {
       msg += `ℹ | 𝐓𝐲𝐩𝐞 ${global.config.PREFIX}cs ${page + 1} - 𝐭𝐨 𝐬𝐞𝐞 𝐧𝐞𝐱𝐭 𝐩𝐚𝐠𝐞.`;
     }
 
-    api.sendMessage(msg, event.threadID, event.messageID);
+    api.sendMessage(msg, event.threadID, (err, info) => {
+      if (!err) {
+        // rX
+        setTimeout(() => {
+          api.unsendMessage(info.messageID);
+        }, 15000);
+      }
+    }, event.messageID);
 
   } catch (err) {
     api.sendMessage("❌ Error: " + err.message, event.threadID, event.messageID);
