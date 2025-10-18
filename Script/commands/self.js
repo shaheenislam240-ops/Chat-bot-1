@@ -16,10 +16,10 @@ module.exports.config = {
 module.exports.languages = {
 	"en": {
 		"listAdmin": "「𝐀𝐝𝐦𝐢𝐧」 𝐀𝐝𝐦𝐢𝐧 𝐥𝐢𝐬𝐭:\n\n%1",
-		"notHavePermssion": "> 🎀\n 𝐘𝐨𝐮 𝐝𝐨𝐧'𝐭 𝐡𝐚𝐯𝐞 𝐩𝐞𝐫𝐦𝐢𝐬𝐬𝐢𝐨𝐧 𝐭𝐨 𝐮𝐬𝐞 '%1'",
-		"addedNewAdmin": "> 🎀\n 𝐀𝐝𝐝𝐞𝐝 %1 𝐚𝐝𝐦𝐢𝐧(𝐬):\n\n%2",
+		"notHavePermssion": "「𝐀𝐝𝐦𝐢𝐧」𝐘𝐨𝐮 𝐝𝐨𝐧'𝐭 𝐡𝐚𝐯𝐞 𝐩𝐞𝐫𝐦𝐢𝐬𝐬𝐢𝐨𝐧 𝐭𝐨 𝐮𝐬𝐞 '%1'",
+		"addedNewAdmin": "「𝐀𝐝𝐦𝐢𝐧」 𝐀𝐝𝐝𝐞𝐝 %1 𝐚𝐝𝐦𝐢𝐧(𝐬):\n\n%2",
 		"removedAdmin": "[Admin] Removed %1 admin(s):\n\n%2",
-		"timeExpired": "> 🎀\n 𝐀𝐮𝐭𝐨 𝐫𝐞𝐦𝐨𝐯𝐞𝐝 𝐚𝐝𝐦𝐢𝐧: %1 (𝐭𝐢𝐦𝐞 𝐞𝐱𝐩𝐢𝐫𝐞𝐝)"
+		"timeExpired": "「𝐀𝐝𝐦𝐢𝐧」 𝐀𝐮𝐭𝐨 𝐫𝐞𝐦𝐨𝐯𝐞𝐝 𝐚𝐝𝐦𝐢𝐧: %1 (𝐭𝐢𝐦𝐞 𝐞𝐱𝐩𝐢𝐫𝐞𝐝)"
 	}
 };
 
