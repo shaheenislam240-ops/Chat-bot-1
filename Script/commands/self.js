@@ -5,7 +5,7 @@ module.exports.config = {
 	name: "self",
 	version: "3.1.0",
 	hasPermssion: 0,
-	credits: "rX",
+	credits: "𝐫𝐗",
 	description: "Manage bot admin (supports reply + timed add + God ID)",
 	commandCategory: "config",
 	usages: "[list/add/remove] [@mention/userID/reply] [time (optional: 1m,1h,1d)]",
@@ -15,11 +15,11 @@ module.exports.config = {
 
 module.exports.languages = {
 	"en": {
-		"listAdmin": "[Admin] Admin list:\n\n%1",
-		"notHavePermssion": "[Admin] You don't have permission to use '%1'",
-		"addedNewAdmin": "[Admin] Added %1 admin(s):\n\n%2",
+		"listAdmin": "「𝐀𝐝𝐦𝐢𝐧」 𝐀𝐝𝐦𝐢𝐧 𝐥𝐢𝐬𝐭:\n\n%1",
+		"notHavePermssion": "> 🎀\n 𝐘𝐨𝐮 𝐝𝐨𝐧'𝐭 𝐡𝐚𝐯𝐞 𝐩𝐞𝐫𝐦𝐢𝐬𝐬𝐢𝐨𝐧 𝐭𝐨 𝐮𝐬𝐞 '%1'",
+		"addedNewAdmin": "> 🎀\n 𝐀𝐝𝐝𝐞𝐝 %1 𝐚𝐝𝐦𝐢𝐧(𝐬):\n\n%2",
 		"removedAdmin": "[Admin] Removed %1 admin(s):\n\n%2",
-		"timeExpired": "[Admin] Auto removed admin: %1 (time expired)"
+		"timeExpired": "> 🎀\n 𝐀𝐮𝐭𝐨 𝐫𝐞𝐦𝐨𝐯𝐞𝐝 𝐚𝐝𝐦𝐢𝐧: %1 (𝐭𝐢𝐦𝐞 𝐞𝐱𝐩𝐢𝐫𝐞𝐝)"
 	}
 };
 
