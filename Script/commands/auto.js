@@ -3,7 +3,7 @@ module.exports = {
     name: "autodl",
     version: "1.0.0",
     hasPermssion: 0,
-    credits: "rX Abdullah",
+    credits: "rX",
     description: "Auto detect and download videos from YouTube, TikTok, Instagram, etc.",
     commandCategory: "user",
     usages: "",
@@ -22,23 +22,28 @@ module.exports = {
     if (!content.startsWith("https://")) return;
 
     try {
-      // Detect site type
+      // Detect platform
       let site = "Unknown";
       if (content.includes("youtube.com") || content.includes("youtu.be")) site = "YouTube";
       else if (content.includes("tiktok.com")) site = "TikTok";
       else if (content.includes("instagram.com")) site = "Instagram";
       else if (content.includes("facebook.com")) site = "Facebook";
 
+      // React with 🔍 while processing
       api.setMessageReaction("🔍", event.messageID, () => {}, true);
-      api.sendMessage(`🎥 Detected platform: ${site}\n⏳ Downloading...`, event.threadID);
 
-      // Download data
+      // Download video data
       const data = await alldown(content);
-      if (!data || !data.url) return api.sendMessage("❌ Failed to get download link.", event.threadID);
+      if (!data || !data.url) {
+        // React ❌ if failed
+        api.setMessageReaction("❌", event.messageID, () => {}, true);
+        return;
+      }
 
       const title = data.title || "unknown_video";
       const videoUrl = data.url;
 
+      // React ⬇️ before download
       api.setMessageReaction("⬇️", event.messageID, () => {}, true);
 
       // Download video file
@@ -46,22 +51,22 @@ module.exports = {
       const filePath = __dirname + "/cache/" + title.replace(/[^\w\s]/gi, "_") + ".mp4";
       fs.writeFileSync(filePath, Buffer.from(videoBuffer, "utf-8"));
 
-      // Send video with title and source
+      // Send video with platform and title
       api.sendMessage(
         {
-          body: `🎀 Download Complete!\n📍 Source: ${site}\n🎬 Title: ${title}`,
+          body: `🎀 Download Complete!\n📍 Platform: ${site}\n🎬 Title: ${title}`,
           attachment: fs.createReadStream(filePath),
         },
         event.threadID,
         (err) => {
           fs.unlinkSync(filePath);
-          api.setMessageReaction("✅", event.messageID, () => {}, true);
+          if (!err) api.setMessageReaction("✅", event.messageID, () => {}, true);
+          else api.setMessageReaction("❌", event.messageID, () => {}, true);
         },
         event.messageID
       );
     } catch (err) {
       console.error(err);
-      api.sendMessage("❌ Error downloading video.", event.threadID, event.messageID);
       api.setMessageReaction("❌", event.messageID, () => {}, true);
     }
   },
