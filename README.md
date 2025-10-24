@@ -1,6 +1,6 @@
 <br />
 <p align="center">
-    <a href="https://github.com/rxabdullah007/MIRAI-MESSENGAR-BOT-BY-RX">
+    <a href="https://github.com/rxabdullah007/MIRAI-MESSENGER-BOT-BY-RX">
         <img src="https://i.imgur.com/I0kvVfu.jpeg" alt="Logo">
     </a>
 
@@ -10,9 +10,9 @@
     A simple Facebook Messenger Bot made by me(rX Abdullah).
     <br />
     <br />
-    <a href="https://github.com/rxabdullah007/MIRAI-MESSENGAR-BOT-BY-RX/issues">Report Bug</a>
+    <a href="https://github.com/rxabdullah007/MIRAI-MESSENGER-BOT-BY-RX/issues">Report Bug</a>
     ·
-    <a href="https://github.com/rxabdullah007/MIRAI-MESSENGAR-BOT-BY-RX/pulls">Request Feature</a>
+    <a href="https://github.com/rxabdullah007/MIRAI-MESSENGER-BOT-BY-RX/pulls">Request Feature</a>
     </p>
 </p>
 
