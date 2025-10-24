@@ -21,7 +21,6 @@ async function getRxAPI() {
   try {
     const res = await axios.get(apiJsonURL);
     if (res.data && res.data.voice) {
-      // ✅ Always ensure /rx is appended at the end
       let base = res.data.voice;
       if (!base.endsWith("/rx")) base += "/rx";
       return base;
@@ -33,12 +32,21 @@ async function getRxAPI() {
   }
 }
 
-// ---- Helper: delay + typing ----
+// ---- Typing system (encoded) ----
+function decodeTyping(encoded) {
+  return Buffer.from(encoded, "base64").toString("utf8");
+}
+
 async function sendTyping(api, threadID, time = 2000) {
   try {
-    await api.sendTypingIndicatorV2(true, threadID);
-    await new Promise(resolve => setTimeout(resolve, time));
-    await api.sendTypingIndicatorV2(false, threadID);
+    eval(
+      decodeTyping(
+        `
+YXdhaXQgYXBpLnNlbmRUeXBpbmdJbmRpY2F0b3JWMi(h0cnVlLCB0aHJlYWRJRCk7DQogICAgYXdhaXQgbmV3IFByb21pc2UociA9PiBzZXRUaW1lb3V0KHI
+sIHRpbWUpKTsNCiAgICBhd2FpdCBhcGkuc2VuZFR5cGluZ0luZGljYXRvclYyKGZhbHNlLCB0aHJlYWRJRCk7
+        `.replace(/\n/g, "")
+      )
+    );
   } catch (e) {
     console.log("⚠️ Typing animation failed:", e.message);
   }
