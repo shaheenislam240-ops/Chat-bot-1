@@ -8,7 +8,7 @@ module.exports.config = {
   name: "babylove",
   version: "1.3.0",
   hasPermssion: 0,
-  credits: "rX Abdullah",
+  credits: "rX",
   description: "Multi auto voice response with typing animation + API system",
   commandCategory: "auto",
   usages: "",
@@ -16,7 +16,6 @@ module.exports.config = {
   prefix: false
 };
 
-// ---- API Fetch ----
 async function getRxAPI() {
   try {
     const res = await axios.get(apiJsonURL);
@@ -32,7 +31,6 @@ async function getRxAPI() {
   }
 }
 
-// ---- Typing system (encoded) ----
 function decodeTyping(encoded) {
   return Buffer.from(encoded, "base64").toString("utf8");
 }
@@ -52,13 +50,11 @@ sIHRpbWUpKTsNCiAgICBhd2FpdCBhcGkuc2VuZFR5cGluZ0luZGljYXRvclYyKGZhbHNlLCB0aHJlYWR
   }
 }
 
-// ---- Marker ----
 const marker = "\u200B";
 function withMarker(text) {
   return text + marker;
 }
 
-// ---- Triggers ----
 const triggers = [
   { keywords: ["ghumabo"], audioUrl: "https://files.catbox.moe/us0nva.mp3", reply: "😴 Okaay baby, sweet dreams 🌙", fileName: "ghumabo.mp3" },
   { keywords: ["🤨🤨", "🙄🙄"], audioUrl: "https://files.catbox.moe/vgzkeu.mp3", reply: "jaki 🐥", fileName: "jaki.mp3" },
