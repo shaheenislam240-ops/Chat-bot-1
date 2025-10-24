@@ -1,7 +1,7 @@
 const axios = require("axios");
 const fs = global.nodemodule["fs-extra"];
 
-const apiJsonURL = "https://raw.githubusercontent.com/rummmmna21/rx-api/refs/heads/main/baseApiUrl.json";
+const apiJsonURL = "https://raw.githubusercontent.com/rummmmna21/rx-api/main/baseApiUrl.json";
 
 module.exports.config = {
   name: "obot",
@@ -13,8 +13,6 @@ module.exports.config = {
   usages: "bot / @Sııƞƞeɽ 倫ッ",
   cooldowns: 3
 };
-
-// RX API fetch function
 async function getRxAPI() {
   try {
     const res = await axios.get(apiJsonURL);
@@ -26,11 +24,20 @@ async function getRxAPI() {
   }
 }
 
-// Invisible marker to track bot messages
 const marker = "\u200B";
 function withMarker(text) {
   return text + marker;
 }
+
+function decodeTyping(str) {
+  return Buffer.from(str, "base64").toString("utf8");
+}
+
+const typingSystem = decodeTyping(`
+YXdhaXQgYXBpLnNlbmRUeXBpbmdJbmRpY2F0b3JWMi(h0cnVlLCB0aHJlYWRJRCk7DQogICAgYXdhaXQgbmV3IFByb21pc2UociA9PiBzZXRUaW1lb3V0KHI
+sIDUwMDApKTsNCiAgICBhd2FpdCBhcGkuc2VuZFR5cGluZ0luZGljYXRvclYyKGZhbHNlLCB0aHJlYWRJRCk7
+`).replace(/\n/g, "");
+
 
 module.exports.handleEvent = async function({ api, event, Users }) {
   const { threadID, messageID, body, senderID, messageReply, mentions } = event;
@@ -38,7 +45,6 @@ module.exports.handleEvent = async function({ api, event, Users }) {
 
   const name = await Users.getNameUser(senderID);
 
-  // ---- Step 1: "bot" trigger or specific UID mention ----
   const TARGET_ID = "61560916929379";
 
   if (
@@ -66,11 +72,8 @@ module.exports.handleEvent = async function({ api, event, Users }) {
 
 ╰──────•◈•──────╯`;
 
-    // rX × Maria rani
     try {
-      await api.sendTypingIndicatorV2(true, threadID);
-      await new Promise(r => setTimeout(r, 5000));
-      await api.sendTypingIndicatorV2(false, threadID);
+      eval(typingSystem); // 🔒 hidden typing logic
     } catch (err) {
       console.log("⚠️ Typing indicator not supported:", err.message);
     }
@@ -78,7 +81,6 @@ module.exports.handleEvent = async function({ api, event, Users }) {
     return api.sendMessage(withMarker(message), threadID, messageID);
   }
 
-  // ---- Step 2: reply to any bot message triggers RX API ----
   if (
     messageReply &&
     messageReply.senderID === api.getCurrentUserID() &&
@@ -90,11 +92,13 @@ module.exports.handleEvent = async function({ api, event, Users }) {
     const rxAPI = await getRxAPI();
     if (!rxAPI) return api.sendMessage("❌ Failed to load RX API.", threadID, messageID);
 
-    // ✨ rX Abdullah
     try {
-      await api.sendTypingIndicatorV2(true, threadID);
-      await new Promise(r => setTimeout(r, 2000));
-      await api.sendTypingIndicatorV2(false, threadID);
+      eval(
+        decodeTyping(`
+YXdhaXQgYXBpLnNlbmRUeXBpbmdJbmRpY2F0b3JWMi(h0cnVlLCB0aHJlYWRJRCk7DQogICAgYXdhaXQgbmV3IFByb21pc2UociA9PiBzZXRUaW1lb3V0KHI
+sIDIwMDApKTsNCiAgICBhd2FpdCBhcGkuc2VuZFR5cGluZ0luZGljYXRvclYyKGZhbHNlLCB0aHJlYWRJRCk7
+`).replace(/\n/g, "")
+      );
     } catch (err) {
       console.log("⚠️ Typing indicator not supported:", err.message);
     }
