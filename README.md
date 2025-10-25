@@ -46,7 +46,7 @@ This project is licensed under the GNU General Public License v3.0 or later - se
 
 - Facebook Messenger chatbot functionality
 - Facebook login through `appstate.json` (cookies)
-- 300+ built-in commands
+- 150+ built-in commands
 - Easily customizable structure for developers
 
 
